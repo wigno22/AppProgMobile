@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "655002032958",
+    "project_id": "progettopm-6890f",
+    "storage_bucket": "progettopm-6890f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:655002032958:android:ffd90b188e64713b5aea6f",
+        "android_client_info": {
+          "package_name": "com.example.progettoprogrammazionemobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClR9mmYMo_OoD8E5JovdaSVCdCKcPaKas"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
