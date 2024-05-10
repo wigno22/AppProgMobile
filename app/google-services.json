@@ -12,7 +12,20 @@
           "package_name": "com.example.progettoprogrammazionemobile"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "655002032958-hok3b3n9msm4d965l52geqs4ttabh5ia.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.progettoprogrammazionemobile",
+            "certificate_hash": "babeb6d2e5b183f774cc33820c8657afffc50aba"
+          }
+        },
+        {
+          "client_id": "655002032958-ncj6t2khcgu2b6tnsq26niv10ukp463f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyClR9mmYMo_OoD8E5JovdaSVCdCKcPaKas"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "655002032958-ncj6t2khcgu2b6tnsq26niv10ukp463f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

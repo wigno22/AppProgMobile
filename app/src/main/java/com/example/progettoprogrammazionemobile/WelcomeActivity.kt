@@ -2,6 +2,7 @@ package com.example.progettoprogrammazionemobile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
@@ -15,6 +16,7 @@ class WelcomeActivity : AppCompatActivity() {
         FirebaseAuthUIActivityResultContract()
     ) { res ->
         this.onSignInResult(res)
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,10 +47,16 @@ class WelcomeActivity : AppCompatActivity() {
         if (result.resultCode == RESULT_OK) {
             // Successfully signed in
             val user = FirebaseAuth.getInstance().currentUser
-//start the MainActivity
             val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("USER", user)
+
+            if (user != null) {
+                user.displayName?.let { Log.e("tag", it) }
+                intent.putExtra("USER", user.displayName)
+
+            };
+//start the MainActivity
             startActivity(intent)
+
         }
 
     }
