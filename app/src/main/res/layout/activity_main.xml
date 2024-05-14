@@ -24,9 +24,6 @@
         app:layout_constraintVertical_bias="0.022">
 
         <!-- TextView -->
-
-        <!-- Button -->
-
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
@@ -35,6 +32,7 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
+        <!-- Button x Logout-->
         <Button
             android:id="@+id/sign_out"
             android:layout_width="wrap_content"
@@ -42,6 +40,14 @@
             android:backgroundTint="@color/white"
             android:text="Log-Out"
             android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/transaction_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
+            android:text="Transaction"
+            android:textColor="@android:color/black"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
 

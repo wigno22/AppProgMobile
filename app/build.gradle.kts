@@ -42,7 +42,10 @@ dependencies {
     //if you target Android 12
     implementation("com.google.android.gms:play-services-auth:20.0.1")
 
-
+    // Declare the dependency for the Cloud Firestore library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-firestore")
+    implementation ("com.google.firebase:firebase-firestore-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
