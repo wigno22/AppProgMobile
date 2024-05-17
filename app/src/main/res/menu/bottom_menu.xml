@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <item
-        android:id="@+id/navigation_Account"
-        android:icon="@drawable/cupcake"
-        android:title="" />
-
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/iconaprofilo"
+        android:title="Profile"/>
     <item
-        android:id="@+id/navigation_Profile"
-        android:icon="@drawable/cupcake"
-        android:title="" />
-
-
-    <item
-        android:id="@+id/navigation_Operation"
+        android:id="@+id/navigation_operations"
         android:icon="@drawable/iconaoperazioni"
-        android:title="" />
+        android:title="Operations"/>
+    <item
+        android:id="@+id/navigation_account"
+        android:icon="@drawable/iconaconto"
+        android:title="Account"/>
 </menu>

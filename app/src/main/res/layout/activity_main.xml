@@ -3,19 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    android:gravity="center"
-    tools:ignore="MissingConstraints">
-
-    <!-- Aggiungi vincoli per centerLayout -->
-
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
     <LinearLayout
         android:id="@+id/centerLayout"
-        android:layout_width="409dp"
-        android:layout_height="729dp"
+        android:layout_width="412dp"
+        android:layout_height="857dp"
         android:layout_gravity="center"
         android:background="@color/greenpers"
         android:gravity="center"
@@ -23,16 +18,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0">
-
-        <!-- TextView -->
-        <Button
-            android:id="@+id/transaction_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:text="Transaction"
-            android:textColor="@android:color/black" />
+        app:layout_constraintVertical_bias="0.461">
 
         <Button
             android:id="@+id/sign_out"
@@ -50,46 +36,53 @@
             android:textSize="18sp"
             android:textStyle="bold" />
 
-        <!-- Button x Logout-->
-
         <LinearLayout
             android:id="@+id/centerLayout2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="333dp"
+            android:layout_height="41dp"
+            android:layout_gravity="center|bottom"
+            android:layout_marginTop="500px"
             android:background="@color/greenpers"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0">
+            android:orientation="horizontal">
 
+            <ImageButton
+                android:id="@+id/ButtonProfilo"
+                android:layout_width="105dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/iconaprofilo" />
+
+            <ImageButton
+                android:id="@+id/ButtonOperazioni"
+                android:layout_width="113dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/iconaoperazioni" />
+
+            <ImageButton
+                android:id="@+id/ButtonConto"
+                android:layout_width="116dp"
+                android:layout_height="match_parent"
+                app:srcCompat="@drawable/iconaconto" />
         </LinearLayout>
-
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="66dp"
-            android:layout_height="75dp"
-            app:srcCompat="@drawable/iconaconto" />
-
-        <ImageButton
-            android:id="@+id/imageButton2"
-            android:layout_width="69dp"
-            android:layout_height="77dp"
-            app:srcCompat="@drawable/iconaoperazioni" />
-
     </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/centerLayout2"
+        app:layout_constraintBottom_toTopOf="@+id/nav_view"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteY="0dp"
+        tools:layout_editor_absoluteX="0dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="404dp"
+        android:layout_height="53dp"
         android:layout_gravity="bottom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:menu="@menu/bottom_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
