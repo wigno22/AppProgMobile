@@ -1,15 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
     <item
         android:id="@+id/navigation_profile"
-        android:icon="@drawable/iconaprofilo"
-        android:title="Profile"/>
+        android:icon="@drawable/iconprofile"
+        app:showAsAction="always"
+        tools:ignore="HardcodedText"
+        android:title="" />
+
     <item
         android:id="@+id/navigation_operations"
-        android:icon="@drawable/iconaoperazioni"
-        android:title="Operations"/>
+        android:icon="@drawable/iconoper"
+        android:iconTintMode="screen"
+        android:title=""
+        app:showAsAction="always"
+        tools:ignore="HardcodedText" />
+
     <item
         android:id="@+id/navigation_account"
-        android:icon="@drawable/iconaconto"
-        android:title="Account"/>
+        android:title=""
+        android:icon="@drawable/iconaccount"
+        tools:ignore="HardcodedText"
+        app:showAsAction="always"/>
 </menu>
