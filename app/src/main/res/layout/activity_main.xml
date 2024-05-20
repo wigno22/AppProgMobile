@@ -9,15 +9,32 @@
     tools:context=".MainActivity"
     tools:ignore="ExtraText">
 
-    <FrameLayout
-        android:id="@+id/fragment_container"
+    <TextView
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/centerLayout"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:gravity="center"
 
-    <LinearLayout
+        android:text=""
+        android:textSize="18sp"
+        android:textStyle="bold"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="180dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="360dp"
+        android:layout_height="521dp"
+        app:defaultNavHost="true"
+        app:navGraph="@navigation/navigation_menu"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="-1dp"
+        tools:layout_editor_absoluteY="59dp" />
+
+
+    <!--<LinearLayout
         android:id="@+id/centerLayout"
         android:layout_width="413dp"
         android:layout_height="881dp"
@@ -38,13 +55,7 @@
             android:text="Log-Out"
             android:textColor="@android:color/black" />
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textSize="18sp"
-            android:textStyle="bold" />
+
 
         <LinearLayout
             android:id="@+id/centerLayout2"
@@ -53,31 +64,12 @@
             android:layout_gravity="center|bottom"
             android:layout_marginTop="500px"
             android:background="@color/greenpers"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/ButtonProfilo"
-                android:layout_width="105dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/iconaprofilo" />
-
-            <ImageButton
-                android:id="@+id/ButtonOperazioni"
-                android:layout_width="113dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/iconaoperazioni" />
-
-            <ImageButton
-                android:id="@+id/ButtonConto"
-                android:layout_width="116dp"
-                android:layout_height="match_parent"
-                app:srcCompat="@drawable/iconaconto" />
-        </LinearLayout>
+            android:orientation="horizontal"/>
 
 
 
     </LinearLayout>
-
+-->
 
 
 

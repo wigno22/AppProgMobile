@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/navigation_menu"
+    app:startDestination="@id/navigation_account">
+
+    <fragment
+        android:id="@+id/navigation_account"
+        android:name="com.example.progettoprogrammazionemobile.AccountFragment"
+        android:label="AccountFragment" >
+        <action
+            android:id="@+id/action_accountFragment_to_operationFragment"
+            app:destination="@id/navigation_operations" />
+        <action
+            android:id="@+id/action_accountFragment_to_profileFragment"
+            app:destination="@id/navigation_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_operations"
+        android:name="com.example.progettoprogrammazionemobile.OperationFragment"
+        android:label="OperationFragment" >
+        <action
+            android:id="@+id/action_operationFragment_to_accountFragment"
+            app:destination="@id/navigation_account" />
+        <action
+            android:id="@+id/action_operationFragment_to_profileFragment"
+            app:destination="@id/navigation_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.example.progettoprogrammazionemobile.ProfileFragment"
+        android:label="ProfileFragment" >
+        <action
+            android:id="@+id/action_profileFragment_to_operationFragment"
+            app:destination="@id/navigation_operations" />
+        <action
+            android:id="@+id/action_profileFragment_to_accountFragment"
+            app:destination="@id/navigation_account" />
+    </fragment>
+</navigation>
