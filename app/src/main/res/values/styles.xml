@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="BottomNavigationViewItemStyle" parent="Widget.Design.BottomNavigationView">
+        <item name="itemIconSize">40dp</item> <!-- Dimensione dell'icona -->
+        <!--<item name="itemTextAppearanceActive">@style/BottomNavigationActiveText</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationInactiveText</item>
+    </style>
+
+    <style name="BottomNavigationActiveText" parent="TextAppearance.Design.BottomNavigation.Active">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="BottomNavigationInactiveText" parent="TextAppearance.Design.BottomNavigation.Inactive">
+        <item name="android:textSize">14sp</item>-->
+    </style>
+</resources>

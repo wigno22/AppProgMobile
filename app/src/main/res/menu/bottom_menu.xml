@@ -11,6 +11,13 @@
         android:title="" />
 
     <item
+        android:id="@+id/navigation_account"
+        android:title=""
+        android:icon="@drawable/iconaccount"
+        tools:ignore="HardcodedText"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/navigation_operations"
         android:icon="@drawable/iconoper"
         android:iconTintMode="screen"
@@ -18,10 +25,5 @@
         app:showAsAction="always"
         tools:ignore="HardcodedText" />
 
-    <item
-        android:id="@+id/navigation_account"
-        android:title=""
-        android:icon="@drawable/iconaccount"
-        tools:ignore="HardcodedText"
-        app:showAsAction="always"/>
+
 </menu>

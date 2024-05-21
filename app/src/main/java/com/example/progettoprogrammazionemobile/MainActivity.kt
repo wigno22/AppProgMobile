@@ -40,8 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val textName: TextView = findViewById(R.id.textView)
-        textName.text = "Benvenuto " + intent.extras?.getString("USER")
+
 
         //val navController = findNavController(R.id.nav_host)
 
@@ -55,19 +54,9 @@ class MainActivity : AppCompatActivity() {
         //navController.navigate(R.id.action_accountFragment_to_operationFragment)
 
 
-/*
-        val signOutButton: Button = findViewById(R.id.sign_out)
-        signOutButton.setOnClickListener {
-            AuthUI.getInstance()
-                .signOut(this)
-                .addOnCompleteListener {
-                    val intent = Intent(this, WelcomeActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
-        }
 
-*/
+
+
         // Bottom Navigation
         //val bottomNavigationView: BottomNavigationView = findViewById(R.id.nav_view)
 
