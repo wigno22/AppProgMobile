@@ -25,7 +25,7 @@ import java.time.LocalDateTime
 import java.lang.Override as Override
 
 data class AccountDetails(val iDNumber: String, val IBAN: String, val Balance: Number)
-data class Transaction(val iDNumber: String, val Valore: Number, val Type: Boolean, val Category: String, val Description: String, val Data: String)
+//data class Transaction(val iDNumber: String, val Valore: Number, val Type: Boolean, val Category: String, val Description: String, val Data: String)
 
 class profilefrg: Fragment(R.layout.fragment_profile)
 class accountfrg: Fragment(R.layout.fragment_account)
@@ -42,23 +42,11 @@ class MainActivity : AppCompatActivity() {
 
 
 
-        //val navController = findNavController(R.id.nav_host)
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.setupWithNavController(navController)
 
-
-
-        //navController.navigate(R.id.action_accountFragment_to_operationFragment)
-
-
-
-
-
-        // Bottom Navigation
-        //val bottomNavigationView: BottomNavigationView = findViewById(R.id.nav_view)
 
 
         db = Firebase.firestore
@@ -74,6 +62,7 @@ class MainActivity : AppCompatActivity() {
             return "$countryCode$controlDigits$bankCode$accountNumber"
         }
 
+        /*
         val user = firebaseAuth.currentUser
         val UID = user!!.uid
         val iban = generateIban(SecureRandom())
@@ -97,6 +86,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         db.collection(firebaseAuth.currentUser!!.uid).document("Account").set(AccountDetails(UID, iban, 0))
+        */
+
     }
 
 }

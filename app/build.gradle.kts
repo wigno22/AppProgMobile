@@ -2,13 +2,17 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.application")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 android {
     namespace = "com.example.progettoprogrammazionemobile"
     compileSdk = 34
 
-
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
+    }
 
     defaultConfig {
         applicationId = "com.example.progettoprogrammazionemobile"
@@ -45,8 +49,11 @@ dependencies {
     //if you target Android 12
     implementation("com.google.android.gms:play-services-auth:20.0.1")
 
-    // Declare the dependency for the Cloud Firestore library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
+    val lifecycle_version = "2.7.0"
+    val activity_version = "1.8.2"
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
+    implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.firebase:firebase-firestore")
     implementation ("com.google.firebase:firebase-firestore-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
