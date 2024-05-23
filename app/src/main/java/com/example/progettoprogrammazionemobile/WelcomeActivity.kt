@@ -54,7 +54,8 @@ class WelcomeActivity : AppCompatActivity() {
                 intent.putExtra("USER", user.displayName)
 
             };
-//start the MainActivity
+
+
             startActivity(intent)
 
         }

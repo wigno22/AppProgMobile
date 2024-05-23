@@ -8,9 +8,10 @@ import android.widget.*
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
 import java.util.Date
 
-data class Transaction(
+data class UserTransaction(
     val uid: String = "",
     val amount: Double = 0.0,
     val isOutgoing: Boolean = true,
@@ -18,7 +19,6 @@ data class Transaction(
     val notes: String = "",
     val date: Date = Date()
 )
-
 
 class OperationFragment : Fragment() {
 
@@ -76,7 +76,7 @@ class OperationFragment : Fragment() {
 
             if (amount != null && category.isNotEmpty()) {
                 val isOutgoing = type == "-"
-                val transaction = Transaction(
+                val userTransaction = UserTransaction(
                     uid = UID,
                     amount = amount,
                     isOutgoing = isOutgoing,
@@ -85,16 +85,29 @@ class OperationFragment : Fragment() {
                     date = date
                 )
 
-                db.collection(UID).document("Account")
-                    .collection("Transaction").document(date.toString())
-                    .set(transaction)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Transaction added successfully", Toast.LENGTH_SHORT).show()
-                        resetFields()
+                db.runTransaction { transaction ->
+                    val accountRef = db.collection(UID).document("Account")
+                    val snapshot = transaction.get(accountRef)
+                    val currentBalance = snapshot.getDouble("balance") ?: 0.0
+
+                    val newBalance = if (isOutgoing) {
+                        currentBalance - amount
+                    } else {
+                        currentBalance + amount
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Failed to add transaction: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
+
+                    transaction.update(accountRef, "balance", newBalance)
+
+                    val transactionRef = accountRef.collection("Transaction").document(date.toString())
+                    transaction.set(transactionRef, userTransaction)
+
+                    null
+                }.addOnSuccessListener {
+                    Toast.makeText(context, "Transaction added successfully", Toast.LENGTH_SHORT).show()
+                    resetFields()
+                }.addOnFailureListener { e ->
+                    Toast.makeText(context, "Failed to add transaction: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
             } else {
                 Toast.makeText(context, "Please enter a valid amount and select a category", Toast.LENGTH_SHORT).show()
             }
@@ -110,3 +123,4 @@ class OperationFragment : Fragment() {
         spinnerCategory.setSelection(0)
     }
 }
+

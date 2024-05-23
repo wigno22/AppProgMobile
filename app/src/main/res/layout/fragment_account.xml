@@ -3,14 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:weightSum="4">
+    android:gravity="top"
+    >
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/welcomeText"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="50dp"
+        android:layout_marginTop="50dp"
         android:gravity="center"
         android:text=""
         android:textColor="@color/black"
@@ -18,10 +18,30 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
+        android:layout_height="100dp"
         android:gravity="center"
-        android:text="Account Fragment"
+        android:text=""
         android:textSize="24sp" />
+
+    <TextView
+        android:id="@+id/textTransactions"
+        android:layout_width="match_parent"
+        android:layout_height="207dp"
+        android:layout_marginTop="20dp"
+        android:background="@android:color/white"
+        android:fadeScrollbars="true"
+        android:gravity="left"
+        android:padding="8dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="horizontal|vertical"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="15sp" />
+
+
+
+
+
 </LinearLayout>
