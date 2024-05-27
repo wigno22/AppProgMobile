@@ -1,18 +1,23 @@
 package com.example.progettoprogrammazionemobile
 
 import android.annotation.SuppressLint
+import android.graphics.Color
+import android.icu.text.NumberFormat
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.GridView
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.security.SecureRandom
+import java.text.SimpleDateFormat
+import java.util.*
 
 data class AccountDetail(
     val uid: String = "",
@@ -28,6 +33,8 @@ class AccountFragment : Fragment() {
         super.onCreate(savedInstanceState)
         db = Firebase.firestore
         firebaseAuth = FirebaseAuth.getInstance()
+
+
 
         // Create account if it doesn't exist
         createAccountIfNotExists()
@@ -79,12 +86,14 @@ class AccountFragment : Fragment() {
 
         val textName: TextView = rootView.findViewById(R.id.welcomeText)
         val textBalance: TextView = rootView.findViewById(R.id.textView)
-        val textTransactions: TextView = rootView.findViewById(R.id.textTransactions)
+        val gridTransactions: GridView = rootView.findViewById(R.id.idGVDati)
 
-        val user = firebaseAuth.currentUser
+        val user = FirebaseAuth.getInstance().currentUser
+
         user?.let {
             val name = user.displayName
             textName.text = "Benvenuto $name"
+
         }
 
         val UID = user?.uid
@@ -95,7 +104,19 @@ class AccountFragment : Fragment() {
                     if (documentSnapshot.exists()) {
                         val balance = documentSnapshot.getDouble("balance")
 
-                        textBalance.text = "Your Current Balance: $balance "
+                        val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
+                        val formattedAmount = numberFormat.format(balance)
+
+                        // Set the text color based on the amount
+                        if (balance!! <0.0) {
+                            textBalance.setTextColor(Color.RED)
+                        } else {
+                            textBalance.setTextColor(Color.GREEN)
+                        }
+
+
+
+                        textBalance.text =  "$formattedAmount"
 
                         Log.e("AccountFragment", "Balance: $balance")
                     } else {
@@ -111,24 +132,25 @@ class AccountFragment : Fragment() {
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .limit(150)
 
-            var isOutgoing = " + "
             transactionsRef.get()
                 .addOnSuccessListener { querySnapshot ->
-                    val transactionsText = StringBuilder()
+                    val transactions = mutableListOf<Transaction>()
+                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     for (document in querySnapshot.documents) {
-                        val amount = document.getDouble("amount")
-                        isOutgoing = if (document.getBoolean("isOutgoing") == true) " - " else " + "
+                        var amount = document.getDouble("amount") ?: 0.0
+                        val isOutgoing = document.getBoolean("outgoing")
+                        val category = document.getString("category") ?: "Unknown"
+                        val type = if (isOutgoing!!) "Uscita" else "Entrata"
+                        if (isOutgoing!!) amount = amount*-1 else amount = amount*1
+                        val date = document.getDate("date")?.let { dateFormat.format(it) } ?: "Unknown"
 
-                        val category = document.getString("category")
-                        transactionsText.append("Amount: $isOutgoing $amount, Category: $category \n")
-                        Log.e("isOutgoing", "isOutgoing: $isOutgoing")
+
+
+                        transactions.add(Transaction(date, type , amount , category))
                     }
 
-                    textTransactions.text = transactionsText.toString()
-
-                    textTransactions.isVerticalScrollBarEnabled = true
-                    textTransactions.isHorizontalScrollBarEnabled = true
-                    textTransactions.movementMethod = android.text.method.ScrollingMovementMethod()
+                    val adapter = TransactionAdapter(requireContext(), transactions)
+                    gridTransactions.adapter = adapter
                 }
                 .addOnFailureListener { exception ->
                     Log.e("AccountFragment", "Failed to fetch transactions: ${exception.message}")

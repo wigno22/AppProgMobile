@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
+        android:scrollbars="vertical">
+
+
+
+        <TextView
+            android:id="@+id/transactionDate"
+            android:layout_width="78dp"
+            android:layout_height="wrap_content"
+            android:text="Date"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/transactionType"
+            android:layout_width="68dp"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:text="Type"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/transactionAmount"
+            android:layout_width="108dp"
+            android:layout_height="wrap_content"
+            android:gravity="right"
+            android:text="Amount"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/transactionCategory"
+            android:layout_width="113dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:gravity="left"
+            android:text="Category"
+            android:textColor="@android:color/black"
+            android:textSize="14sp" />
+
+</LinearLayout>

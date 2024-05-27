@@ -45,13 +45,13 @@ android {
 
 dependencies {
     //for authentication
-    implementation("com.firebaseui:firebase-ui-auth:8.0.0")
+    implementation("com.firebaseui:firebase-ui-auth:8.0.1")
     //if you target Android 12
-    implementation("com.google.android.gms:play-services-auth:20.0.1")
+    implementation("com.google.android.gms:play-services-auth:20.3.0")
 
     val lifecycle_version = "2.7.0"
     val activity_version = "1.8.2"
-
+    implementation ("com.google.firebase:firebase-auth:21.0.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.firebase:firebase-firestore")
