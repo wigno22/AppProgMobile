@@ -1,14 +1,23 @@
 package com.example.progettoprogrammazionemobile
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
+import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import com.ekn.gruzer.gaugelibrary.HalfGauge
+import com.ekn.gruzer.gaugelibrary.MultiGauge
+import com.ekn.gruzer.gaugelibrary.Range
+import com.example.progettoprogrammazionemobile.databinding.FragmentOperationBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-
 import java.util.Date
 
 data class UserTransaction(
@@ -21,6 +30,7 @@ data class UserTransaction(
 )
 
 class OperationFragment : Fragment() {
+
 
     private lateinit var editTextAmount: EditText
     private lateinit var spinnerType: Spinner
@@ -35,7 +45,9 @@ class OperationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
+
+        // Initialize UI components
         val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
         editTextAmount = view.findViewById(R.id.editTextAmount)
@@ -60,6 +72,51 @@ class OperationFragment : Fragment() {
         buttonConfirm.setOnClickListener {
             addTransaction()
         }
+
+
+        val range = Range()
+        range.color = Color.parseColor("#ce0000")
+        range.from = 0.0
+        range.to = 1000000.0
+
+        val range2 = Range()
+        range2.color = Color.parseColor("#E3E500")
+        range2.from = 0.0
+        range2.to = 1000000.0
+
+        val range3 = Range()
+        range3.color = Color.parseColor("#00b20b")
+        range3.from = 0.0
+        range3.to = 1000000.0
+
+
+        val vmultiGauge:MultiGauge = view.findViewById<MultiGauge>(R.id.multiGauge)
+
+        // Add color ranges to gauge
+        vmultiGauge.addRange(range)
+        //vmultiGauge.addRange(range2)
+       // vmultiGauge.addRange(range3)
+
+        //vmultiGauge.addSecondRange(range)
+        vmultiGauge.addSecondRange(range2)
+       // vmultiGauge.addSecondRange(range3)
+
+        //vmultiGauge.addThirdRange(range)
+       // vmultiGauge.addThirdRange(range2)
+        vmultiGauge.addThirdRange(range3)
+
+        // Set min, max, and current value
+        vmultiGauge.minValue = 0.0
+        vmultiGauge.maxValue = 100000.0
+        vmultiGauge.value = 21000.0
+
+        vmultiGauge.secondMinValue = 0.0
+        vmultiGauge.secondMaxValue = 100000.0
+        vmultiGauge.secondValue = 15.0
+
+        vmultiGauge.thirdMinValue = 0.0
+        vmultiGauge.thirdMaxValue = 100000.0
+        vmultiGauge.thirdValue = 48000.0
 
         return view
     }
@@ -123,4 +180,3 @@ class OperationFragment : Fragment() {
         spinnerCategory.setSelection(0)
     }
 }
-
