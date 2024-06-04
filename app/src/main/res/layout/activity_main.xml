@@ -14,7 +14,7 @@
         android:id="@+id/nav_host"
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="410dp"
-        android:layout_height="657dp"
+        android:layout_height="match_parent"
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_menu"
         tools:ignore="MissingConstraints"

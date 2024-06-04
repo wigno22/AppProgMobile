@@ -41,26 +41,90 @@
         android:id="@+id/buttonConfirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:text="Confirm" />
 
-<RelativeLayout
+<FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    >
 
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="15dp"
+        android:text="Month:" />
+
+    <Spinner
+        android:id="@+id/spinnerMonth"
+        android:layout_width="150dp"
+        android:layout_height="57dp"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textSize="15dp"
+        android:layout_gravity="right"
+        android:text="Year:" />
+
+
+    <Spinner
+        android:id="@+id/spinnerYear"
+        android:layout_width="150dp"
+        android:layout_height="57dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:id="@+id/totaleEntrate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="210dp"
+        android:gravity="center"
+        android:text="Totale Bilancio"
+        android:textColor="#00b20b"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/totaleUscite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="250dp"
+        android:gravity="center"
+        android:text="Totale Bilancio"
+        android:textColor="#ce0000"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/totaleDelta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="290dp"
+        android:gravity="center"
+        android:text="Totale Bilancio"
+        android:textColor="#E3E500"
+        android:textSize="18sp" />
 
     <com.ekn.gruzer.gaugelibrary.MultiGauge
         android:id="@+id/multiGauge"
         android:layout_width="358dp"
-        android:layout_height="264dp"
+        android:layout_height="338dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="100dp"
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</RelativeLayout>
+
+
+</FrameLayout>
 
 
 </LinearLayout>
