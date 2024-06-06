@@ -1,6 +1,7 @@
 package com.example.progettoprogrammazionemobile
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.graphics.Color
 import android.icu.text.NumberFormat
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.DatePicker
 import android.widget.EditText
 import android.widget.Spinner
 import android.widget.TextView
@@ -17,12 +19,20 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.ekn.gruzer.gaugelibrary.MultiGauge
 import com.ekn.gruzer.gaugelibrary.Range
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.type.DateTime
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Month
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 data class UserTransaction(
     val uid: String = "",
@@ -46,7 +56,7 @@ class OperationFragment : Fragment() {
     private lateinit var totDelta: TextView
     private lateinit var spinnerMonth: Spinner
     private lateinit var spinnerYear: Spinner
-
+    lateinit var dateEditText: TextInputEditText
 
 
 
@@ -71,7 +81,7 @@ class OperationFragment : Fragment() {
         totDelta = view.findViewById(R.id.totaleDelta)
         spinnerMonth = view.findViewById(R.id.spinnerMonth)
         spinnerYear = view.findViewById(R.id.spinnerYear)
-
+        dateEditText = view.findViewById(R.id.dateEditText)
         vmultiGauge = view.findViewById(R.id.multiGauge)
 
         // Set up the spinner for transaction type (+/-)
@@ -118,6 +128,11 @@ class OperationFragment : Fragment() {
         }
 
 
+        dateEditText.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+
         // Confirm button to add transaction
         buttonConfirm.setOnClickListener {
             addTransaction()
@@ -161,6 +176,24 @@ class OperationFragment : Fragment() {
         return view
     }
 
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(requireContext(),
+            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
+                val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                dateEditText.setText(selectedDate)
+            },
+            year,
+            month,
+            day
+        )
+
+        datePickerDialog.show()
+    }
     private fun addTransaction() {
         val user = firebaseAuth.currentUser
         if (user != null) {
@@ -169,7 +202,20 @@ class OperationFragment : Fragment() {
             val type = spinnerType.selectedItem.toString()
             val category = spinnerCategory.selectedItem.toString()
             val description = editTextDescription.text.toString()
-            val date = Date()  // Prende l'ora esatta al momento della creazione
+            val date = dateEditText.text.toString() // Ottieni la data dal campo dateEditText
+
+            val currentDateTime = LocalDateTime.now()
+
+            // Parsa la data dalla stringa 'date' e ottieni un oggetto LocalDateTime
+
+            val parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"))
+
+            // Crea un nuovo oggetto LocalDateTime che contenga la data di 'date' e l'ora, i minuti, i secondi e i millisecondi da 'currentDateTime'
+            val newDateTime = LocalDateTime.of(parsedDate, currentDateTime.toLocalTime())
+
+            // Converti il nuovo oggetto LocalDateTime in un oggetto Date
+            val formattedDateTime = Date.from(newDateTime.atZone(ZoneId.systemDefault()).toInstant())
+
 
             if (amount != null && category.isNotEmpty()) {
                 val isOutgoing = type == "-"
@@ -179,7 +225,7 @@ class OperationFragment : Fragment() {
                     outgoing = isOutgoing,
                     category = category,
                     notes = description,
-                    date = date
+                    date = formattedDateTime
                 )
 
                 db.runTransaction { transaction ->
@@ -195,7 +241,7 @@ class OperationFragment : Fragment() {
 
                     transaction.update(accountRef, "balance", newBalance)
 
-                    val transactionRef = accountRef.collection("Transaction").document(date.toString())
+                    val transactionRef = accountRef.collection("Transaction").document(formattedDateTime.toString())
                     transaction.set(transactionRef, userTransaction)
 
                     null
@@ -226,7 +272,7 @@ class OperationFragment : Fragment() {
                 transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfYear(selectedYear))
                     .whereLessThan("date", getStartOfNextYear(selectedYear))
             } else {
-                val monthIndex = Month.valueOf(selectedMonth.toUpperCase(Locale.ROOT)).value
+                val monthIndex = Month.valueOf(selectedMonth.uppercase(Locale.ROOT)).value
                 transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfMonth(monthIndex, selectedYear))
                     .whereLessThan("date", getStartOfNextMonth(monthIndex, selectedYear))
             }

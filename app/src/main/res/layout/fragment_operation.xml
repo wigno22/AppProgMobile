@@ -32,10 +32,31 @@
         android:layout_height="60dp"
         android:hint="Enter description" />
 
-    <Spinner
-        android:id="@+id/spinnerCategory"
-        android:layout_width="382dp"
-        android:layout_height="57dp" />
+    <LinearLayout
+        android:layout_width="378dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="185dp"
+            android:layout_height="55dp" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Select Date">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/dateEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                android:focusable="false"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/buttonConfirm"
