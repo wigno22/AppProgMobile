@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical">
 
     <TextView
@@ -42,11 +45,46 @@
             android:textSize="20dp" />
     </LinearLayout>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="92dp">
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Month:"
+            android:textSize="18dp" />
+
+        <Spinner
+            android:id="@+id/spinnerMonthAccount"
+            android:layout_width="150dp"
+            android:layout_height="57dp"
+            android:layout_marginTop="25dp" />
+
+        <TextView
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="10dp"
+            android:text="Year:"
+            android:textSize="18dp" />
+
+
+        <Spinner
+            android:id="@+id/spinnerYearAccount"
+            android:layout_width="150dp"
+            android:layout_height="57dp"
+            android:layout_gravity="right"
+            android:layout_marginTop="25dp" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginTop="20dp"
         android:background="@color/greenpers">
 
         <TextView
@@ -86,10 +124,11 @@
             android:textSize="14sp" />
 
     </LinearLayout>
+
     <GridView
         android:id="@+id/idGVDati"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="460dp"
         android:numColumns="1" />
 
 </LinearLayout>
