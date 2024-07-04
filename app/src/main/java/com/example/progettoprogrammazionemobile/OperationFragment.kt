@@ -2,9 +2,11 @@ package com.example.progettoprogrammazionemobile
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.ContentValues.TAG
 import android.graphics.Color
 import android.icu.text.NumberFormat
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +15,8 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.DatePicker
 import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
@@ -46,6 +50,11 @@ data class UserTransaction(
 class OperationFragment : Fragment() {
 
     private lateinit var editTextAmount: EditText
+
+    private lateinit var butttongroup: RadioGroup
+    private lateinit var buttonplus: RadioButton
+    private lateinit var buttonminus: RadioButton
+
     private lateinit var spinnerType: Spinner
     private lateinit var editTextDescription: EditText
     private lateinit var spinnerCategory: Spinner
@@ -63,6 +72,11 @@ class OperationFragment : Fragment() {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+    private val categoriesAll = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription")
+    private val categoriesIncome = listOf("salary", "other")
+
+    //GESTIRE ENTRATE(TIPOLOGIA in entrata) e VISUALIZZAZIONE ANNO (METTERE ALL)
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,7 +86,12 @@ class OperationFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
         editTextAmount = view.findViewById(R.id.editTextAmount)
-        spinnerType = view.findViewById(R.id.spinnerType)
+        //spinnerType = view.findViewById(R.id.spinnerType)
+
+        butttongroup= view.findViewById(R.id.radiogroup)
+        buttonplus = view.findViewById(R.id.buttonplus)
+        buttonminus = view.findViewById(R.id.buttonminus)
+
         editTextDescription = view.findViewById(R.id.editTextDescription)
         spinnerCategory = view.findViewById(R.id.spinnerCategory)
         buttonConfirm = view.findViewById(R.id.buttonConfirm)
@@ -84,17 +103,30 @@ class OperationFragment : Fragment() {
         dateEditText = view.findViewById(R.id.dateEditText)
         vmultiGauge = view.findViewById(R.id.multiGauge)
 
-        // Set up the spinner for transaction type (+/-)
+        /* Set up the spinner for transaction type (+/-)
         val types = listOf("+", "-")
         val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerType.adapter = typeAdapter
+        spinnerType.adapter = typeAdapter*/
 
         // Set up the spinner with categories
-        val categories = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription")
+        updateCategorySpinner(categoriesAll)
+
+        butttongroup.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.buttonplus -> updateCategorySpinner(categoriesIncome)
+                R.id.buttonminus -> updateCategorySpinner(categoriesAll)
+            }
+        }
+
+
+
+
+        /*Set up the spinner with categories
+        val categories = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription", "other")
         val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = categoryAdapter
+        spinnerCategory.adapter = categoryAdapter*/
 
 
         val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -176,6 +208,12 @@ class OperationFragment : Fragment() {
         return view
     }
 
+    private fun updateCategorySpinner(categories: List<String>) {
+        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCategory.adapter = categoryAdapter
+    }
+
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -199,26 +237,23 @@ class OperationFragment : Fragment() {
         if (user != null) {
             val UID = user.uid
             val amount = editTextAmount.text.toString().toDoubleOrNull()
-            val type = spinnerType.selectedItem.toString()
+            //val type = spinnerType.selectedItem.toString()
+            var isOutgoing = butttongroup.checkedRadioButtonId == R.id.buttonminus
             val category = spinnerCategory.selectedItem.toString()
             val description = editTextDescription.text.toString()
             val date = dateEditText.text.toString() // Ottieni la data dal campo dateEditText
 
             val currentDateTime = LocalDateTime.now()
-
             // Parsa la data dalla stringa 'date' e ottieni un oggetto LocalDateTime
-
             val parsedDate = LocalDate.parse(date, DateTimeFormatter.ofPattern("d/M/yyyy"))
-
             // Crea un nuovo oggetto LocalDateTime che contenga la data di 'date' e l'ora, i minuti, i secondi e i millisecondi da 'currentDateTime'
             val newDateTime = LocalDateTime.of(parsedDate, currentDateTime.toLocalTime())
-
             // Converti il nuovo oggetto LocalDateTime in un oggetto Date
             val formattedDateTime = Date.from(newDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
 
             if (amount != null && category.isNotEmpty()) {
-                val isOutgoing = type == "-"
+                //isOutgoing = type == "-"
                 val userTransaction = UserTransaction(
                     uid = UID,
                     amount = amount,
@@ -238,25 +273,22 @@ class OperationFragment : Fragment() {
                     } else {
                         currentBalance + amount
                     }
-
                     transaction.update(accountRef, "balance", newBalance)
 
                     val transactionRef = accountRef.collection("Transaction").document(formattedDateTime.toString())
                     transaction.set(transactionRef, userTransaction)
 
-                    null
-                }.addOnSuccessListener {
-                    Toast.makeText(context, "Transaction added successfully", Toast.LENGTH_SHORT).show()
-                    resetFields()
+                    newBalance
+                }.addOnSuccessListener { newBalance ->
+                    Toast.makeText(context, "Transaction added. New balance: $newBalance", Toast.LENGTH_SHORT).show()
                     updateGauges()
                 }.addOnFailureListener { e ->
-                    Toast.makeText(context, "Failed to add transaction: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Log.w(TAG, "Transaction failed.", e)
+                    Toast.makeText(context, "Transaction failed. Please try again.", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                Toast.makeText(context, "Please enter a valid amount and select a category", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Please enter a valid amount and category.", Toast.LENGTH_SHORT).show()
             }
-        } else {
-            Toast.makeText(context, "User not authenticated", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -266,6 +298,7 @@ class OperationFragment : Fragment() {
             val UID = user.uid
             val selectedMonth = spinnerMonth.selectedItem.toString()
             val selectedYear = spinnerYear.selectedItem.toString().toInt()
+
             val transactionsRef = db.collection(UID).document("Account").collection("Transaction")
 
             val query = if (selectedMonth == "All") {
@@ -377,11 +410,10 @@ class OperationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         updateGauges()
     }
-
-    private fun resetFields() {
+    /*private fun resetFields() {
         editTextAmount.text.clear()
         editTextDescription.text.clear()
         spinnerType.setSelection(0)
         spinnerCategory.setSelection(0)
-    }
+    }*/
 }

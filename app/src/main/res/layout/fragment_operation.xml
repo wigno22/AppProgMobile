@@ -10,21 +10,44 @@
 
     <LinearLayout
         android:layout_width="382dp"
-        android:layout_height="80dp"
+        android:layout_height="wrap_content"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/editTextAmount"
-            android:layout_width="272dp"
+            android:layout_width="262dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
             android:hint="Enter amount"
             android:inputType="numberDecimal" />
 
-        <Spinner
+        <RadioGroup
+            android:id="@+id/radiogroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/buttonplus"
+                android:layout_width="59dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:gravity="center"
+                android:text="+" />
+
+            <RadioButton
+                android:id="@+id/buttonminus"
+                android:layout_width="58dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="0dp"
+                android:gravity="center"
+                android:text="-" />
+        </RadioGroup>
+
+
+        <!--- <Spinner
             android:id="@+id/spinnerType"
             android:layout_width="wrap_content"
-            android:layout_height="48dp" />
+            android:layout_height="48dp" />-->
     </LinearLayout>
 
     <EditText

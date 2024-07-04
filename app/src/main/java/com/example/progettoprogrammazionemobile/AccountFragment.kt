@@ -8,7 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.GridView
+import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
@@ -28,16 +31,14 @@ data class AccountDetail(
 class AccountFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var MonthSelection: Spinner
+    private lateinit var YearSelection: Spinner
+    private lateinit var gridTransactions: GridView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db = Firebase.firestore
         firebaseAuth = FirebaseAuth.getInstance()
-
-
-
-        // Create account if it doesn't exist
-        createAccountIfNotExists()
     }
 
     private fun createAccountIfNotExists() {
@@ -86,15 +87,20 @@ class AccountFragment : Fragment() {
 
         val textName: TextView = rootView.findViewById(R.id.welcomeText)
         val textBalance: TextView = rootView.findViewById(R.id.textView)
-        val gridTransactions: GridView = rootView.findViewById(R.id.idGVDati)
+        gridTransactions = rootView.findViewById(R.id.idGVDati)
+
+        MonthSelection = rootView.findViewById(R.id.spinnerMonthAccount)
+        YearSelection = rootView.findViewById(R.id.spinnerYearAccount)
 
         val user = FirebaseAuth.getInstance().currentUser
 
         user?.let {
             val name = user.displayName
             textName.text = "Benvenuto $name"
-
         }
+
+        // Create account if it doesn't exist
+        createAccountIfNotExists()
 
         val UID = user?.uid
         if (UID != null) {
@@ -108,16 +114,13 @@ class AccountFragment : Fragment() {
                         val formattedAmount = numberFormat.format(balance)
 
                         // Set the text color based on the amount
-                        if (balance!! <0.0) {
+                        if (balance!! < 0.0) {
                             textBalance.setTextColor(Color.RED)
                         } else {
                             textBalance.setTextColor(Color.GREEN)
                         }
 
-
-
-                        textBalance.text =  "$formattedAmount"
-
+                        textBalance.text = "$formattedAmount"
                         Log.e("AccountFragment", "Balance: $balance")
                     } else {
                         Log.e("AccountFragment", "Account document does not exist.")
@@ -127,7 +130,45 @@ class AccountFragment : Fragment() {
                     Log.e("AccountFragment", "Failed to fetch account details: ${exception.message}")
                 }
 
-            // Fetch the last 5 transactions
+            val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+            val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
+            monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            MonthSelection.adapter = monthAdapter
+
+            MonthSelection.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    filterTransactions()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            val years = getYearsList()
+            val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
+            yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            YearSelection.adapter = yearAdapter
+
+            YearSelection.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    filterTransactions()
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {}
+            }
+
+            fetchTransactions()
+        } else {
+            Log.e("AccountFragment", "User not authenticated")
+        }
+
+        return rootView
+    }
+
+    private fun fetchTransactions() {
+        val user = FirebaseAuth.getInstance().currentUser
+        val UID = user?.uid
+        if (UID != null) {
+            val userDocRef = db.collection(UID).document("Account")
             val transactionsRef = userDocRef.collection("Transaction")
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .limit(150)
@@ -141,12 +182,10 @@ class AccountFragment : Fragment() {
                         val isOutgoing = document.getBoolean("outgoing")
                         val category = document.getString("category") ?: "Unknown"
                         val type = if (isOutgoing!!) "Uscita" else "Entrata"
-                        if (isOutgoing!!) amount = amount*-1 else amount = amount*1
+                        if (isOutgoing) amount *= -1 else amount *= 1
                         val date = document.getDate("date")?.let { dateFormat.format(it) } ?: "Unknown"
 
-
-
-                        transactions.add(Transaction(date, type , amount , category))
+                        transactions.add(Transaction(date, type, amount, category))
                     }
 
                     val adapter = TransactionAdapter(requireContext(), transactions)
@@ -155,10 +194,67 @@ class AccountFragment : Fragment() {
                 .addOnFailureListener { exception ->
                     Log.e("AccountFragment", "Failed to fetch transactions: ${exception.message}")
                 }
-        } else {
-            Log.e("AccountFragment", "User not authenticated")
         }
-
-        return rootView
     }
+
+    private fun filterTransactions() {
+        val selectedMonth = MonthSelection.selectedItemPosition
+        val selectedYear = YearSelection.selectedItem.toString().toIntOrNull()
+
+        val user = FirebaseAuth.getInstance().currentUser
+        val UID = user?.uid
+        if (UID != null && selectedYear != null) {
+            val userDocRef = db.collection(UID).document("Account")
+            var transactionsRef = userDocRef.collection("Transaction")
+                .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
+                .limit(150)
+
+            if (selectedMonth > 0) {
+                val calendar = Calendar.getInstance()
+                calendar.set(selectedYear, selectedMonth - 1, 1, 0, 0, 0)
+                val startDate = calendar.time
+                calendar.set(selectedYear, selectedMonth, 1, 0, 0, 0)
+                calendar.add(Calendar.DATE, -1)
+                val endDate = calendar.time
+
+                transactionsRef = transactionsRef
+                    .whereGreaterThanOrEqualTo("date", startDate)
+                    .whereLessThanOrEqualTo("date", endDate)
+            } else {
+                val startDate = GregorianCalendar(selectedYear, Calendar.JANUARY, 1).time
+                val endDate = GregorianCalendar(selectedYear, Calendar.DECEMBER, 31).time
+
+                transactionsRef = transactionsRef
+                    .whereGreaterThanOrEqualTo("date", startDate)
+                    .whereLessThanOrEqualTo("date", endDate)
+            }
+
+            transactionsRef.get()
+                .addOnSuccessListener { querySnapshot ->
+                    val transactions = mutableListOf<Transaction>()
+                    val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    for (document in querySnapshot.documents) {
+                        var amount = document.getDouble("amount") ?: 0.0
+                        val isOutgoing = document.getBoolean("outgoing")
+                        val category = document.getString("category") ?: "Unknown"
+                        val type = if (isOutgoing!!) "Uscita" else "Entrata"
+                        if (isOutgoing) amount *= -1 else amount *= 1
+                        val date = document.getDate("date")?.let { dateFormat.format(it) } ?: "Unknown"
+
+                        transactions.add(Transaction(date, type, amount, category))
+                    }
+
+                    val adapter = TransactionAdapter(requireContext(), transactions)
+                    gridTransactions.adapter = adapter
+                }
+                .addOnFailureListener { exception ->
+                    Log.e("AccountFragment", "Failed to fetch filtered transactions: ${exception.message}")
+                }
+        }
+    }
+}
+
+fun getYearsList(): List<String> {
+    val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+    return (currentYear downTo (currentYear - 10)).map { it.toString() }
 }
