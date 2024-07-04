@@ -112,7 +112,7 @@ class OperationFragment : Fragment() {
         // Set up the spinner with categories
         updateCategorySpinner(categoriesAll)
 
-        butttongroup.setOnCheckedChangeListener { group, checkedId ->
+        butttongroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.buttonplus -> updateCategorySpinner(categoriesIncome)
                 R.id.buttonminus -> updateCategorySpinner(categoriesAll)

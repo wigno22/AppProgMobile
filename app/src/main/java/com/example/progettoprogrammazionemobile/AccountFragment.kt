@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.GridView
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,6 +22,7 @@ import com.google.firebase.ktx.Firebase
 import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.progettoprogrammazionemobile.databinding.FragmentAccountBinding
 
 data class AccountDetail(
     val uid: String = "",
@@ -34,6 +36,9 @@ class AccountFragment : Fragment() {
     private lateinit var MonthSelection: Spinner
     private lateinit var YearSelection: Spinner
     private lateinit var gridTransactions: GridView
+
+    private var _binding: FragmentAccountBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,6 +83,8 @@ class AccountFragment : Fragment() {
         }
     }
 
+
+
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,7 +92,10 @@ class AccountFragment : Fragment() {
     ): View? {
         val rootView = inflater.inflate(R.layout.fragment_account, container, false)
 
-        val textName: TextView = rootView.findViewById(R.id.welcomeText)
+
+
+
+        //val textName: TextView = rootView.findViewById(R.id.welcomeText)
         val textBalance: TextView = rootView.findViewById(R.id.textView)
         gridTransactions = rootView.findViewById(R.id.idGVDati)
 
@@ -94,10 +104,17 @@ class AccountFragment : Fragment() {
 
         val user = FirebaseAuth.getInstance().currentUser
 
-        user?.let {
+        /*user?.let {
             val name = user.displayName
-            textName.text = "Benvenuto $name"
-        }
+           // textName.text = "Benvenuto $name"
+        }*/
+
+        val name = user?.displayName
+
+
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
+        binding.username = " Benvenuto $name"
+
 
         // Create account if it doesn't exist
         createAccountIfNotExists()
