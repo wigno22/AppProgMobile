@@ -49,6 +49,7 @@ dependencies {
     //if you target Android 12
     implementation("com.google.android.gms:play-services-auth:20.3.0")
     implementation ("com.google.dagger:dagger:2.40.5")
+    implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")
     val lifecycle_version = "2.7.0"
     val activity_version = "1.8.2"
     implementation ("com.google.firebase:firebase-auth:21.0.3")
@@ -57,6 +58,7 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation ("com.google.firebase:firebase-firestore-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation("com.google.firebase:firebase-messaging")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.12.0")
@@ -69,4 +71,6 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     implementation ("com.github.Pygmalion69:Gauge:1.5.2")
     implementation ("com.github.Gruzer:simple-gauge-android:0.3.1")
+
+
 }

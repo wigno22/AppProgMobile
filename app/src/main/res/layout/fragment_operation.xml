@@ -15,7 +15,7 @@
 
         <EditText
             android:id="@+id/editTextAmount"
-            android:layout_width="262dp"
+            android:layout_width="217dp"
             android:layout_height="match_parent"
             android:hint="Enter amount"
             android:inputType="numberDecimal" />
@@ -24,23 +24,30 @@
             android:id="@+id/radiogroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+
+            >
 
             <RadioButton
                 android:id="@+id/buttonplus"
-                android:layout_width="59dp"
+                android:layout_width="82dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
+                android:checked="true"
                 android:gravity="center"
-                android:text="+" />
+                android:text="+"
+                android:textSize="25dp"
+                android:textStyle="bold" />
 
             <RadioButton
                 android:id="@+id/buttonminus"
-                android:layout_width="58dp"
+                android:layout_width="82dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
                 android:gravity="center"
-                android:text="-" />
+                android:text="-"
+                android:textSize="25dp"
+                android:textStyle="bold" />
         </RadioGroup>
 
 
@@ -76,8 +83,8 @@
                 android:id="@+id/dateEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="none"
-                android:focusable="false"/>
+                android:focusable="false"
+                android:inputType="none" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

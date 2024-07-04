@@ -1,12 +1,19 @@
 package com.example.progettoprogrammazionemobile
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 
 
 data class AccountDetails(val iDNumber: String, val IBAN: String, val Balance: Number)
@@ -33,34 +40,34 @@ class MainActivity : AppCompatActivity() {
 
 
 
-
-
-        /*
-        val user = firebaseAuth.currentUser
-        val UID = user!!.uid
-        val iban = generateIban(SecureRandom())
-        var date = LocalDateTime.now()
-
-        val categorieValide = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription")
-
-        val transactions = hashMapOf<String, Transaction>()
-
-        val categoria = "food"
-        if (categoria in categorieValide) {
-            transactions[date.toString()] = Transaction(UID, 3, false, categoria, " ", date.toString())
-            date = date.plusDays(2)
-            transactions[date.toString()] = Transaction(UID, 4, false, categoria, " ", date.toString())
-        } else {
-            Log.w("MainActivity", "Categoria non valida: $categoria")
+        //Require the permission POST_NOTIFICATIONS
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
         }
 
-        transactions.map {
-            db.collection(firebaseAuth.currentUser!!.uid).document("Account").collection("Transaction").document(it.key).set(it.value)
-        }
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("FCMExample", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            // Get new FCM registration token
+            val token = task.result
+            // Log and toast
+            Log.d("FCMExample", token)
+            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+        })
 
-        db.collection(firebaseAuth.currentUser!!.uid).document("Account").set(AccountDetails(UID, iban, 0))
-        */
+
+        
+
+
+
 
     }
+
 
 }

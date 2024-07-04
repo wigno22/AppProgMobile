@@ -72,7 +72,8 @@ class OperationFragment : Fragment() {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    private val categoriesAll = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription")
+
+    private val categoriesAll = listOf("food", "transport", "shopping", "service", "entertainment", "household expenses", "subscription")
     private val categoriesIncome = listOf("salary", "other")
 
     //GESTIRE ENTRATE(TIPOLOGIA in entrata) e VISUALIZZAZIONE ANNO (METTERE ALL)
@@ -102,6 +103,18 @@ class OperationFragment : Fragment() {
         spinnerYear = view.findViewById(R.id.spinnerYear)
         dateEditText = view.findViewById(R.id.dateEditText)
         vmultiGauge = view.findViewById(R.id.multiGauge)
+
+
+
+        // Ottieni la data corrente
+        val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val currentDate = dateFormat.format(calendar.time)
+
+
+        dateEditText.setText(currentDate)
+
+
 
         /* Set up the spinner for transaction type (+/-)
         val types = listOf("+", "-")
