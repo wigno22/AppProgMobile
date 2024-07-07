@@ -15,6 +15,8 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -30,6 +32,7 @@ data class AccountDetail(
     val balance: Double = 0.0
 )
 
+
 class AccountFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -37,8 +40,7 @@ class AccountFragment : Fragment() {
     private lateinit var YearSelection: Spinner
     private lateinit var gridTransactions: GridView
 
-    private var _binding: FragmentAccountBinding? = null
-    private val binding get() = _binding!!
+    private val viewModel: DataViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,33 +92,24 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_account, container, false)
+        val binding: FragmentAccountBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_account, container, false
+        )
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
-
-
-
-        //val textName: TextView = rootView.findViewById(R.id.welcomeText)
+        val rootView = binding.root
         val textBalance: TextView = rootView.findViewById(R.id.textView)
-        gridTransactions = rootView.findViewById(R.id.idGVDati)
 
+        gridTransactions = rootView.findViewById(R.id.idGVDati)
         MonthSelection = rootView.findViewById(R.id.spinnerMonthAccount)
         YearSelection = rootView.findViewById(R.id.spinnerYearAccount)
 
         val user = FirebaseAuth.getInstance().currentUser
-
-        /*user?.let {
-            val name = user.displayName
-           // textName.text = "Benvenuto $name"
-        }*/
-
         val name = user?.displayName
 
+        viewModel.setUsername("Welcome: $name")
 
-        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
-        binding.username = " Benvenuto $name"
-
-
-        // Create account if it doesn't exist
         createAccountIfNotExists()
 
         val UID = user?.uid
@@ -125,19 +118,17 @@ class AccountFragment : Fragment() {
             userDocRef.get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
-                        val balance = documentSnapshot.getDouble("balance")
+                        val balance = documentSnapshot.getDouble("balance") ?: 0.0
+                        viewModel.setBalance(balance)
 
-                        val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
-                        val formattedAmount = numberFormat.format(balance)
-
-                        // Set the text color based on the amount
-                        if (balance!! < 0.0) {
+                        if (balance < 0.0) {
                             textBalance.setTextColor(Color.RED)
                         } else {
                             textBalance.setTextColor(Color.GREEN)
                         }
 
-                        textBalance.text = "$formattedAmount"
+                        viewModel.updateBalance()
+
                         Log.e("AccountFragment", "Balance: $balance")
                     } else {
                         Log.e("AccountFragment", "Account document does not exist.")
@@ -178,8 +169,34 @@ class AccountFragment : Fragment() {
             Log.e("AccountFragment", "User not authenticated")
         }
 
+        viewModel.balance.observe(viewLifecycleOwner, androidx.lifecycle.Observer { newBalance ->
+            textBalance.text = NumberFormat.getCurrencyInstance().format(newBalance)
+
+            if (newBalance < 0.0) {
+                textBalance.setTextColor(Color.RED)
+            } else {
+                textBalance.setTextColor(Color.GREEN)
+            }
+        })
+
+        viewModel.fixedEntries.observe(viewLifecycleOwner) {
+            viewModel.updateBalance()
+        }
+
+        viewModel.fixedOut.observe(viewLifecycleOwner) {
+            viewModel.updateBalance()
+        }
+
+        viewModel.balance.observe(viewLifecycleOwner) { newBalance ->
+            if (UID != null) {
+                db.collection(UID).document("Account")
+                    .update("balance", newBalance)
+            }
+        }
+
         return rootView
     }
+
 
     private fun fetchTransactions() {
         val user = FirebaseAuth.getInstance().currentUser
@@ -194,16 +211,20 @@ class AccountFragment : Fragment() {
                 .addOnSuccessListener { querySnapshot ->
                     val transactions = mutableListOf<Transaction>()
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                    var balance = 0.0
                     for (document in querySnapshot.documents) {
                         var amount = document.getDouble("amount") ?: 0.0
-                        val isOutgoing = document.getBoolean("outgoing")
+                        val isOutgoing = document.getBoolean("outgoing") ?: false
                         val category = document.getString("category") ?: "Unknown"
-                        val type = if (isOutgoing!!) "Uscita" else "Entrata"
+                        val type = if (isOutgoing) "Uscita" else "Entrata"
                         if (isOutgoing) amount *= -1 else amount *= 1
                         val date = document.getDate("date")?.let { dateFormat.format(it) } ?: "Unknown"
 
                         transactions.add(Transaction(date, type, amount, category))
+                        balance += amount
                     }
+
+                    viewModel.setBalance(balance)  // Aggiorna il saldo nel ViewModel
 
                     val adapter = TransactionAdapter(requireContext(), transactions)
                     gridTransactions.adapter = adapter

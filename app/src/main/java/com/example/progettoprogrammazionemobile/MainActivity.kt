@@ -16,14 +16,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 
 
-data class AccountDetails(val iDNumber: String, val IBAN: String, val Balance: Number)
-//data class Transaction(val iDNumber: String, val Valore: Number, val Type: Boolean, val Category: String, val Description: String, val Data: String)
-
 class profilefrg: Fragment(R.layout.fragment_profile)
 class accountfrg: Fragment(R.layout.fragment_account)
 class operationfrg: Fragment(R.layout.fragment_operation)
 class MainActivity : AppCompatActivity() {
-
 
 
     @SuppressLint("SetTextI18n", "MissingInflatedId")
@@ -31,13 +27,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-
-
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.setupWithNavController(navController)
-
 
 
         //Require the permission POST_NOTIFICATIONS
@@ -48,6 +41,7 @@ class MainActivity : AppCompatActivity() {
                 0
             )
         }
+
 
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
@@ -61,13 +55,5 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
 
-
-        
-
-
-
-
     }
-
-
 }

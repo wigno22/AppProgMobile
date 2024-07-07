@@ -46,7 +46,6 @@ android {
 dependencies {
     //for authentication
     implementation("com.firebaseui:firebase-ui-auth:8.0.1")
-    //if you target Android 12
     implementation("com.google.android.gms:play-services-auth:20.3.0")
     implementation ("com.google.dagger:dagger:2.40.5")
     implementation("com.google.firebase:firebase-messaging-ktx:24.0.0")

@@ -3,8 +3,8 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
         <variable
-            name="username"
-            type="String" />
+            name="viewModel"
+            type="com.example.progettoprogrammazionemobile.DataViewModel" />
     </data>
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:layout_height="50dp"
             android:layout_marginTop="20dp"
             android:gravity="center"
-            android:text="@{username}"
+            android:text="@{viewModel.username}"
             android:textColor="@android:color/black"
             android:textSize="20dp"
             android:textStyle="bold" />

@@ -1,8 +1,8 @@
+// ProfileFragment.kt
 package com.example.progettoprogrammazionemobile
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +10,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfileFragment : Fragment() {
@@ -27,12 +28,12 @@ class ProfileFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+    private val viewModel: DataViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         Name = view.findViewById(R.id.Tname)
@@ -73,13 +74,19 @@ class ProfileFragment : Fragment() {
             Name.text = user.displayName?.split(" ")?.firstOrNull() ?: ""
             Surname.text = user.displayName?.split(" ")?.lastOrNull() ?: ""
 
-
             firestore.collection(user.uid).document("Account").get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
                         Phone.setText(document.getString("phone"))
-                        Spesefisse.setText(document.getString("fixed_expenses"))
-                        Entratefisse.setText(document.getString("fixed_income"))
+
+                        val fixedExpenses = document.getDouble("fixed_expenses") ?: 0.0
+                        val fixedIncome = document.getDouble("fixed_income") ?: 0.0
+
+                        Spesefisse.setText(fixedExpenses.toString())
+                        Entratefisse.setText(fixedIncome.toString())
+
+                        viewModel.setFixedEntries(fixedIncome)
+                        viewModel.setFixedOut(fixedExpenses)
                     }
                 }
                 .addOnFailureListener { exception ->
@@ -91,16 +98,21 @@ class ProfileFragment : Fragment() {
     private fun saveUserProfile() {
         val user = auth.currentUser
         if (user != null) {
+            val fixedExpenses = Spesefisse.text.toString().toDoubleOrNull() ?: 0.0
+            val fixedIncome = Entratefisse.text.toString().toDoubleOrNull() ?: 0.0
+
             val userData = hashMapOf(
                 "phone" to Phone.text.toString(),
-                "fixed_expenses" to Spesefisse.text.toString(),
-                "fixed_income" to Entratefisse.text.toString()
+                "fixed_expenses" to fixedExpenses,
+                "fixed_income" to fixedIncome
             )
 
             firestore.collection(user.uid).document("Account").update(userData as Map<String, Any>)
                 .addOnSuccessListener {
                     // Handle success
-                    Toast.makeText(context, "Saved Succesfully", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Saved Successfully", Toast.LENGTH_SHORT).show()
+                    viewModel.setFixedEntries(fixedIncome)
+                    viewModel.setFixedOut(fixedExpenses)
                 }
                 .addOnFailureListener { e ->
                     // Handle the error
