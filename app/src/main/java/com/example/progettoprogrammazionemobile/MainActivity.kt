@@ -9,11 +9,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
+import java.util.concurrent.TimeUnit
 
 
 class profilefrg: Fragment(R.layout.fragment_profile)
@@ -31,6 +38,14 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.setupWithNavController(navController)
+
+        val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
+
+        //val myWorkRequest: WorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 15, TimeUnit.MINUTES).build()
+        // Enqueue the WorkRequest
+        val workManager = WorkManager.getInstance(this)
+        workManager.enqueue(myWorkRequest)
+
 
 
         //Require the permission POST_NOTIFICATIONS
@@ -52,8 +67,11 @@ class MainActivity : AppCompatActivity() {
             val token = task.result
             // Log and toast
             Log.d("FCMExample", token)
-            Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
+            //Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
 
+
+
     }
+
 }

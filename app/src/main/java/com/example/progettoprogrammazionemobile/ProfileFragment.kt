@@ -85,8 +85,6 @@ class ProfileFragment : Fragment() {
                         Spesefisse.setText(fixedExpenses.toString())
                         Entratefisse.setText(fixedIncome.toString())
 
-                        viewModel.setFixedEntries(fixedIncome)
-                        viewModel.setFixedOut(fixedExpenses)
                     }
                 }
                 .addOnFailureListener { exception ->

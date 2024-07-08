@@ -50,12 +50,9 @@ data class UserTransaction(
 class OperationFragment : Fragment() {
 
     private lateinit var editTextAmount: EditText
-
     private lateinit var butttongroup: RadioGroup
     private lateinit var buttonplus: RadioButton
     private lateinit var buttonminus: RadioButton
-
-    private lateinit var spinnerType: Spinner
     private lateinit var editTextDescription: EditText
     private lateinit var spinnerCategory: Spinner
     private lateinit var buttonConfirm: Button
@@ -76,8 +73,6 @@ class OperationFragment : Fragment() {
     private val categoriesAll = listOf("food", "transport", "shopping", "service", "entertainment", "household expenses", "subscription")
     private val categoriesIncome = listOf("salary", "other")
 
-    //GESTIRE ENTRATE(TIPOLOGIA in entrata) e VISUALIZZAZIONE ANNO (METTERE ALL)
-
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -87,12 +82,9 @@ class OperationFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
         editTextAmount = view.findViewById(R.id.editTextAmount)
-        //spinnerType = view.findViewById(R.id.spinnerType)
-
         butttongroup= view.findViewById(R.id.radiogroup)
         buttonplus = view.findViewById(R.id.buttonplus)
         buttonminus = view.findViewById(R.id.buttonminus)
-
         editTextDescription = view.findViewById(R.id.editTextDescription)
         spinnerCategory = view.findViewById(R.id.spinnerCategory)
         buttonConfirm = view.findViewById(R.id.buttonConfirm)
@@ -115,13 +107,6 @@ class OperationFragment : Fragment() {
         dateEditText.setText(currentDate)
 
 
-
-        /* Set up the spinner for transaction type (+/-)
-        val types = listOf("+", "-")
-        val typeAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, types)
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerType.adapter = typeAdapter*/
-
         // Set up the spinner with categories
         updateCategorySpinner(categoriesAll)
 
@@ -131,15 +116,6 @@ class OperationFragment : Fragment() {
                 R.id.buttonminus -> updateCategorySpinner(categoriesAll)
             }
         }
-
-
-
-
-        /*Set up the spinner with categories
-        val categories = listOf("food", "transport", "shopping", "service", "entertainment", "salary", "household expenses", "subscription", "other")
-        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = categoryAdapter*/
 
 
         val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
@@ -423,10 +399,5 @@ class OperationFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         updateGauges()
     }
-    /*private fun resetFields() {
-        editTextAmount.text.clear()
-        editTextDescription.text.clear()
-        spinnerType.setSelection(0)
-        spinnerCategory.setSelection(0)
-    }*/
+
 }

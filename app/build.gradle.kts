@@ -70,6 +70,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     implementation ("com.github.Pygmalion69:Gauge:1.5.2")
     implementation ("com.github.Gruzer:simple-gauge-android:0.3.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
 
 
 }

@@ -95,6 +95,7 @@ class AccountFragment : Fragment() {
         val binding: FragmentAccountBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_account, container, false
         )
+
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
@@ -127,7 +128,6 @@ class AccountFragment : Fragment() {
                             textBalance.setTextColor(Color.GREEN)
                         }
 
-                        viewModel.updateBalance()
 
                         Log.e("AccountFragment", "Balance: $balance")
                     } else {
@@ -179,13 +179,6 @@ class AccountFragment : Fragment() {
             }
         })
 
-        viewModel.fixedEntries.observe(viewLifecycleOwner) {
-            viewModel.updateBalance()
-        }
-
-        viewModel.fixedOut.observe(viewLifecycleOwner) {
-            viewModel.updateBalance()
-        }
 
         viewModel.balance.observe(viewLifecycleOwner) { newBalance ->
             if (UID != null) {
