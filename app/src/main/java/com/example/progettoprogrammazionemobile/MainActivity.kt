@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkInfo
@@ -20,6 +21,7 @@ import androidx.work.WorkRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
@@ -39,13 +41,34 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.nav_view)
         bottomNavigationView.setupWithNavController(navController)
 
-        val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
-
-        //val myWorkRequest: WorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 15, TimeUnit.MINUTES).build()
-        // Enqueue the WorkRequest
         val workManager = WorkManager.getInstance(this)
-        workManager.enqueue(myWorkRequest)
 
+        //val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
+        // Crea il PeriodicWorkRequest
+        val myWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 30, TimeUnit.DAYS)
+            .build()
+
+
+        // Enqueue il WorkRequest in modo unico
+        workManager.enqueueUniquePeriodicWork(
+            "Mywork",
+            ExistingPeriodicWorkPolicy.KEEP, // Mantiene il lavoro esistente e non crea un nuovo lavoro
+            myWorkRequest
+        )
+
+
+        // Osserva lo stato del lavoro
+        workManager.getWorkInfoByIdLiveData(myWorkRequest.id)
+            .observe(this, Observer { workInfo ->
+                if (workInfo != null && workInfo.state.isFinished) {
+                    // Lavoro terminato con successo
+                    if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                        Log.d("MainActivity", "Work completed successfully")
+                    } else if (workInfo.state == WorkInfo.State.FAILED) {
+                        Log.d("MainActivity", "Work failed")
+                    }
+                }
+            })
 
 
         //Require the permission POST_NOTIFICATIONS
