@@ -173,7 +173,7 @@ class OperationFragment : Fragment() {
         }
 
         val deltaRange = Range().apply {
-            color = Color.parseColor("#E3E500")
+            color = Color.parseColor("#1976D2")
             from = 0.0
             to = 1000000.0
         }
@@ -286,17 +286,24 @@ class OperationFragment : Fragment() {
         if (user != null) {
             val UID = user.uid
             val selectedMonth = spinnerMonth.selectedItem.toString()
-            val selectedYear = spinnerYear.selectedItem.toString().toInt()
+            val selectedYear = spinnerYear.selectedItem.toString()
 
             val transactionsRef = db.collection(UID).document("Account").collection("Transaction")
 
-            val query = if (selectedMonth == "All") {
-                transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfYear(selectedYear))
-                    .whereLessThan("date", getStartOfNextYear(selectedYear))
-            } else {
+            val query = if (selectedMonth == "All" && selectedYear == "All") {
+                transactionsRef
+            } else if (selectedMonth == "All") {
+                val year = selectedYear.toInt()
+                transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfYear(year))
+                    .whereLessThan("date", getStartOfNextYear(year))
+            } else if (selectedYear == "All") {
                 val monthIndex = Month.valueOf(selectedMonth.uppercase(Locale.ROOT)).value
-                transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfMonth(monthIndex, selectedYear))
-                    .whereLessThan("date", getStartOfNextMonth(monthIndex, selectedYear))
+                transactionsRef.whereEqualTo("month", monthIndex)
+            } else {
+                val year = selectedYear.toInt()
+                val monthIndex = Month.valueOf(selectedMonth.uppercase(Locale.ROOT)).value
+                transactionsRef.whereGreaterThanOrEqualTo("date", getStartOfMonth(monthIndex, year))
+                    .whereLessThan("date", getStartOfNextMonth(monthIndex, year))
             }
 
             query.get().addOnSuccessListener { documents ->
@@ -315,13 +322,12 @@ class OperationFragment : Fragment() {
                 val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
                 totEntrate.text = numberFormat.format(totalPositive)
                 totUscite.text = numberFormat.format(totalNegative)
-                totDelta.text = numberFormat.format(totalPositive-totalNegative)
-
+                totDelta.text = numberFormat.format(totalPositive - totalNegative)
 
                 // Update gauge values proportionally
                 vmultiGauge.value = totalPositive
                 vmultiGauge.secondValue = totalNegative
-                vmultiGauge.thirdValue= totalPositive - totalNegative
+                vmultiGauge.thirdValue = totalPositive - totalNegative
 
                 if (totalPositive > totalNegative) {
                     vmultiGauge.maxValue = totalPositive * 1.1
@@ -337,6 +343,7 @@ class OperationFragment : Fragment() {
             }
         }
     }
+
 
     private fun getStartOfMonth(month: Int, year: Int): Date {
         val calendar = Calendar.getInstance().apply {
@@ -392,7 +399,7 @@ class OperationFragment : Fragment() {
 
     fun getYearsList(): List<String> {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        return (currentYear downTo (currentYear - 10)).map { it.toString() }
+        return listOf("All") + (currentYear downTo (currentYear - 10)).map { it.toString() }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

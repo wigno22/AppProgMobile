@@ -15,6 +15,7 @@
         android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="410dp"
         android:layout_height="match_parent"
+        android:layout_marginTop="10dp"
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_menu"
         tools:ignore="MissingConstraints"
@@ -22,45 +23,13 @@
         tools:layout_editor_absoluteY="2dp" />
 
 
-    <!--<LinearLayout
-        android:id="@+id/centerLayout"
-        android:layout_width="413dp"
-        android:layout_height="881dp"
-        android:layout_gravity="center"
-        android:background="@color/greenpers"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-
-
-
-
-        <LinearLayout
-            android:id="@+id/centerLayout2"
-            android:layout_width="333dp"
-            android:layout_height="41dp"
-            android:layout_gravity="center|bottom"
-            android:layout_marginTop="500px"
-            android:background="@color/greenpers"
-            android:orientation="horizontal"/>
-
-
-
-    </LinearLayout>
--->
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/nav_view"
-        android:layout_width="410dp"
-        android:layout_height="71dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:background="@color/fui_bgPhone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

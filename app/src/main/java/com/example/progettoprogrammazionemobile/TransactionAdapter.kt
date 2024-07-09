@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import java.util.Locale
 
 data class Transaction(val date: String, val type: String, val amount: Double, val category: String)
@@ -54,7 +55,7 @@ class TransactionAdapter(private val context: Context, private val transactions:
         if (transaction.amount < 0) {
             amountTextView.setTextColor(Color.RED)
         } else {
-            amountTextView.setTextColor(Color.GREEN)
+            amountTextView.setTextColor(ContextCompat.getColor(context, R.color.verdescuro))
         }
 
         amountTextView.text = formattedAmount

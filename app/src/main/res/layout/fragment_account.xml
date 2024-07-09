@@ -52,7 +52,8 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="92dp">
+            android:layout_height="92dp"
+            android:layout_marginTop="20dp">
 
             <TextView
                 android:layout_width="150dp"
@@ -85,15 +86,15 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:background="@color/greenpers"
+            android:layout_height="35dp"
+            android:layout_marginTop="30dp"
+            android:background="@color/colorPrimary"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/transactionDateTitle"
                 android:layout_width="92dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Data"
                 android:textColor="@android:color/white"
@@ -102,7 +103,7 @@
             <TextView
                 android:id="@+id/transactionTypeTitle"
                 android:layout_width="68dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Type"
                 android:textColor="@android:color/white"
@@ -111,7 +112,7 @@
             <TextView
                 android:id="@+id/transactionAmountTitle"
                 android:layout_width="127dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Amount"
                 android:textColor="@android:color/white"
@@ -120,7 +121,7 @@
             <TextView
                 android:id="@+id/transactionCategoryTitle"
                 android:layout_width="124dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:text="Category"
                 android:textColor="@android:color/white"

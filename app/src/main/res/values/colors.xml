@@ -3,6 +3,17 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="greenpers">#008080</color>
-    <color name="red">#CB3234</color>
+    <color name="red">#D32F2F</color>
     <color name="lavanda">#e6e6fa</color>
+    <color name="verdescuro">#4CAF50</color>
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#4CAF50</color>
+    <color name="colorPrimaryLight">#33A69C</color>
+    <color name="colorBackground">#E0F7FA</color>
+    <color name="colorTextPrimary">#FF000000</color>
+    <color name="colorTextSecondary">#757575</color>
+    <color name="colorPositive">#4CAF50</color> <!-- Green for positive values -->
+    <color name="colorNegative">#D32F2F</color> <!-- Red for negative values -->
+    <color name="colorNeutral">#1976D2</color> <!-- Blue for neutral values -->
 </resources>

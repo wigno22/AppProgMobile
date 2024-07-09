@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter
 import android.widget.GridView
 import android.widget.Spinner
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -31,7 +32,6 @@ data class AccountDetail(
     val iban: String = "",
     val balance: Double = 0.0
 )
-
 
 class AccountFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
@@ -85,8 +85,6 @@ class AccountFragment : Fragment() {
         }
     }
 
-
-
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -125,9 +123,8 @@ class AccountFragment : Fragment() {
                         if (balance < 0.0) {
                             textBalance.setTextColor(Color.RED)
                         } else {
-                            textBalance.setTextColor(Color.GREEN)
+                            textBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
                         }
-
 
                         Log.e("AccountFragment", "Balance: $balance")
                     } else {
@@ -151,7 +148,7 @@ class AccountFragment : Fragment() {
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
-            val years = getYearsList()
+            val years = getYearsListWithAll()
             val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
             yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             YearSelection.adapter = yearAdapter
@@ -175,10 +172,9 @@ class AccountFragment : Fragment() {
             if (newBalance < 0.0) {
                 textBalance.setTextColor(Color.RED)
             } else {
-                textBalance.setTextColor(Color.GREEN)
+                textBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
             }
         })
-
 
         viewModel.balance.observe(viewLifecycleOwner) { newBalance ->
             if (UID != null) {
@@ -189,7 +185,6 @@ class AccountFragment : Fragment() {
 
         return rootView
     }
-
 
     private fun fetchTransactions() {
         val user = FirebaseAuth.getInstance().currentUser
@@ -230,34 +225,51 @@ class AccountFragment : Fragment() {
 
     private fun filterTransactions() {
         val selectedMonth = MonthSelection.selectedItemPosition
-        val selectedYear = YearSelection.selectedItem.toString().toIntOrNull()
+        val selectedYearString = YearSelection.selectedItem.toString()
 
         val user = FirebaseAuth.getInstance().currentUser
         val UID = user?.uid
-        if (UID != null && selectedYear != null) {
+        if (UID != null) {
             val userDocRef = db.collection(UID).document("Account")
             var transactionsRef = userDocRef.collection("Transaction")
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .limit(150)
 
-            if (selectedMonth > 0) {
-                val calendar = Calendar.getInstance()
-                calendar.set(selectedYear, selectedMonth - 1, 1, 0, 0, 0)
-                val startDate = calendar.time
-                calendar.set(selectedYear, selectedMonth, 1, 0, 0, 0)
-                calendar.add(Calendar.DATE, -1)
-                val endDate = calendar.time
+            if (selectedYearString == "All") {
+                // Non applicare filtri per l'anno
+                if (selectedMonth > 0) {
+                    val calendar = Calendar.getInstance()
+                    calendar.set(Calendar.MONTH, selectedMonth - 1)
+                    calendar.set(Calendar.DAY_OF_MONTH, 1)
+                    val startDate = calendar.time
+                    calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+                    val endDate = calendar.time
 
-                transactionsRef = transactionsRef
-                    .whereGreaterThanOrEqualTo("date", startDate)
-                    .whereLessThanOrEqualTo("date", endDate)
+                    transactionsRef = transactionsRef
+                        .whereGreaterThanOrEqualTo("date", startDate)
+                        .whereLessThanOrEqualTo("date", endDate)
+                }
             } else {
-                val startDate = GregorianCalendar(selectedYear, Calendar.JANUARY, 1).time
-                val endDate = GregorianCalendar(selectedYear, Calendar.DECEMBER, 31).time
+                val selectedYear = selectedYearString.toInt()
+                if (selectedMonth > 0) {
+                    val calendar = Calendar.getInstance()
+                    calendar.set(selectedYear, selectedMonth - 1, 1, 0, 0, 0)
+                    val startDate = calendar.time
+                    calendar.set(selectedYear, selectedMonth, 1, 0, 0, 0)
+                    calendar.add(Calendar.DATE, -1)
+                    val endDate = calendar.time
 
-                transactionsRef = transactionsRef
-                    .whereGreaterThanOrEqualTo("date", startDate)
-                    .whereLessThanOrEqualTo("date", endDate)
+                    transactionsRef = transactionsRef
+                        .whereGreaterThanOrEqualTo("date", startDate)
+                        .whereLessThanOrEqualTo("date", endDate)
+                } else {
+                    val startDate = GregorianCalendar(selectedYear, Calendar.JANUARY, 1).time
+                    val endDate = GregorianCalendar(selectedYear, Calendar.DECEMBER, 31).time
+
+                    transactionsRef = transactionsRef
+                        .whereGreaterThanOrEqualTo("date", startDate)
+                        .whereLessThanOrEqualTo("date", endDate)
+                }
             }
 
             transactionsRef.get()
@@ -285,7 +297,9 @@ class AccountFragment : Fragment() {
     }
 }
 
-fun getYearsList(): List<String> {
+fun getYearsListWithAll(): List<String> {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-    return (currentYear downTo (currentYear - 10)).map { it.toString() }
+    val years = (currentYear downTo (currentYear - 10)).map { it.toString() }.toMutableList()
+    years.add(0, "All")  // Aggiungi l'opzione "All" all'inizio della lista
+    return years
 }

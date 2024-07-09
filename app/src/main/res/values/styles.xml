@@ -1,16 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="BottomNavigationViewItemStyle" parent="Widget.Design.BottomNavigationView">
-        <item name="itemIconSize">40dp</item> <!-- Dimensione dell'icona -->
-        <!--<item name="itemTextAppearanceActive">@style/BottomNavigationActiveText</item>
-        <item name="itemTextAppearanceInactive">@style/BottomNavigationInactiveText</item>
+        <item name="itemIconSize">50dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@color/colorBackground</item>
     </style>
 
-    <style name="BottomNavigationActiveText" parent="TextAppearance.Design.BottomNavigation.Active">
-        <item name="android:textSize">14sp</item>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/colorTextPrimary</item>
+        <item name="android:textColorSecondary">@color/colorTextSecondary</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+
+        <!-- Customize your theme here -->
+        <item name="android:buttonStyle">@style/MyButtonStyle</item>
+        <item name="android:editTextStyle">@style/MyEditTextStyle</item>
+        <item name="android:spinnerStyle">@style/MySpinnerStyle</item>
     </style>
 
-    <style name="BottomNavigationInactiveText" parent="TextAppearance.Design.BottomNavigation.Inactive">
-        <item name="android:textSize">14sp</item>-->
+    <!-- Button style -->
+    <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
     </style>
+
+    <!-- EditText style -->
+    <style name="MyEditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="android:backgroundTint">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+        <item name="android:textColorHint">@color/colorTextSecondary</item>
+    </style>
+
+    <!-- Spinner style -->
+    <style name="MySpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:backgroundTint">@color/colorPrimaryLight</item>
+        <item name="android:textColor">@color/colorTextPrimary</item>
+    </style>
+
+
+
 </resources>

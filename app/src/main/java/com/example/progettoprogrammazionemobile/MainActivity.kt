@@ -43,13 +43,13 @@ class MainActivity : AppCompatActivity() {
 
         val workManager = WorkManager.getInstance(this)
 
+        //workManager.cancelAllWork()
         //val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
         // Crea il PeriodicWorkRequest
-        val myWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 30, TimeUnit.DAYS)
-            .build()
+        val myWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 30, TimeUnit.DAYS).build()
 
 
-        // Enqueue il WorkRequest in modo unico
+        //Enqueue il WorkRequest in modo unico
         workManager.enqueueUniquePeriodicWork(
             "Mywork",
             ExistingPeriodicWorkPolicy.KEEP, // Mantiene il lavoro esistente e non crea un nuovo lavoro
