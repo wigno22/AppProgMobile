@@ -10,9 +10,11 @@ class DataViewModel : ViewModel() {
     private val _username = MutableLiveData<String>()
     val username: LiveData<String> get() = _username
 
-    private val _fixedEntries = MutableLiveData<Double>()
+    private val _fixedEntries = MutableLiveData<String>()
+    val fixedEntries: LiveData<String> get() = _fixedEntries
 
-    private val _fixedOut = MutableLiveData<Double>()
+    private val _fixedOut = MutableLiveData<String>()
+    val fixedOut: LiveData<String> get() = _fixedOut
 
     private val _balance = MutableLiveData<Double>()
     val balance: LiveData<Double> get() = _balance
@@ -21,11 +23,11 @@ class DataViewModel : ViewModel() {
         _username.value = name
     }
 
-    fun setFixedEntries(entries: Double) {
+    fun setFixedEntries(entries: String) {
         _fixedEntries.value = entries
     }
 
-    fun setFixedOut(out: Double) {
+    fun setFixedOut(out: String) {
         _fixedOut.value = out
     }
 

@@ -93,8 +93,6 @@ class MainActivity : AppCompatActivity() {
             //Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
 
-
-
     }
 
 }

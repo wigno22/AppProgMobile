@@ -17,7 +17,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
@@ -26,6 +25,7 @@ import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.progettoprogrammazionemobile.databinding.FragmentAccountBinding
+import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBinding
 
 data class AccountDetail(
     val uid: String = "",
@@ -36,11 +36,13 @@ data class AccountDetail(
 class AccountFragment : Fragment() {
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var MonthSelection: Spinner
+
+   /* private lateinit var MonthSelection: Spinner
     private lateinit var YearSelection: Spinner
-    private lateinit var gridTransactions: GridView
+    private lateinit var gridTransactions: GridView */
 
     private val viewModel: DataViewModel by viewModels()
+    private lateinit var binding: FragmentAccountBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,19 +92,16 @@ class AccountFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding: FragmentAccountBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_account, container, false
-        )
-
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
         val rootView = binding.root
-        val textBalance: TextView = rootView.findViewById(R.id.textView)
 
-        gridTransactions = rootView.findViewById(R.id.idGVDati)
-        MonthSelection = rootView.findViewById(R.id.spinnerMonthAccount)
-        YearSelection = rootView.findViewById(R.id.spinnerYearAccount)
+        // val textBalance: TextView = rootView.findViewById(R.id.textView)
+        //gridTransactions = rootView.findViewById(R.id.idGVDati)
+        //MonthSelection = rootView.findViewById(R.id.spinnerMonthAccount)
+        //YearSelection = rootView.findViewById(R.id.spinnerYearAccount)
 
         val user = FirebaseAuth.getInstance().currentUser
         val name = user?.displayName
@@ -121,9 +120,9 @@ class AccountFragment : Fragment() {
                         viewModel.setBalance(balance)
 
                         if (balance < 0.0) {
-                            textBalance.setTextColor(Color.RED)
+                            binding.textView.setTextColor(Color.RED)
                         } else {
-                            textBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
+                            binding.textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
                         }
 
                         Log.e("AccountFragment", "Balance: $balance")
@@ -138,9 +137,9 @@ class AccountFragment : Fragment() {
             val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
             val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
             monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            MonthSelection.adapter = monthAdapter
+            binding.spinnerMonthAccount.adapter = monthAdapter
 
-            MonthSelection.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            binding.spinnerMonthAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                     filterTransactions()
                 }
@@ -151,9 +150,9 @@ class AccountFragment : Fragment() {
             val years = getYearsListWithAll()
             val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
             yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            YearSelection.adapter = yearAdapter
+            binding.spinnerYearAccount.adapter = yearAdapter
 
-            YearSelection.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            binding.spinnerYearAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                     filterTransactions()
                 }
@@ -167,12 +166,12 @@ class AccountFragment : Fragment() {
         }
 
         viewModel.balance.observe(viewLifecycleOwner, androidx.lifecycle.Observer { newBalance ->
-            textBalance.text = NumberFormat.getCurrencyInstance().format(newBalance)
+            binding.textView.text = NumberFormat.getCurrencyInstance().format(newBalance)
 
             if (newBalance < 0.0) {
-                textBalance.setTextColor(Color.RED)
+                binding.textView.setTextColor(Color.RED)
             } else {
-                textBalance.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
+                binding.textView.setTextColor(ContextCompat.getColor(requireContext(), R.color.verdescuro))
             }
         })
 
@@ -215,7 +214,7 @@ class AccountFragment : Fragment() {
                     viewModel.setBalance(balance)  // Aggiorna il saldo nel ViewModel
 
                     val adapter = TransactionAdapter(requireContext(), transactions)
-                    gridTransactions.adapter = adapter
+                    binding.idGVDati.adapter = adapter
                 }
                 .addOnFailureListener { exception ->
                     Log.e("AccountFragment", "Failed to fetch transactions: ${exception.message}")
@@ -224,8 +223,8 @@ class AccountFragment : Fragment() {
     }
 
     private fun filterTransactions() {
-        val selectedMonth = MonthSelection.selectedItemPosition
-        val selectedYearString = YearSelection.selectedItem.toString()
+        val selectedMonth = binding.spinnerMonthAccount.selectedItemPosition
+        val selectedYearString =  binding.spinnerYearAccount.selectedItem.toString()
 
         val user = FirebaseAuth.getInstance().currentUser
         val UID = user?.uid
@@ -288,7 +287,7 @@ class AccountFragment : Fragment() {
                     }
 
                     val adapter = TransactionAdapter(requireContext(), transactions)
-                    gridTransactions.adapter = adapter
+                    binding.idGVDati.adapter = adapter
                 }
                 .addOnFailureListener { exception ->
                     Log.e("AccountFragment", "Failed to fetch filtered transactions: ${exception.message}")

@@ -1,8 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.progettoprogrammazionemobile.DataViewModel" />
+    </data>
+
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="10dp">
+
+
 
     <Button
         android:id="@+id/sign_out"
@@ -28,7 +38,7 @@
 
             <TextView
                 android:id="@+id/Tname"
-                android:layout_width="191dp"
+                android:layout_width="190dp"
                 android:layout_height="42dp"
                 android:gravity="left"
                 android:text="Name"
@@ -37,7 +47,7 @@
 
             <TextView
                 android:id="@+id/Tsurname"
-                android:layout_width="200dp"
+                android:layout_width="199dp"
                 android:layout_height="42dp"
                 android:gravity="left"
                 android:text="Surname"
@@ -92,7 +102,8 @@
             android:layout_height="wrap_content"
             android:hint="Fixed Expenses"
             android:inputType="numberDecimal"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="@{viewModel.fixedOut}"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -108,7 +119,8 @@
             android:layout_height="wrap_content"
             android:hint="Fixed Income"
             android:inputType="numberDecimal"
-            android:padding="10dp"/>
+            android:padding="10dp"
+            android:text="@{viewModel.fixedEntries}"/>
     </LinearLayout>
 
     <Button
@@ -119,3 +131,4 @@
         android:layout_marginTop="16dp"
         android:layout_gravity="center"/>
 </LinearLayout>
+</layout>

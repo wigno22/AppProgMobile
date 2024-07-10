@@ -20,9 +20,12 @@ import android.widget.RadioGroup
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import com.ekn.gruzer.gaugelibrary.MultiGauge
 import com.ekn.gruzer.gaugelibrary.Range
+import com.example.progettoprogrammazionemobile.databinding.FragmentOperationBinding
+import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -49,7 +52,7 @@ data class UserTransaction(
 
 class OperationFragment : Fragment() {
 
-    private lateinit var editTextAmount: EditText
+    /*private lateinit var editTextAmount: EditText
     private lateinit var butttongroup: RadioGroup
     private lateinit var buttonplus: RadioButton
     private lateinit var buttonminus: RadioButton
@@ -62,13 +65,13 @@ class OperationFragment : Fragment() {
     private lateinit var totDelta: TextView
     private lateinit var spinnerMonth: Spinner
     private lateinit var spinnerYear: Spinner
-    lateinit var dateEditText: TextInputEditText
+    lateinit var dateEditText: TextInputEditText*/
 
 
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
-
+    private lateinit var binding: FragmentOperationBinding
 
     private val categoriesAll = listOf("food", "transport", "shopping", "service", "entertainment", "household expenses", "subscription")
     private val categoriesIncome = listOf("salary", "other")
@@ -78,9 +81,13 @@ class OperationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_operation, container, false)
+        binding.lifecycleOwner = viewLifecycleOwner
+
         // Initialize UI components
         val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
+        /*
         editTextAmount = view.findViewById(R.id.editTextAmount)
         butttongroup= view.findViewById(R.id.radiogroup)
         buttonplus = view.findViewById(R.id.buttonplus)
@@ -94,7 +101,7 @@ class OperationFragment : Fragment() {
         spinnerMonth = view.findViewById(R.id.spinnerMonth)
         spinnerYear = view.findViewById(R.id.spinnerYear)
         dateEditText = view.findViewById(R.id.dateEditText)
-        vmultiGauge = view.findViewById(R.id.multiGauge)
+        vmultiGauge = view.findViewById(R.id.multiGauge)*/
 
 
 
@@ -104,13 +111,13 @@ class OperationFragment : Fragment() {
         val currentDate = dateFormat.format(calendar.time)
 
 
-        dateEditText.setText(currentDate)
+        binding.dateEditText.setText(currentDate)
 
 
         // Set up the spinner with categories
         updateCategorySpinner(categoriesAll)
 
-        butttongroup.setOnCheckedChangeListener { _, checkedId ->
+        binding.radiogroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.buttonplus -> updateCategorySpinner(categoriesIncome)
                 R.id.buttonminus -> updateCategorySpinner(categoriesAll)
@@ -121,9 +128,9 @@ class OperationFragment : Fragment() {
         val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
         val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerMonth.adapter = monthAdapter
+        binding.spinnerMonth.adapter = monthAdapter
 
-        spinnerMonth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spinnerMonth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 updateGauges()
             }
@@ -136,9 +143,9 @@ class OperationFragment : Fragment() {
         val years = getYearsList()
         val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerYear.adapter =yearAdapter
+        binding.spinnerYear.adapter =yearAdapter
 
-        spinnerYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spinnerYear.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 updateGauges()
             }
@@ -149,13 +156,13 @@ class OperationFragment : Fragment() {
         }
 
 
-        dateEditText.setOnClickListener {
+        binding.dateEditText.setOnClickListener {
             showDatePickerDialog()
         }
 
 
         // Confirm button to add transaction
-        buttonConfirm.setOnClickListener {
+        binding.buttonConfirm.setOnClickListener {
             addTransaction()
         }
 
@@ -178,29 +185,29 @@ class OperationFragment : Fragment() {
             to = 1000000.0
         }
 
-        vmultiGauge.addRange(positiveRange) // Green for positive transactions
-        vmultiGauge.addSecondRange(negativeRange) // Red for negative transactions
-        vmultiGauge.addThirdRange(deltaRange)
+        binding.multiGauge.addRange(positiveRange) // Green for positive transactions
+        binding.multiGauge.addSecondRange(negativeRange) // Red for negative transactions
+        binding.multiGauge.addThirdRange(deltaRange)
 
         // Set min, max, and initial values
-        vmultiGauge.minValue = 0.0
-        vmultiGauge.maxValue = 100000.0
-        vmultiGauge.value = 0.0
-        vmultiGauge.secondMinValue = 0.0
-        vmultiGauge.secondMaxValue = 100000.0
-        vmultiGauge.secondValue = 0.0
-        vmultiGauge.thirdMinValue = 0.0
-        vmultiGauge.thirdMaxValue = 100000.0
-        vmultiGauge.thirdValue = 0.0
+        binding.multiGauge.minValue = 0.0
+        binding.multiGauge.maxValue = 100000.0
+        binding.multiGauge.value = 0.0
+        binding.multiGauge.secondMinValue = 0.0
+        binding.multiGauge.secondMaxValue = 100000.0
+        binding.multiGauge.secondValue = 0.0
+        binding.multiGauge.thirdMinValue = 0.0
+        binding.multiGauge.thirdMaxValue = 100000.0
+        binding.multiGauge.thirdValue = 0.0
 
 
-        return view
+        return binding.root
     }
 
     private fun updateCategorySpinner(categories: List<String>) {
         val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = categoryAdapter
+        binding.spinnerCategory.adapter = categoryAdapter
     }
 
     private fun showDatePickerDialog() {
@@ -212,7 +219,7 @@ class OperationFragment : Fragment() {
         val datePickerDialog = DatePickerDialog(requireContext(),
             { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
                 val selectedDate = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                dateEditText.setText(selectedDate)
+                binding.dateEditText.setText(selectedDate)
             },
             year,
             month,
@@ -225,12 +232,13 @@ class OperationFragment : Fragment() {
         val user = firebaseAuth.currentUser
         if (user != null) {
             val UID = user.uid
-            val amount = editTextAmount.text.toString().toDoubleOrNull()
+
+            val amount = binding.editTextAmount.text.toString().toDoubleOrNull()
             //val type = spinnerType.selectedItem.toString()
-            var isOutgoing = butttongroup.checkedRadioButtonId == R.id.buttonminus
-            val category = spinnerCategory.selectedItem.toString()
-            val description = editTextDescription.text.toString()
-            val date = dateEditText.text.toString() // Ottieni la data dal campo dateEditText
+            var isOutgoing = binding.radiogroup.checkedRadioButtonId == R.id.buttonminus
+            val category = binding.spinnerCategory.selectedItem.toString()
+            val description = binding.editTextDescription.text.toString()
+            val date = binding.dateEditText.text.toString()
 
             val currentDateTime = LocalDateTime.now()
             // Parsa la data dalla stringa 'date' e ottieni un oggetto LocalDateTime
@@ -285,8 +293,8 @@ class OperationFragment : Fragment() {
         val user = firebaseAuth.currentUser
         if (user != null) {
             val UID = user.uid
-            val selectedMonth = spinnerMonth.selectedItem.toString()
-            val selectedYear = spinnerYear.selectedItem.toString()
+            val selectedMonth = binding.spinnerMonth.selectedItem.toString()
+            val selectedYear = binding.spinnerYear.selectedItem.toString()
 
             val transactionsRef = db.collection(UID).document("Account").collection("Transaction")
 
@@ -320,23 +328,23 @@ class OperationFragment : Fragment() {
                 }
 
                 val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
-                totEntrate.text = numberFormat.format(totalPositive)
-                totUscite.text = numberFormat.format(totalNegative)
-                totDelta.text = numberFormat.format(totalPositive - totalNegative)
+                binding.totaleEntrate.text = numberFormat.format(totalPositive)
+                binding.totaleUscite.text = numberFormat.format(totalNegative)
+                binding.totaleDelta.text = numberFormat.format(totalPositive - totalNegative)
 
                 // Update gauge values proportionally
-                vmultiGauge.value = totalPositive
-                vmultiGauge.secondValue = totalNegative
-                vmultiGauge.thirdValue = totalPositive - totalNegative
+                binding.multiGauge.value = totalPositive
+                binding.multiGauge.secondValue = totalNegative
+                binding.multiGauge.thirdValue = totalPositive - totalNegative
 
                 if (totalPositive > totalNegative) {
-                    vmultiGauge.maxValue = totalPositive * 1.1
-                    vmultiGauge.secondMaxValue = totalPositive * 1.1
-                    vmultiGauge.thirdMaxValue = totalPositive * 1.1
+                    binding.multiGauge.maxValue = totalPositive * 1.1
+                    binding.multiGauge.secondMaxValue = totalPositive * 1.1
+                    binding.multiGauge.thirdMaxValue = totalPositive * 1.1
                 } else {
-                    vmultiGauge.maxValue = totalNegative * 1.1
-                    vmultiGauge.secondMaxValue = totalNegative * 1.1
-                    vmultiGauge.thirdMaxValue = totalNegative * 1.1
+                    binding.multiGauge.maxValue = totalNegative * 1.1
+                    binding.multiGauge.secondMaxValue = totalNegative * 1.1
+                    binding.multiGauge.thirdMaxValue = totalNegative * 1.1
                 }
             }.addOnFailureListener { e ->
                 Toast.makeText(context, "Failed to load transactions: ${e.message}", Toast.LENGTH_SHORT).show()
