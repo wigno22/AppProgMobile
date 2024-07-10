@@ -85,7 +85,7 @@ class OperationFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         // Initialize UI components
-        val view = inflater.inflate(R.layout.fragment_operation, container, false)
+        //val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
         /*
         editTextAmount = view.findViewById(R.id.editTextAmount)

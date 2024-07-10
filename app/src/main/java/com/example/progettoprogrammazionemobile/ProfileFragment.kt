@@ -1,4 +1,3 @@
-// ProfileFragment.kt
 package com.example.progettoprogrammazionemobile
 
 import android.content.Intent
@@ -7,27 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.progettoprogrammazionemobile.databinding.FragmentAccountBinding
 import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBinding
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class ProfileFragment : Fragment() {
-
-    /*private lateinit var Name: TextView
-    private lateinit var Surname: TextView
-    private lateinit var Email: TextView
-    private lateinit var Phone: EditText
-    private lateinit var Spesefisse: EditText
-    private lateinit var Entratefisse: EditText
-    private lateinit var Save: Button*/
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
@@ -42,16 +30,6 @@ class ProfileFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
 
-        val view = inflater.inflate(R.layout.fragment_profile, container, false)
-
-        //Name = view.findViewById(R.id.Tname)
-        //Surname = view.findViewById(R.id.Tsurname)
-        //Email = view.findViewById(R.id.Temail)
-        //Phone = view.findViewById(R.id.Tphone)
-        //Spesefisse = view.findViewById(R.id.TfixedOut)
-        //Entratefisse = view.findViewById(R.id.TfixedIn)
-        //Save = view.findViewById(R.id.Bsave)
-
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
@@ -61,7 +39,7 @@ class ProfileFragment : Fragment() {
             saveUserProfile()
         }
 
-        val signOutButton: Button = view.findViewById(R.id.sign_out)
+        val signOutButton: Button = binding.root.findViewById(R.id.sign_out)
         signOutButton.setOnClickListener {
             AuthUI.getInstance()
                 .signOut(requireContext())
@@ -79,27 +57,29 @@ class ProfileFragment : Fragment() {
         val user = auth.currentUser
         if (user != null) {
             binding.Temail.text = user.email
-            binding.Tname.text  = user.displayName?.split(" ")?.firstOrNull() ?: ""
-            binding.Tsurname.text  = user.displayName?.split(" ")?.lastOrNull() ?: ""
+            binding.Tname.text = user.displayName?.split(" ")?.firstOrNull() ?: ""
+            binding.Tsurname.text = user.displayName?.split(" ")?.lastOrNull() ?: ""
 
             firestore.collection(user.uid).document("Account").get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
-                       binding.Tphone.setText(document.getString("phone"))
+                        binding.Tphone.setText(document.getString("phone"))
 
-                        //val fixedExpenses = document.getDouble("fixed_expenses") ?: 0.0
-                        //val fixedIncome = document.getDouble("fixed_income") ?: 0.0
+                        val fixedIncomeField = document.get("fixed_income")
+                        val fixedExpensesField = document.get("fixed_expenses")
 
-                        viewModel.setFixedEntries((document.getDouble("fixed_income")).toString())
-                        viewModel.setFixedOut((document.getDouble("fixed_expenses")).toString())
+                        val fixedIncome = fixedIncomeField?.toString()?.toDoubleOrNull() ?: 0.0
+                        val fixedExpenses = fixedExpensesField?.toString()?.toDoubleOrNull() ?: 0.0
 
-                        //Spesefisse.setText(fixedExpenses.toString())
-                        //Entratefisse.setText(fixedIncome.toString())
+                        viewModel.setFixedEntries(fixedIncome.toString())
+                        viewModel.setFixedOut(fixedExpenses.toString())
 
+                        binding.TfixedIn.setText(fixedIncome.toString())
+                        binding.TfixedOut.setText(fixedExpenses.toString())
                     }
                 }
                 .addOnFailureListener { exception ->
-                    // Handle the error
+                    Toast.makeText(context, "Error loading profile", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -107,24 +87,23 @@ class ProfileFragment : Fragment() {
     private fun saveUserProfile() {
         val user = auth.currentUser
         if (user != null) {
-            val fixedExpenses = binding.TfixedOut.text.toString()
-            val fixedIncome = binding.TfixedIn.text.toString()
+            val phone = binding.Tphone.text.toString()
+            val fixedExpenses = binding.TfixedOut.text.toString().toDoubleOrNull() ?: 0.0
+            val fixedIncome = binding.TfixedIn.text.toString().toDoubleOrNull() ?: 0.0
 
             val userData = hashMapOf(
-                "phone" to binding.Tphone.toString(),
+                "phone" to phone,
                 "fixed_expenses" to fixedExpenses,
                 "fixed_income" to fixedIncome
             )
 
-            firestore.collection(user.uid).document("Account").update(userData as Map<String, Any>)
+            firestore.collection(user.uid).document("Account").set(userData)
                 .addOnSuccessListener {
-                    // Handle success
                     Toast.makeText(context, "Saved Successfully", Toast.LENGTH_SHORT).show()
-                    viewModel.setFixedEntries(fixedIncome)
-                    viewModel.setFixedOut(fixedExpenses)
+                    viewModel.setFixedEntries(fixedIncome.toString())
+                    viewModel.setFixedOut(fixedExpenses.toString())
                 }
                 .addOnFailureListener { e ->
-                    // Handle the error
                     Toast.makeText(context, "Saving Failed", Toast.LENGTH_SHORT).show()
                 }
         }
