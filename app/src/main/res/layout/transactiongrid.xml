@@ -11,7 +11,7 @@
 
         <TextView
             android:id="@+id/transactionDate"
-            android:layout_width="86dp"
+            android:layout_width="102dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Date"
@@ -29,7 +29,7 @@
 
         <TextView
             android:id="@+id/transactionAmount"
-            android:layout_width="108dp"
+            android:layout_width="91dp"
             android:layout_height="wrap_content"
             android:gravity="right"
             android:text="Amount"
@@ -38,7 +38,7 @@
 
         <TextView
             android:id="@+id/transactionCategory"
-            android:layout_width="113dp"
+            android:layout_width="85dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:gravity="left"
