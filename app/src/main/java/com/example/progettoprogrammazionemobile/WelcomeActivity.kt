@@ -52,8 +52,7 @@ class WelcomeActivity : AppCompatActivity() {
             if (user != null) {
                 user.displayName?.let { Log.e("tag", it) }
                 intent.putExtra("USER", user.displayName)
-
-            };
+            }
 
             startActivity(intent)
 
