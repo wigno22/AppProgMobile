@@ -27,6 +27,7 @@ import java.util.*
 import com.example.progettoprogrammazionemobile.databinding.FragmentAccountBinding
 import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBinding
 
+//Classe generica per ogni utente
 data class AccountDetail(
     val uid: String = "",
     val iban: String = "",
@@ -34,31 +35,34 @@ data class AccountDetail(
 )
 
 class AccountFragment : Fragment() {
+    //variabili che mi servono per accedere ad authentication e db
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
 
-   /* private lateinit var MonthSelection: Spinner
-    private lateinit var YearSelection: Spinner
-    private lateinit var gridTransactions: GridView */
-
+    //variabili per utilizzare binding e viewmodel
     private val viewModel: DataViewModel by viewModels()
     private lateinit var binding: FragmentAccountBinding
 
+    //alla creazione mi salvo db e auth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         db = Firebase.firestore
         firebaseAuth = FirebaseAuth.getInstance()
     }
 
+    //creo il conto dell'utente se è la prima volta che fa l'accesso
     private fun createAccountIfNotExists() {
         val user = firebaseAuth.currentUser
         if (user != null) {
+            //accedo alla sua raccolta (univoca) nel db
             val UID = user.uid
             val userDocRef = db.collection(UID).document("Account")
 
             userDocRef.get()
                 .addOnSuccessListener { documentSnapshot ->
                     if (!documentSnapshot.exists()) {
+
+                        //simulo la creazione di un conto (codice, iban, saldo (a 0))
                         val codiceConto = SecureRandom().nextInt(90000000) + 10000000
 
                         fun generateIban(random: SecureRandom): String {
@@ -97,15 +101,10 @@ class AccountFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
 
         val rootView = binding.root
-
-        // val textBalance: TextView = rootView.findViewById(R.id.textView)
-        //gridTransactions = rootView.findViewById(R.id.idGVDati)
-        //MonthSelection = rootView.findViewById(R.id.spinnerMonthAccount)
-        //YearSelection = rootView.findViewById(R.id.spinnerYearAccount)
-
         val user = FirebaseAuth.getInstance().currentUser
         val name = user?.displayName
 
+        //con il view model recupero nome dell' utente e lo stampo
         viewModel.setUsername("Welcome: $name")
 
         createAccountIfNotExists()
@@ -117,8 +116,10 @@ class AccountFragment : Fragment() {
                 .addOnSuccessListener { documentSnapshot ->
                     if (documentSnapshot.exists()) {
                         val balance = documentSnapshot.getDouble("balance") ?: 0.0
+                        //con viewmodel stampo anche il saldo, recuperato da db
                         viewModel.setBalance(balance)
 
+                        //cambio colore in base al valore del saldo
                         if (balance < 0.0) {
                             binding.textView.setTextColor(Color.RED)
                         } else {
@@ -134,6 +135,7 @@ class AccountFragment : Fragment() {
                     Log.e("AccountFragment", "Failed to fetch account details: ${exception.message}")
                 }
 
+            //dichiaro la lista dei mesi e l'adapter per far scegliere all'utente i mesi dei quali vuole vedere le transazioni
             val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
             val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
             monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -141,12 +143,15 @@ class AccountFragment : Fragment() {
 
             binding.spinnerMonthAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    //quando seleziono un item nello spinner filtro le transazioni
                     filterTransactions()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
+            //dichiaro la lista degli anni e l'adapter per far scegliere all'utente gli anni dei quali vuole vedere le transazioni
+            //ho una funzione che mi prende fino a 10 anni primna
             val years = getYearsListWithAll()
             val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
             yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -154,17 +159,20 @@ class AccountFragment : Fragment() {
 
             binding.spinnerYearAccount.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    //filtro transazioni
                     filterTransactions()
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>) {}
             }
 
+            //stampo transazioni
             fetchTransactions()
         } else {
             Log.e("AccountFragment", "User not authenticated")
         }
 
+        //quando cambia saldo e lo voglio stampare cambio colore a seconda del valore
         viewModel.balance.observe(viewLifecycleOwner, androidx.lifecycle.Observer { newBalance ->
             binding.textView.text = NumberFormat.getCurrencyInstance().format(newBalance)
 
@@ -185,7 +193,9 @@ class AccountFragment : Fragment() {
         return rootView
     }
 
+    //funzione per stampare le transazioni
     private fun fetchTransactions() {
+        //le transazioni sono salvate in una raccolta all'interno dell'account di ogni utente
         val user = FirebaseAuth.getInstance().currentUser
         val UID = user?.uid
         if (UID != null) {
@@ -194,11 +204,12 @@ class AccountFragment : Fragment() {
                 .orderBy("date", com.google.firebase.firestore.Query.Direction.DESCENDING)
                 .limit(150)
 
-            transactionsRef.get()
-                .addOnSuccessListener { querySnapshot ->
+
+            transactionsRef.get().addOnSuccessListener { querySnapshot ->
                     val transactions = mutableListOf<Transaction>()
                     val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                     var balance = 0.0
+                    //scorro tutti i documenti per ottenere il saldo corretto poichè sarà dato dalla somma di tutte le transazioni
                     for (document in querySnapshot.documents) {
                         var amount = document.getDouble("amount") ?: 0.0
                         val isOutgoing = document.getBoolean("outgoing") ?: false
@@ -207,12 +218,14 @@ class AccountFragment : Fragment() {
                         if (isOutgoing) amount *= -1 else amount *= 1
                         val date = document.getDate("date")?.let { dateFormat.format(it) } ?: "Unknown"
 
+                        //aggiungo tutte le transazioni ad una lista
                         transactions.add(Transaction(date, type, amount, category))
                         balance += amount
                     }
 
                     viewModel.setBalance(balance)  // Aggiorna il saldo nel ViewModel
 
+                    //per stampare correttamente tutte le transazioni passo la lista delle transazioni a questa funzione
                     val adapter = TransactionAdapter(requireContext(), transactions)
                     binding.idGVDati.adapter = adapter
                 }
@@ -222,6 +235,7 @@ class AccountFragment : Fragment() {
         }
     }
 
+    //filtro le transazioni in base alla scelta effettuata negli spinner
     private fun filterTransactions() {
         val selectedMonth = binding.spinnerMonthAccount.selectedItemPosition
         val selectedYearString =  binding.spinnerYearAccount.selectedItem.toString()
@@ -235,7 +249,8 @@ class AccountFragment : Fragment() {
                 .limit(150)
 
             if (selectedYearString == "All") {
-                // Non applicare filtri per l'anno
+                // Non applico filtri per l'anno
+                //guardo se è selezionato un mese
                 if (selectedMonth > 0) {
                     val calendar = Calendar.getInstance()
                     calendar.set(Calendar.MONTH, selectedMonth - 1)
@@ -243,7 +258,7 @@ class AccountFragment : Fragment() {
                     val startDate = calendar.time
                     calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
                     val endDate = calendar.time
-
+                    //filtro
                     transactionsRef = transactionsRef
                         .whereGreaterThanOrEqualTo("date", startDate)
                         .whereLessThanOrEqualTo("date", endDate)
@@ -271,6 +286,7 @@ class AccountFragment : Fragment() {
                 }
             }
 
+            //dopo aver filtrato per tutti i casi, salvo in transactioRef le transazioni che voglio visualizzare
             transactionsRef.get()
                 .addOnSuccessListener { querySnapshot ->
                     val transactions = mutableListOf<Transaction>()
@@ -286,6 +302,7 @@ class AccountFragment : Fragment() {
                         transactions.add(Transaction(date, type, amount, category))
                     }
 
+                    //richiamo la funzione che stampa
                     val adapter = TransactionAdapter(requireContext(), transactions)
                     binding.idGVDati.adapter = adapter
                 }
@@ -299,6 +316,6 @@ class AccountFragment : Fragment() {
 fun getYearsListWithAll(): List<String> {
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val years = (currentYear downTo (currentYear - 10)).map { it.toString() }.toMutableList()
-    years.add(0, "All")  // Aggiungi l'opzione "All" all'inizio della lista
+    years.add(0, "All")
     return years
 }

@@ -28,6 +28,7 @@ class TransactionAdapter(private val context: Context, private val transactions:
         return position.toLong()
     }
 
+    //per tutte le transazioni presenti nella lista:
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val view: View
         try {
@@ -38,6 +39,7 @@ class TransactionAdapter(private val context: Context, private val transactions:
         }
         val transaction = transactions[position]
 
+        //recupero tutti i dati necessari dagli elementi xml
         val dateTextView = view.findViewById<TextView>(R.id.transactionDate)
         val typeTextView = view.findViewById<TextView>(R.id.transactionType)
         val amountTextView = view.findViewById<TextView>(R.id.transactionAmount)
@@ -51,7 +53,7 @@ class TransactionAdapter(private val context: Context, private val transactions:
         val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
         val formattedAmount = numberFormat.format(transaction.amount)
 
-        // Set the text color based on the amount
+        // cambio colore al valore
         if (transaction.amount < 0) {
             amountTextView.setTextColor(Color.RED)
         } else {

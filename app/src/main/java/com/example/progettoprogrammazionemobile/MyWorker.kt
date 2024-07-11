@@ -12,6 +12,8 @@ import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 
+
+//il mio servizio periodico non è altro che la registrazione delle transazioni di entrate/uscite fisse
 class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
     override fun doWork(): Result {
         // Perform the background task here
@@ -19,6 +21,7 @@ class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(app
         val UID = sharedPreferences.getString("UID", null)
 
         return if (UID != null) {
+            //chiamo il servizio in background
             performBackgroundTask(UID)
             Result.success()
         } else {
@@ -38,6 +41,7 @@ class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(app
                     val amountIN = document.getDouble("fixed_income")?.toInt() ?: 0
                     val amountOUT = document.getDouble("fixed_expenses")?.toInt() ?: 0
 
+                    //metto le categorie manualmente nelle due transazioni
                     val categoryIN = "Fixed Income"
                     val categoryOUT = "Fixed Outcome"
                     val descriptionIN = "Fixed Income"
@@ -66,7 +70,7 @@ class MyWorker(appContext: Context, workerParams: WorkerParameters) : Worker(app
 
                             val currentDate = Date()
 
-                            // Aggiungere un secondo alla data corrente
+                            //per fare in modo che non si crei una sovrapposizione delle due transazioni nella registrazione sul db, aggiungo 1 secondo di ritardo
                             val calendar = Calendar.getInstance()
                             calendar.time = currentDate
                             calendar.add(Calendar.SECOND, 1)

@@ -52,22 +52,6 @@ data class UserTransaction(
 
 class OperationFragment : Fragment() {
 
-    /*private lateinit var editTextAmount: EditText
-    private lateinit var butttongroup: RadioGroup
-    private lateinit var buttonplus: RadioButton
-    private lateinit var buttonminus: RadioButton
-    private lateinit var editTextDescription: EditText
-    private lateinit var spinnerCategory: Spinner
-    private lateinit var buttonConfirm: Button
-    private lateinit var vmultiGauge: MultiGauge
-    private lateinit var totEntrate: TextView
-    private lateinit var totUscite: TextView
-    private lateinit var totDelta: TextView
-    private lateinit var spinnerMonth: Spinner
-    private lateinit var spinnerYear: Spinner
-    lateinit var dateEditText: TextInputEditText*/
-
-
 
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -84,38 +68,18 @@ class OperationFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_operation, container, false)
         binding.lifecycleOwner = viewLifecycleOwner
 
-        // Initialize UI components
-        //val view = inflater.inflate(R.layout.fragment_operation, container, false)
 
-        /*
-        editTextAmount = view.findViewById(R.id.editTextAmount)
-        butttongroup= view.findViewById(R.id.radiogroup)
-        buttonplus = view.findViewById(R.id.buttonplus)
-        buttonminus = view.findViewById(R.id.buttonminus)
-        editTextDescription = view.findViewById(R.id.editTextDescription)
-        spinnerCategory = view.findViewById(R.id.spinnerCategory)
-        buttonConfirm = view.findViewById(R.id.buttonConfirm)
-        totUscite = view.findViewById(R.id.totaleUscite)
-        totEntrate = view.findViewById(R.id.totaleEntrate)
-        totDelta = view.findViewById(R.id.totaleDelta)
-        spinnerMonth = view.findViewById(R.id.spinnerMonth)
-        spinnerYear = view.findViewById(R.id.spinnerYear)
-        dateEditText = view.findViewById(R.id.dateEditText)
-        vmultiGauge = view.findViewById(R.id.multiGauge)*/
-
-
-
-        // Ottieni la data corrente
+        // Ottengo la data corrente
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val currentDate = dateFormat.format(calendar.time)
 
-
+        //imposto data corrente come predefinita
         binding.dateEditText.setText(currentDate)
 
 
-        // Set up the spinner with categories
-        updateCategorySpinner(categoriesAll)
+        //Imposto le categorie corrette sullo spinner a seconda del radio button selezionato
+        updateCategorySpinner(categoriesIncome)
 
         binding.radiogroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
@@ -125,6 +89,7 @@ class OperationFragment : Fragment() {
         }
 
 
+        //faccio selezionare all'utente i mesi di cui vuole vedere il saldo
         val months = listOf("All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
         val monthAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, months)
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -132,6 +97,7 @@ class OperationFragment : Fragment() {
 
         binding.spinnerMonth.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                //aggiorno grafico
                 updateGauges()
             }
 
@@ -140,6 +106,7 @@ class OperationFragment : Fragment() {
             }
         }
 
+        //faccio selezionare all'utente gli anni di cui vuole vedere il saldo
         val years = getYearsList()
         val yearAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, years)
         yearAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -156,17 +123,18 @@ class OperationFragment : Fragment() {
         }
 
 
+        //gestisco cambio di data
         binding.dateEditText.setOnClickListener {
             showDatePickerDialog()
         }
 
 
-        // Confirm button to add transaction
+        // Confermo transazione
         binding.buttonConfirm.setOnClickListener {
             addTransaction()
         }
 
-        // Add color ranges to gauge
+        // aggiungo i 3 colori al gauge e range
         val positiveRange = Range().apply {
             color = Color.parseColor("#00b20b")
             from = 0.0
@@ -189,7 +157,7 @@ class OperationFragment : Fragment() {
         binding.multiGauge.addSecondRange(negativeRange) // Red for negative transactions
         binding.multiGauge.addThirdRange(deltaRange)
 
-        // Set min, max, and initial values
+        //imposto valori predefiniti dei 3 cerchi
         binding.multiGauge.minValue = 0.0
         binding.multiGauge.maxValue = 100000.0
         binding.multiGauge.value = 0.0
@@ -204,12 +172,14 @@ class OperationFragment : Fragment() {
         return binding.root
     }
 
+   //funzione per impostare la categoria in base al button
     private fun updateCategorySpinner(categories: List<String>) {
         val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinnerCategory.adapter = categoryAdapter
     }
 
+    //selezione data
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
         val year = calendar.get(Calendar.YEAR)
@@ -225,16 +195,16 @@ class OperationFragment : Fragment() {
             month,
             day
         )
-
         datePickerDialog.show()
     }
+
+    //registro transazione una volta confermata
     private fun addTransaction() {
         val user = firebaseAuth.currentUser
         if (user != null) {
             val UID = user.uid
 
             val amount = binding.editTextAmount.text.toString().toDoubleOrNull()
-            //val type = spinnerType.selectedItem.toString()
             var isOutgoing = binding.radiogroup.checkedRadioButtonId == R.id.buttonminus
             val category = binding.spinnerCategory.selectedItem.toString()
             val description = binding.editTextDescription.text.toString()
@@ -250,7 +220,6 @@ class OperationFragment : Fragment() {
 
 
             if (amount != null && category.isNotEmpty()) {
-                //isOutgoing = type == "-"
                 val userTransaction = UserTransaction(
                     uid = UID,
                     amount = amount,
@@ -289,6 +258,7 @@ class OperationFragment : Fragment() {
         }
     }
 
+    //funzione per aggiornare grafico
     private fun updateGauges() {
         val user = firebaseAuth.currentUser
         if (user != null) {
@@ -298,6 +268,7 @@ class OperationFragment : Fragment() {
 
             val transactionsRef = db.collection(UID).document("Account").collection("Transaction")
 
+            //in base alla scelta nello spinner seleziono su quali transazioni calcolare saldo
             val query = if (selectedMonth == "All" && selectedYear == "All") {
                 transactionsRef
             } else if (selectedMonth == "All") {
@@ -320,6 +291,7 @@ class OperationFragment : Fragment() {
 
                 for (document in documents) {
                     val transaction = document.toObject(UserTransaction::class.java)
+                    //se outgoing è true aggiungo il valore della transazione a quelle negative viceversa se è false
                     if (transaction.outgoing) {
                         totalNegative += transaction.amount
                     } else {
@@ -327,12 +299,13 @@ class OperationFragment : Fragment() {
                     }
                 }
 
+                //stampo il valore del amount positivo, negativo e della differenza
                 val numberFormat = NumberFormat.getNumberInstance(Locale.ITALY)
                 binding.totaleEntrate.text = numberFormat.format(totalPositive)
                 binding.totaleUscite.text = numberFormat.format(totalNegative)
                 binding.totaleDelta.text = numberFormat.format(totalPositive - totalNegative)
 
-                // Update gauge values proportionally
+                // Grandezza del cerchio colorato è proporzionale al valore più grande
                 binding.multiGauge.value = totalPositive
                 binding.multiGauge.secondValue = totalNegative
                 binding.multiGauge.thirdValue = totalPositive - totalNegative
@@ -353,6 +326,7 @@ class OperationFragment : Fragment() {
     }
 
 
+    //funzioni per la gestione della selezione di mesi e anni
     private fun getStartOfMonth(month: Int, year: Int): Date {
         val calendar = Calendar.getInstance().apply {
             set(Calendar.YEAR, year)
@@ -405,6 +379,7 @@ class OperationFragment : Fragment() {
         return calendar.time
     }
 
+    //lista anni
     fun getYearsList(): List<String> {
         val currentYear = Calendar.getInstance().get(Calendar.YEAR)
         return listOf("All") + (currentYear downTo (currentYear - 10)).map { it.toString() }

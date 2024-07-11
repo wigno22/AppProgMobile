@@ -19,6 +19,7 @@ class ProfileFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var firestore: FirebaseFirestore
+
     private val viewModel: DataViewModel by viewModels()
     private lateinit var binding: FragmentProfileBinding
 
@@ -33,17 +34,21 @@ class ProfileFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
         firestore = FirebaseFirestore.getInstance()
 
+        //alla creazione carico il profilo dell'utente
         loadUserProfile()
 
         binding.Bsave.setOnClickListener {
+           //bottone per salvare modifiche
             saveUserProfile()
         }
 
+        //gestione del bottone di logout
         val signOutButton: Button = binding.root.findViewById(R.id.sign_out)
         signOutButton.setOnClickListener {
             AuthUI.getInstance()
                 .signOut(requireContext())
                 .addOnCompleteListener {
+                    //torno a welcome activity
                     val intent = Intent(requireContext(), WelcomeActivity::class.java)
                     startActivity(intent)
                     requireActivity().finish()
@@ -53,9 +58,11 @@ class ProfileFragment : Fragment() {
         return binding.root
     }
 
+    //carico profilo
     private fun loadUserProfile() {
         val user = auth.currentUser
         if (user != null) {
+            //stampo nome, cognome, email presi da auth
             binding.Temail.text = user.email
             binding.Tname.text = user.displayName?.split(" ")?.firstOrNull() ?: ""
             binding.Tsurname.text = user.displayName?.split(" ")?.lastOrNull() ?: ""
@@ -63,17 +70,22 @@ class ProfileFragment : Fragment() {
             firestore.collection(user.uid).document("Account").get()
                 .addOnSuccessListener { document ->
                     if (document != null) {
+                        //numero di telefono, income e outcome sono opzionali
                         binding.Tphone.setText(document.getString("phone"))
 
+                        //recupero il dato da db
                         val fixedIncomeField = document.get("fixed_income")
                         val fixedExpensesField = document.get("fixed_expenses")
+
 
                         val fixedIncome = fixedIncomeField?.toString()?.toDoubleOrNull() ?: 0.0
                         val fixedExpenses = fixedExpensesField?.toString()?.toDoubleOrNull() ?: 0.0
 
+                        //salvo il dato
                         viewModel.setFixedEntries(fixedIncome.toString())
                         viewModel.setFixedOut(fixedExpenses.toString())
 
+                        //scrivo il valore
                         binding.TfixedIn.setText(fixedIncome.toString())
                         binding.TfixedOut.setText(fixedExpenses.toString())
                     }
@@ -84,9 +96,11 @@ class ProfileFragment : Fragment() {
         }
     }
 
+
     private fun saveUserProfile() {
         val user = auth.currentUser
         if (user != null) {
+            //prendo valori nei campi e aggiorno su db
             val phone = binding.Tphone.text.toString()
             val fixedExpenses = binding.TfixedOut.text.toString().toDoubleOrNull() ?: 0.0
             val fixedIncome = binding.TfixedIn.text.toString().toDoubleOrNull() ?: 0.0
@@ -97,6 +111,7 @@ class ProfileFragment : Fragment() {
                 "fixed_income" to fixedIncome
             )
 
+            //accedo a cartella su db per salvare dati
             firestore.collection(user.uid).document("Account").set(userData)
                 .addOnSuccessListener {
                     Toast.makeText(context, "Saved Successfully", Toast.LENGTH_SHORT).show()
