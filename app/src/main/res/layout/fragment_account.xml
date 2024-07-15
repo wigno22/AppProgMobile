@@ -132,8 +132,8 @@
 
         <GridView
             android:id="@+id/idGVDati"
-            android:layout_width="match_parent"
-            android:layout_height="460dp"
+            android:layout_width="373dp"
+            android:layout_height="434dp"
             android:numColumns="1" />
     </LinearLayout>
 </layout>
