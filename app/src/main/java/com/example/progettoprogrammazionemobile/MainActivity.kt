@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         //per ogni utente faccio partire un servizio periodico univoco
         fun startWorkerForUser(context: Context, UID: String) {
 
+            //creo file di tipo persistente con chiave valore l'uid dell'utente, da passare al worker
             val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
             with(sharedPreferences.edit()) {
                 putString("UID", UID)

@@ -14,6 +14,7 @@ import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBindi
 import com.firebase.ui.auth.AuthUI
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class ProfileFragment : Fragment() {
 
@@ -112,7 +113,7 @@ class ProfileFragment : Fragment() {
             )
 
             //accedo a cartella su db per salvare dati
-            firestore.collection(user.uid).document("Account").set(userData)
+            firestore.collection(user.uid).document("Account").set(userData, SetOptions.merge())
                 .addOnSuccessListener {
                     Toast.makeText(context, "Saved Successfully", Toast.LENGTH_SHORT).show()
                     viewModel.setFixedEntries(fixedIncome.toString())
