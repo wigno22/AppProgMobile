@@ -72,5 +72,19 @@ dependencies {
     implementation ("com.github.Gruzer:simple-gauge-android:0.3.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
 
+    /* add the dependency for the Vertex AI SDK for Android
+    implementation("com.google.firebase:firebase-vertexai:16.0.0-alpha02")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+
+
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
+    implementation ("com.google.firebase:firebase-auth:21.0.3")
+    implementation ("com.google.firebase:firebase-messaging:23.0.0")
+    implementation ("com.google.firebase:firebase-firestore:24.0.0")
+    implementation ("com.google.firebase:firebase-vertex-ai:1.0.0")*/
 
 }

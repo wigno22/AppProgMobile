@@ -21,8 +21,10 @@ import androidx.work.WorkManager
 import androidx.work.WorkRequest
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
+//import com.google.firebase.vertexai.vertexAI
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
@@ -30,6 +32,15 @@ import java.util.concurrent.TimeUnit
 class profilefrg: Fragment(R.layout.fragment_profile)
 class accountfrg: Fragment(R.layout.fragment_account)
 class operationfrg: Fragment(R.layout.fragment_operation)
+class investmentfrg: Fragment(R.layout.fragment_investment)
+
+// Initialize the Vertex AI service and the generative model
+// Specify a model that supports your use case
+// Gemini 1.5 Pro is versatile and can accept both text-only and multimodal prompt inputs
+//val generativeModel = Firebase.vertexAI.generativeModel("gemini-1.5-pro-preview-0409")
+
+
+
 class MainActivity : AppCompatActivity() {
 
 
@@ -37,6 +48,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+
 
         val firebaseAuth = FirebaseAuth.getInstance()
         val user = firebaseAuth.currentUser
@@ -76,52 +89,51 @@ class MainActivity : AppCompatActivity() {
             // Get new FCM registration token
             val token = task.result
             // Log and toast
-            Log.d("FCMExample", token)
+            Log.e("FCMExample", token)
             //Toast.makeText(baseContext, token, Toast.LENGTH_SHORT).show()
         })
 
     }
 
-        //per ogni utente faccio partire un servizio periodico univoco
-        fun startWorkerForUser(context: Context, UID: String) {
+    //per ogni utente faccio partire un servizio periodico univoco
+    fun startWorkerForUser(context: Context, UID: String) {
 
-            //creo file di tipo persistente con chiave valore l'uid dell'utente, da passare al worker
-            val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-            with(sharedPreferences.edit()) {
-                putString("UID", UID)
-                apply()
-            }
-
-
-            val workManager = WorkManager.getInstance(this)
-            //workManager.cancelAllWork()
-            //val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
-
-            // Creo il PeriodicWorkRequest di 30 giorni
-            val myWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 30, TimeUnit.DAYS).build()
-
-
-            //metto in coda il WorkRequest in modo unico
-            workManager.enqueueUniquePeriodicWork(
-                "Mywork_$UID",
-                ExistingPeriodicWorkPolicy.KEEP, // Mantiene il lavoro esistente e non crea un nuovo lavoro
-                myWorkRequest
-            )
-
-
-            // Osserva lo stato del lavoro
-            workManager.getWorkInfoByIdLiveData(myWorkRequest.id)
-                .observe(this, Observer { workInfo ->
-                    if (workInfo != null && workInfo.state.isFinished) {
-                        // Lavoro terminato con successo
-                        if (workInfo.state == WorkInfo.State.SUCCEEDED) {
-                            Log.d("MainActivity", "Work completed successfully")
-                        } else if (workInfo.state == WorkInfo.State.FAILED) {
-                            Log.d("MainActivity", "Work failed")
-                        }
-                    }
-                })
+        //creo file di tipo persistente con chiave valore l'uid dell'utente, da passare al worker
+        val sharedPreferences = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("UID", UID)
+            apply()
         }
 
-}
 
+        val workManager = WorkManager.getInstance(this)
+        //workManager.cancelAllWork()
+        //val myWorkRequest: WorkRequest = OneTimeWorkRequestBuilder<MyWorker>().build()
+
+        // Creo il PeriodicWorkRequest di 30 giorni
+        val myWorkRequest: PeriodicWorkRequest = PeriodicWorkRequest.Builder(MyWorker::class.java, 30, TimeUnit.DAYS).build()
+
+
+        //metto in coda il WorkRequest in modo unico
+        workManager.enqueueUniquePeriodicWork(
+            "Mywork_$UID",
+            ExistingPeriodicWorkPolicy.KEEP, // Mantiene il lavoro esistente e non crea un nuovo lavoro
+            myWorkRequest
+        )
+
+
+        // Osserva lo stato del lavoro
+        workManager.getWorkInfoByIdLiveData(myWorkRequest.id)
+            .observe(this, Observer { workInfo ->
+                if (workInfo != null && workInfo.state.isFinished) {
+                    // Lavoro terminato con successo
+                    if (workInfo.state == WorkInfo.State.SUCCEEDED) {
+                        Log.d("MainActivity", "Work completed successfully")
+                    } else if (workInfo.state == WorkInfo.State.FAILED) {
+                        Log.d("MainActivity", "Work failed")
+                    }
+                }
+            })
+    }
+
+}

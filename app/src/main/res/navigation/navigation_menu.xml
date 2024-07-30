@@ -14,6 +14,9 @@
         <action
             android:id="@+id/action_accountFragment_to_profileFragment"
             app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_account_to_navigation_investment"
+            app:destination="@id/navigation_investment" />
     </fragment>
     <fragment
         android:id="@+id/navigation_operations"
@@ -24,6 +27,23 @@
             app:destination="@id/navigation_account" />
         <action
             android:id="@+id/action_operationFragment_to_profileFragment"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_operations_to_navigation_investment"
+            app:destination="@id/navigation_investment" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_investment"
+        android:name="com.example.progettoprogrammazionemobile.investmentfrg"
+        android:label="investmentfrg" >
+        <action
+            android:id="@+id/action_operationFragment_to_accountFragment"
+            app:destination="@id/navigation_account" />
+        <action
+            android:id="@+id/action_navigation_investment_to_navigation_operations"
+            app:destination="@id/navigation_operations" />
+        <action
+            android:id="@+id/action_navigation_investment_to_navigation_profile"
             app:destination="@id/navigation_profile" />
     </fragment>
     <fragment
@@ -36,5 +56,8 @@
         <action
             android:id="@+id/action_profileFragment_to_accountFragment"
             app:destination="@id/navigation_account" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_investment"
+            app:destination="@id/navigation_investment" />
     </fragment>
 </navigation>

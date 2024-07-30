@@ -13,8 +13,8 @@
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host"
         android:name="androidx.navigation.fragment.NavHostFragment"
-        android:layout_width="386dp"
-        android:layout_height="698dp"
+        android:layout_width="393dp"
+        android:layout_height="719dp"
         app:defaultNavHost="true"
         app:navGraph="@navigation/navigation_menu"
         tools:ignore="MissingConstraints" />
@@ -36,4 +36,3 @@
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
