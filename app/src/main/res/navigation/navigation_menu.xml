@@ -34,8 +34,8 @@
     </fragment>
     <fragment
         android:id="@+id/navigation_investment"
-        android:name="com.example.progettoprogrammazionemobile.investmentfrg"
-        android:label="investmentfrg" >
+        android:name="com.example.progettoprogrammazionemobile.InvestmentFragment"
+        android:label="InvestmentFragment" >
         <action
             android:id="@+id/action_operationFragment_to_accountFragment"
             app:destination="@id/navigation_account" />

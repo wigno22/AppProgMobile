@@ -10,9 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.GridView
-import android.widget.Spinner
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,7 +22,7 @@ import java.security.SecureRandom
 import java.text.SimpleDateFormat
 import java.util.*
 import com.example.progettoprogrammazionemobile.databinding.FragmentAccountBinding
-import com.example.progettoprogrammazionemobile.databinding.FragmentProfileBinding
+
 
 //Classe generica per ogni utente
 data class AccountDetail(

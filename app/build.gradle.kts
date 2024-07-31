@@ -55,7 +55,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.activity:activity-ktx:$activity_version")
     implementation("com.google.firebase:firebase-firestore")
-    implementation ("com.google.firebase:firebase-firestore-ktx:23.0.0")
+    //implementation ("com.google.firebase:firebase-firestore-ktx:23.0.0")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
     implementation("com.google.firebase:firebase-messaging")
     implementation("androidx.core:core-ktx:1.13.1")
@@ -71,6 +71,9 @@ dependencies {
     implementation ("com.github.Pygmalion69:Gauge:1.5.2")
     implementation ("com.github.Gruzer:simple-gauge-android:0.3.1")
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    implementation ("com.google.firebase:firebase-firestore-ktx:24.1.2")
+    implementation ("com.google.firebase:firebase-auth-ktx:21.1.0")
 
     /* add the dependency for the Vertex AI SDK for Android
     implementation("com.google.firebase:firebase-vertexai:16.0.0-alpha02")
