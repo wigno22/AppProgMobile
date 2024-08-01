@@ -1,3 +1,4 @@
+// InvestmentFragment.kt
 package com.example.progettoprogrammazionemobile
 
 import android.os.Bundle
@@ -7,18 +8,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import okhttp3.*
+import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
 import java.text.DecimalFormat
 import java.util.*
-
 
 class InvestmentFragment : Fragment() {
 
@@ -35,6 +36,8 @@ class InvestmentFragment : Fragment() {
     private lateinit var azioniFattoreRischioTextView: TextView
     private lateinit var fondiFattoreRischioTextView: TextView
     private lateinit var liquiditaFattoreRischioTextView: TextView
+    private lateinit var miglioriRecyclerView: RecyclerView // Aggiunto RecyclerView
+    private lateinit var switchButton: Button // Aggiunto pulsante per cambiare visualizzazione
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -42,6 +45,7 @@ class InvestmentFragment : Fragment() {
     private var azioniFattoreRischio: Int = 0
     private var fondiFattoreRischio: Int = 0
     private var liquiditaFattoreRischio: Int = 0
+    private var showingStocks = true // Stato della visualizzazione
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,12 +65,15 @@ class InvestmentFragment : Fragment() {
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
         fondiFattoreRischioTextView = view.findViewById(R.id.fondi_fattore_rischio)
         liquiditaFattoreRischioTextView = view.findViewById(R.id.liquidita_fattore_rischio)
+        miglioriRecyclerView = view.findViewById(R.id.migliori_recyclerview) // Inizializzare RecyclerView
+        switchButton = view.findViewById(R.id.switch_button) // Inizializzare pulsante di switch
 
         setupPeriodoSpinner()
+        setupRecyclerView()
         fetchSaldoMedioTrimestrale()
-        fetchFattoriRischioOnline()
+        fetchMiglioriAzioni()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
-
+        switchButton.setOnClickListener { onSwitchButtonClick() } // Impostare listener per il pulsante di switch
 
         return view
     }
@@ -76,6 +83,10 @@ class InvestmentFragment : Fragment() {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, periodi)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         periodoSpinner.adapter = adapter
+    }
+
+    private fun setupRecyclerView() {
+        miglioriRecyclerView.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun fetchSaldoMedioTrimestrale() {
@@ -121,103 +132,138 @@ class InvestmentFragment : Fragment() {
         }
     }
 
-    private fun fetchFattoriRischioOnline() {
+    private fun fetchMiglioriAzioni() {
+        val apiKey = "KMD5G7J3GYUXUOLA" // Inserisci la tua chiave API Alpha Vantage
         val client = OkHttpClient()
         val request = Request.Builder()
-            .url("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&apikey=KMD5G7J3GYUXUOLA")
+            .url("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=$apiKey")
             .build()
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                Log.e("InvestimentiFragment", "Failed to fetch risk factors: ${e.message}")
+                e.printStackTrace()
+                Log.e("InvestmentFragment", "Failed to fetch migliori azioni: ${e.message}")
             }
 
             override fun onResponse(call: Call, response: Response) {
-                response.body?.string()?.let {
-                    val json = JSONObject(it)
-                    val timeSeries = json.getJSONObject("Time Series (Daily)")
-                    val latestEntry = timeSeries.keys().next()
-                    val latestData = timeSeries.getJSONObject(latestEntry)
-                    val closingPrice = latestData.getDouble("4. close")
+                if (response.isSuccessful) {
+                    response.body?.let { responseBody ->
+                        val json = responseBody.string()
+                        Log.d("InvestmentFragment", "API Response: $json")
 
-                    // Simulate realistic risk factors (e.g., percentage-based)
-                    azioniFattoreRischio = (closingPrice * 0.02).toInt() // Example calculation
-                    fondiFattoreRischio = (closingPrice * 0.01).toInt() // Example calculation
-                    liquiditaFattoreRischio = (closingPrice * 0.005).toInt() // Example calculation
+                        val jsonObject = JSONObject(json)
+                        val timeSeries = jsonObject.getJSONObject("Time Series (5min)")
+                        val keys = timeSeries.keys()
+                        val itemList = mutableListOf<MiglioreItem>()
 
-                    activity?.runOnUiThread {
-                        azioniFattoreRischioTextView.text = "Fattore di rischio: ${azioniFattoreRischio}%"
-                        fondiFattoreRischioTextView.text = "Fattore di rischio: ${fondiFattoreRischio}%"
-                        liquiditaFattoreRischioTextView.text = "Fattore di rischio: ${liquiditaFattoreRischio}%"
+                        var count = 0
+                        while (keys.hasNext() && count < 5) {
+                            val key = keys.next()
+                            val data = timeSeries.getJSONObject(key)
+                            val name = "IBM"
+                            val value = data.getString("4. close")
+                            itemList.add(MiglioreItem(name, value))
+                            count++
+                        }
+
+                        requireActivity().runOnUiThread {
+                           // Log.d("InvestmentFragment", "Updating RecyclerView with ${itemList.size} items")
+                            miglioriRecyclerView.adapter = MiglioriAdapter(itemList)
+                        }
                     }
+                } else {
+                    Log.e("InvestmentFragment", "API Response not successful: ${response.code}")
                 }
             }
         })
     }
 
-    private fun onConfirmButtonClick() {
-        val cifraInvestimentoStr = cifraInvestimentoEditText.text.toString()
-        if (cifraInvestimentoStr.isBlank()) {
-            Toast.makeText(requireContext(), "Inserisci una cifra da investire", Toast.LENGTH_SHORT).show()
-            return
-        }
 
-        val cifraInvestimento = cifraInvestimentoStr.toDouble()
-        if (cifraInvestimento > saldoMedio) {
-            Toast.makeText(requireContext(), "La cifra da investire non può superare il saldo medio", Toast.LENGTH_SHORT).show()
-            return
-        }
 
-        val selectedRischioId = radioGroupRischio.checkedRadioButtonId
-        if (selectedRischioId == -1) {
-            Toast.makeText(requireContext(), "Seleziona un livello di rischio", Toast.LENGTH_SHORT).show()
-            return
-        }
+    private fun fetchMiglioriFondi() {
+        val apiKey = "cqlpqj1r01qoqqs7o4c0cqlpqj1r01qoqqs7o4cg" // Inserisci la tua chiave API Finnhub
+        val client = OkHttpClient()
 
-        val distribuzione = when (selectedRischioId) {
-            R.id.radio_basso -> Triple(0.1, 0.2, 0.7)
-            R.id.radio_medio -> Triple(0.3, 0.4, 0.3)
-            R.id.radio_alto -> Triple(0.5, 0.4, 0.1)
-            else -> Triple(0.0, 0.0, 0.0)
-        }
+        // Modifica l'URL per utilizzare l'endpoint che fornisce una lista di fondi o aziende
+        val request = Request.Builder()
+            .url("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=$apiKey") // Esempio di endpoint, sostituisci con quello corretto
+            .build()
 
-        val azioniCifra = cifraInvestimento * distribuzione.first
-        val fondiCifra = cifraInvestimento * distribuzione.second
-        val liquiditaCifra = cifraInvestimento * distribuzione.third
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+                Log.e("InvestmentFragment", "Failed to fetch data: ${e.message}")
+            }
 
-        azioniCifraTextView.text = azioniCifra.toString()
-        fondiCifraTextView.text = fondiCifra.toString()
-        liquiditaCifraTextView.text = liquiditaCifra.toString()
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    response.body?.let { responseBody ->
+                        val json = responseBody.string()
+                        Log.d("InvestmentFragment", "API Response: $json")
 
-        val periodo = periodoSpinner.selectedItem.toString()
-        val previsioneRendimento = calcolaRendimento(azioniCifra, fondiCifra, periodo)
-        previsioneRendimentoTextView.text = previsioneRendimento
+                        try {
+                            val jsonArray = JSONArray(json)
+                            val itemList = mutableListOf<MiglioreItem>()
+
+                            // Limita il numero di elementi a 5
+                            val limit = minOf(5, jsonArray.length())
+                            for (i in 0 until limit) {
+                                val item = jsonArray.getJSONObject(i)
+                                val name = item.getString("description") // Usa la chiave corretta per il nome del fondo o azienda
+                                val symbol = item.getString("symbol") // Usa la chiave corretta per il simbolo
+
+                                itemList.add(MiglioreItem(name, symbol))
+                            }
+
+                            requireActivity().runOnUiThread {
+                                Log.d("InvestmentFragment", "Updating RecyclerView with ${itemList.size} items")
+                                miglioriRecyclerView.adapter = MiglioriAdapter(itemList)
+                            }
+                        } catch (e: JSONException) {
+                            Log.e("InvestmentFragment", "Errore durante il parsing del JSON: ${e.message}")
+                        }
+                    }
+                } else {
+                    Log.e("InvestmentFragment", "API Response not successful: ${response.code}")
+                }
+            }
+        })
     }
 
-    private fun calcolaRendimento(azioniCifra: Double, fondiCifra: Double, periodo: String): String {
-        val rendimentoAzioni = when (periodo) {
-            "6 mesi" -> 0.05
-            "12 mesi" -> 0.1
-            "18 mesi" -> 0.15
-            "24 mesi" -> 0.2
-            "36 mesi" -> 0.3
-            else -> 0.0
+
+
+
+
+    private fun onConfirmButtonClick() {
+        val cifraInvestimento = cifraInvestimentoEditText.text.toString().toDoubleOrNull() ?: return
+        val selectedPeriodo = periodoSpinner.selectedItem.toString()
+        val periodo = selectedPeriodo.split(" ")[0].toInt()
+
+        val rischioId = radioGroupRischio.checkedRadioButtonId
+        val fattoreRischio = when (rischioId) {
+            R.id.rischio_basso -> 1
+            R.id.rischio_medio -> 2
+            R.id.rischio_alto -> 3
+            else -> 1
         }
 
-        val rendimentoFondi = when (periodo) {
-            "6 mesi" -> 0.03
-            "12 mesi" -> 0.06
-            "18 mesi" -> 0.09
-            "24 mesi" -> 0.12
-            "36 mesi" -> 0.18
-            else -> 0.0
+        val rendimentoPrevisto = calcolaRendimentoPrevisto(cifraInvestimento, periodo, fattoreRischio)
+        previsioneRendimentoTextView.text = rendimentoPrevisto.toString()
+    }
+
+    private fun onSwitchButtonClick() {
+        showingStocks = !showingStocks
+        if (showingStocks) {
+            fetchMiglioriAzioni()
+            switchButton.text = "Mostra Fondi"
+        } else {
+            fetchMiglioriFondi()
+            switchButton.text = "Mostra Azioni"
         }
+    }
 
-        val rendimentoTotaleAzioni = azioniCifra * (1 + rendimentoAzioni)
-        val rendimentoTotaleFondi = fondiCifra * (1 + rendimentoFondi)
-        val rendimentoTotale = rendimentoTotaleAzioni + rendimentoTotaleFondi
-
-        val decimalFormat = DecimalFormat("#.00")
-        return "Rendimento previsto: €${decimalFormat.format(rendimentoTotale)}"
+    private fun calcolaRendimentoPrevisto(cifra: Double, periodo: Int, rischio: Int): Double {
+        // Placeholder per il calcolo effettivo del rendimento previsto
+        return cifra * periodo * rischio / 100.0
     }
 }

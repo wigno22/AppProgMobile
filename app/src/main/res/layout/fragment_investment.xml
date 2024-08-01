@@ -52,21 +52,21 @@
             android:orientation="horizontal">
 
             <RadioButton
-                android:id="@+id/radio_basso"
+                android:id="@+id/rischio_basso"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Basso"
                 android:textSize="17dp"/>
 
             <RadioButton
-                android:id="@+id/radio_medio"
+                android:id="@+id/rischio_medio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Medio"
                 android:textSize="17dp"/>
 
             <RadioButton
-                android:id="@+id/radio_alto"
+                android:id="@+id/rischio_alto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Alto"
@@ -232,6 +232,25 @@
             android:layout_marginTop="15dp"
             android:textSize="17dp"/>
 
+        <!-- Nuova sezione per le migliori azioni e fondi -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+
+            <Button
+                android:id="@+id/switch_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mostra Fondi" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/migliori_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

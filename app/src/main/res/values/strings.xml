@@ -3,4 +3,7 @@
     <string name="account">Account</string>
     <string name="profile">Profile</string>
     <string name="operation">Operation</string>
+    <string name="investment">Investment</string>
+    <string name="mostra_fondi">Mostra Fondi</string>
+    <string name="mostra_azioni">Mostra Azioni</string>
 </resources>
