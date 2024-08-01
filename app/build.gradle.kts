@@ -75,6 +75,16 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore-ktx:24.1.2")
     implementation ("com.google.firebase:firebase-auth-ktx:21.1.0")
 
+
+    implementation ("androidx.viewpager2:viewpager2:1.0.0")
+
+    implementation ("com.google.android.material:material:1.7.0")
+    // OkHttp e JSON parsing
+    implementation ("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation ("org.json:json:20210307")
+
+    implementation ("androidx.recyclerview:recyclerview:1.3.0")
+
     /* add the dependency for the Vertex AI SDK for Android
     implementation("com.google.firebase:firebase-vertexai:16.0.0-alpha02")
 

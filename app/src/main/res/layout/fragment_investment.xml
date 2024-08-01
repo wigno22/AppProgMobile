@@ -1,222 +1,237 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Testo per il saldo medio e campo di input -->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/saldo_medio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Il tuo saldo medio degli ultimi 3 mesi è:"
-            android:textSize="17dp"/>
 
-        <EditText
-            android:id="@+id/saldo_cifra"
+        <!-- Testo per il saldo medio e campo di input -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:inputType="numberDecimal"
-            android:hint=""
-            android:textSize="17dp"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-    <!-- Scelta del livello di rischio -->
-    <TextView
-        android:id="@+id/livello_rischio_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Seleziona il livello di rischio:"
-        android:layout_marginTop="16dp"
-        android:textSize="17dp"/>
+            <TextView
+                android:id="@+id/saldo_medio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Saldo Trimestrale:"
+                android:textSize="17dp"/>
 
+            <TextView
+                android:id="@+id/saldo_cifra"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType="numberDecimal"
+                android:hint=""
+                android:textColor="@color/colorNeutral"
+                android:textSize="17dp"/>
+        </LinearLayout>
 
-
-    <RadioGroup
-        android:id="@+id/radio_group_rischio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center_horizontal"
-        android:orientation="horizontal"> <!-- Aggiungi questa riga -->
-
-        <RadioButton
-            android:id="@+id/radio_basso"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Basso"
-            android:textSize="17sp"/>
-
-        <RadioButton
-            android:id="@+id/radio_medio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Medio"
-            android:textSize="17sp"/>
-
-        <RadioButton
-            android:id="@+id/radio_alto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Alto"
-            android:textSize="17sp"/>
-    </RadioGroup>
-
-    <!-- Testo per la cifra da investire e campo di input -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp">
-
+        <!-- Scelta del livello di rischio -->
         <TextView
-            android:id="@+id/cifra_investire_label"
+            android:id="@+id/livello_rischio_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Inserisci la cifra che desideri investire:"
+            android:text="Seleziona il livello di rischio:"
+            android:layout_marginTop="16dp"
             android:textSize="17dp"/>
 
-        <EditText
-            android:id="@+id/cifra_investimento"
+        <RadioGroup
+            android:id="@+id/radio_group_rischio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_basso"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Basso"
+                android:textSize="17dp"/>
+
+            <RadioButton
+                android:id="@+id/radio_medio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medio"
+                android:textSize="17dp"/>
+
+            <RadioButton
+                android:id="@+id/radio_alto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Alto"
+                android:textSize="17dp"/>
+        </RadioGroup>
+
+        <!-- Testo per la cifra da investire e campo di input -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:inputType="numberDecimal"
-            android:hint="Inserisci cifra"
-            android:textSize="12dp"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="14dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp">
+            <TextView
+                android:id="@+id/cifra_investire_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Quantità da investire:"
+                android:textSize="17dp" />
 
-        <TextView
-            android:id="@+id/data_investire_label"
-            android:layout_width="289dp"
-            android:layout_height="wrap_content"
-            android:text="Per quanto tempo vuoi investire:"
-            android:textSize="17dp" />
+            <EditText
+                android:id="@+id/cifra_investimento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType="numberDecimal"
+                android:hint=" "
+                android:textSize="17dp"/>
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/data_investimento"
+        <!-- Spinner per la durata dell'investimento -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:inputType="numberDecimal"
-            android:hint="Inserisci cifra"
-            android:textSize="12dp"/>
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
 
-    <!-- Opzioni di investimento -->
-    <!-- Azioni -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp">
+            <TextView
+                android:id="@+id/data_investire_label"
+                android:layout_width="224dp"
+                android:layout_height="wrap_content"
+                android:text="Durata Investimento:"
+                android:textSize="17dp" />
 
-        <TextView
-            android:id="@+id/azioni_label"
-            android:layout_width="69dp"
+            <Spinner
+                android:id="@+id/periodo_spinner"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:gravity="right" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Azioni:"
-            android:textSize="17dp" />
-
-        <EditText
-            android:id="@+id/azioni_cifra"
-            android:layout_width="97dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:hint=" "
-            android:inputType="numberDecimal"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/azioni_fattore_rischio"
-            android:layout_width="178dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Fattore di rischio: 20%"
-            android:textSize="17dp" />
-    </LinearLayout>
-
-    <!-- Fondi -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp"
-        >
-
-        <TextView
-            android:id="@+id/fondi_label"
-            android:layout_width="68dp"
-            android:layout_height="wrap_content"
-            android:text="Fondi:"
-            android:textSize="17dp" />
-
-        <EditText
-            android:id="@+id/fondi_cifra"
-            android:layout_width="98dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:hint=" "
-            android:inputType="numberDecimal"
-            android:textSize="12dp" />
-
-        <TextView
-            android:id="@+id/fondi_fattore_rischio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Fattore di rischio: 30%"
-            android:layout_marginStart="8dp"
-            android:textSize="17dp"/>
-    </LinearLayout>
-
-    <!-- Liquidità -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginTop="16dp">
-
-        <TextView
-            android:id="@+id/liquidita_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Liquidità:"
+            android:layout_marginTop="24dp"
+            android:text="Visualizza Piano d'investimento"
             android:textSize="17dp"/>
 
-        <EditText
-            android:id="@+id/liquidita_cifra"
-            android:layout_width="97dp"
+        <!-- Azioni -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:hint=" "
-            android:inputType="numberDecimal"
-            android:textSize="12dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
 
-        <TextView
-            android:id="@+id/liquidita_fattore_rischio"
-            android:layout_width="179dp"
+            <TextView
+                android:id="@+id/azioni_label"
+                android:layout_width="69dp"
+                android:layout_height="wrap_content"
+                android:text="Azioni:"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/azioni_cifra"
+                android:layout_width="97dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="____________ "
+                android:inputType="numberDecimal"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/azioni_fattore_rischio"
+                android:layout_width="178dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="17dp" />
+        </LinearLayout>
+
+        <!-- Fondi -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Fattore di rischio: 0%"
-            android:textSize="17dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/fondi_label"
+                android:layout_width="68dp"
+                android:layout_height="wrap_content"
+                android:text="Fondi:"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/fondi_cifra"
+                android:layout_width="98dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="____________ "
+                android:inputType="numberDecimal"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/fondi_fattore_rischio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="17dp"/>
+        </LinearLayout>
+
+        <!-- Liquidità -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/liquidita_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liquidità:"
+                android:textSize="17dp"/>
+
+            <TextView
+                android:id="@+id/liquidita_cifra"
+                android:layout_width="97dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:hint="____________"
+                android:inputType="numberDecimal"
+                android:textSize="17dp" />
+
+            <TextView
+                android:id="@+id/liquidita_fattore_rischio"
+                android:layout_width="179dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textSize="17dp" />
+        </LinearLayout>
+
+        <!-- Previsione di rendimento -->
+        <TextView
+            android:id="@+id/previsione_rendimento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:textSize="17dp"/>
+
+
     </LinearLayout>
-</LinearLayout>
+</layout>
