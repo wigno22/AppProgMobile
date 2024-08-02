@@ -85,6 +85,12 @@ dependencies {
 
     implementation ("androidx.recyclerview:recyclerview:1.3.0")
 
+    // add the dependency for the Google AI client SDK for Android
+    implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+
+    implementation ("com.google.android.gms:play-services-tasks:18.0.2")
+
+
     /* add the dependency for the Vertex AI SDK for Android
     implementation("com.google.firebase:firebase-vertexai:16.0.0-alpha02")
 

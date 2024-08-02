@@ -1,4 +1,3 @@
-// InvestmentFragment.kt
 package com.example.progettoprogrammazionemobile
 
 import android.os.Bundle
@@ -8,11 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import org.json.JSONArray
 import org.json.JSONException
@@ -36,8 +41,8 @@ class InvestmentFragment : Fragment() {
     private lateinit var azioniFattoreRischioTextView: TextView
     private lateinit var fondiFattoreRischioTextView: TextView
     private lateinit var liquiditaFattoreRischioTextView: TextView
-    private lateinit var miglioriRecyclerView: RecyclerView // Aggiunto RecyclerView
-    private lateinit var switchButton: Button // Aggiunto pulsante per cambiare visualizzazione
+    private lateinit var miglioriRecyclerView: RecyclerView
+    private lateinit var switchButton: Button
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -45,7 +50,7 @@ class InvestmentFragment : Fragment() {
     private var azioniFattoreRischio: Int = 0
     private var fondiFattoreRischio: Int = 0
     private var liquiditaFattoreRischio: Int = 0
-    private var showingStocks = true // Stato della visualizzazione
+    private var showingStocks = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,15 +70,14 @@ class InvestmentFragment : Fragment() {
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
         fondiFattoreRischioTextView = view.findViewById(R.id.fondi_fattore_rischio)
         liquiditaFattoreRischioTextView = view.findViewById(R.id.liquidita_fattore_rischio)
-        miglioriRecyclerView = view.findViewById(R.id.migliori_recyclerview) // Inizializzare RecyclerView
-        switchButton = view.findViewById(R.id.switch_button) // Inizializzare pulsante di switch
+        miglioriRecyclerView = view.findViewById(R.id.migliori_recyclerview)
+        switchButton = view.findViewById(R.id.switch_button)
 
         setupPeriodoSpinner()
         setupRecyclerView()
         fetchSaldoMedioTrimestrale()
-        fetchMiglioriAzioni()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
-        switchButton.setOnClickListener { onSwitchButtonClick() } // Impostare listener per il pulsante di switch
+        generateAIContent()
 
         return view
     }
@@ -132,107 +136,30 @@ class InvestmentFragment : Fragment() {
         }
     }
 
-    private fun fetchMiglioriAzioni() {
-        val apiKey = "KMD5G7J3GYUXUOLA" // Inserisci la tua chiave API Alpha Vantage
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=$apiKey")
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-                Log.e("InvestmentFragment", "Failed to fetch migliori azioni: ${e.message}")
+    private fun generateAIContent() {
+        lifecycleScope.launch {
+            try {
+                val responseText = generateContent("Tell me the 10 most popular singer in europe")
+                Log.d("InvestmentFragment", "Generated AI content: $responseText")
+            } catch (e: Exception) {
+                Log.e("InvestmentFragment", "Failed to generate AI content: ${e.message}")
             }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    response.body?.let { responseBody ->
-                        val json = responseBody.string()
-                        Log.d("InvestmentFragment", "API Response: $json")
-
-                        val jsonObject = JSONObject(json)
-                        val timeSeries = jsonObject.getJSONObject("Time Series (5min)")
-                        val keys = timeSeries.keys()
-                        val itemList = mutableListOf<MiglioreItem>()
-
-                        var count = 0
-                        while (keys.hasNext() && count < 5) {
-                            val key = keys.next()
-                            val data = timeSeries.getJSONObject(key)
-                            val name = "IBM"
-                            val value = data.getString("4. close")
-                            itemList.add(MiglioreItem(name, value))
-                            count++
-                        }
-
-                        requireActivity().runOnUiThread {
-                           // Log.d("InvestmentFragment", "Updating RecyclerView with ${itemList.size} items")
-                            miglioriRecyclerView.adapter = MiglioriAdapter(itemList)
-                        }
-                    }
-                } else {
-                    Log.e("InvestmentFragment", "API Response not successful: ${response.code}")
-                }
-            }
-        })
+        }
     }
 
-
-
-    private fun fetchMiglioriFondi() {
-        val apiKey = "cqlpqj1r01qoqqs7o4c0cqlpqj1r01qoqqs7o4cg" // Inserisci la tua chiave API Finnhub
-        val client = OkHttpClient()
-
-        // Modifica l'URL per utilizzare l'endpoint che fornisce una lista di fondi o aziende
-        val request = Request.Builder()
-            .url("https://finnhub.io/api/v1/stock/symbol?exchange=US&token=$apiKey") // Esempio di endpoint, sostituisci con quello corretto
-            .build()
-
-        client.newCall(request).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                e.printStackTrace()
-                Log.e("InvestmentFragment", "Failed to fetch data: ${e.message}")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    response.body?.let { responseBody ->
-                        val json = responseBody.string()
-                        Log.d("InvestmentFragment", "API Response: $json")
-
-                        try {
-                            val jsonArray = JSONArray(json)
-                            val itemList = mutableListOf<MiglioreItem>()
-
-                            // Limita il numero di elementi a 5
-                            val limit = minOf(5, jsonArray.length())
-                            for (i in 0 until limit) {
-                                val item = jsonArray.getJSONObject(i)
-                                val name = item.getString("description") // Usa la chiave corretta per il nome del fondo o azienda
-                                val symbol = item.getString("symbol") // Usa la chiave corretta per il simbolo
-
-                                itemList.add(MiglioreItem(name, symbol))
-                            }
-
-                            requireActivity().runOnUiThread {
-                                Log.d("InvestmentFragment", "Updating RecyclerView with ${itemList.size} items")
-                                miglioriRecyclerView.adapter = MiglioriAdapter(itemList)
-                            }
-                        } catch (e: JSONException) {
-                            Log.e("InvestmentFragment", "Errore durante il parsing del JSON: ${e.message}")
-                        }
-                    }
-                } else {
-                    Log.e("InvestmentFragment", "API Response not successful: ${response.code}")
-                }
-            }
-        })
+    private suspend fun generateContent(prompt: String): String = withContext(Dispatchers.IO) {
+        try {
+            val generativeModel = GenerativeModel(
+                modelName = "gemini-1.5-flash",
+                apiKey = "AIzaSyCe2AHQoV22Njr7MWcPwoEHnXJQpPIlGFw"
+            )
+            val result = generativeModel.generateContent(prompt)
+            result.text ?: "No content generated"
+        } catch (e: Exception) {
+            Log.e("InvestmentFragment", "Failed to generate content: ${e.message}")
+            "Error generating content"
+        }
     }
-
-
-
-
 
     private fun onConfirmButtonClick() {
         val cifraInvestimento = cifraInvestimentoEditText.text.toString().toDoubleOrNull() ?: return
@@ -249,17 +176,6 @@ class InvestmentFragment : Fragment() {
 
         val rendimentoPrevisto = calcolaRendimentoPrevisto(cifraInvestimento, periodo, fattoreRischio)
         previsioneRendimentoTextView.text = rendimentoPrevisto.toString()
-    }
-
-    private fun onSwitchButtonClick() {
-        showingStocks = !showingStocks
-        if (showingStocks) {
-            fetchMiglioriAzioni()
-            switchButton.text = "Mostra Fondi"
-        } else {
-            fetchMiglioriFondi()
-            switchButton.text = "Mostra Azioni"
-        }
     }
 
     private fun calcolaRendimentoPrevisto(cifra: Double, periodo: Int, rischio: Int): Double {
