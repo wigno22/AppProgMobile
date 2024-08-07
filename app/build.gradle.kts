@@ -39,6 +39,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs += "-Xinline-classes"
+        freeCompilerArgs += "-Xenable-break-continue-in-lambdas"
+
     }
 
 }
@@ -90,6 +93,29 @@ dependencies {
 
     implementation ("com.google.android.gms:play-services-tasks:18.0.2")
 
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation ("com.google.code.gson:gson:2.8.9")
+
+    implementation ("androidx.fragment:fragment-ktx:1.3.6")
+
+    //implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    //implementation("com.yahoofinance-api:YahooFinanceAPI:3.15.0")
+
+    implementation(kotlin("stdlib"))
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.moshi:moshi:1.12.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+
+
+
+
 
     /* add the dependency for the Vertex AI SDK for Android
     implementation("com.google.firebase:firebase-vertexai:16.0.0-alpha02")
@@ -104,6 +130,12 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth:21.0.3")
     implementation ("com.google.firebase:firebase-messaging:23.0.0")
     implementation ("com.google.firebase:firebase-firestore:24.0.0")
-    implementation ("com.google.firebase:firebase-vertex-ai:1.0.0")*/
+    implementation ("com.google.firebase:firebase-vertex-ai:1.0.0")
+
+
+
+
+
+    */
 
 }

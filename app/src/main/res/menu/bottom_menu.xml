@@ -27,6 +27,13 @@
 
 
     <item
+        android:id="@+id/navigation_AiIntegration"
+        android:icon="@drawable/iconaccount"
+        app:showAsAction="always"
+        tools:ignore="HardcodedText"
+        android:title="" />
+
+    <item
         android:id="@+id/navigation_operations"
         android:icon="@drawable/iconoper"
         android:iconTintMode="screen"

@@ -1,0 +1,56 @@
+<!-- fragment_aiintergration.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/button_show_stocks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Stocks" />
+
+    <Button
+        android:id="@+id/button_update_values"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Aggiorna Valori"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/stock_selection_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:maxHeight="300dp" /> <!-- Imposta un'altezza massima -->
+
+        <Button
+            android:id="@+id/button_invest"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Invest"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/investment_data_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/investment_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Investment Data" />
+    </LinearLayout>
+</LinearLayout>

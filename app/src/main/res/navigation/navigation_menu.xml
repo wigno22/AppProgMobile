@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_menu"
     app:startDestination="@id/navigation_account">
 
@@ -17,6 +18,12 @@
         <action
             android:id="@+id/action_navigation_account_to_navigation_investment"
             app:destination="@id/navigation_investment" />
+        <action
+            android:id="@+id/action_navigation_account_to_navigation_AiIntegration"
+            app:destination="@id/navigation_AiIntegration" />
+        <action
+            android:id="@+id/action_navigation_account_to_navigation_chatAi"
+            app:destination="@id/navigation_chatAi" />
     </fragment>
     <fragment
         android:id="@+id/navigation_operations"
@@ -31,6 +38,12 @@
         <action
             android:id="@+id/action_navigation_operations_to_navigation_investment"
             app:destination="@id/navigation_investment" />
+        <action
+            android:id="@+id/action_navigation_operations_to_navigation_AiIntegration"
+            app:destination="@id/navigation_AiIntegration" />
+        <action
+            android:id="@+id/action_navigation_operations_to_navigation_chatAi"
+            app:destination="@id/navigation_chatAi" />
     </fragment>
     <fragment
         android:id="@+id/navigation_investment"
@@ -45,6 +58,32 @@
         <action
             android:id="@+id/action_navigation_investment_to_navigation_profile"
             app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_investment_to_navigation_AiIntegration"
+            app:destination="@id/navigation_AiIntegration" />
+        <action
+            android:id="@+id/action_navigation_investment_to_navigation_chatAi"
+            app:destination="@id/navigation_chatAi" />
+    </fragment>
+    <fragment
+        android:id="@+id/navigation_AiIntegration"
+        android:name="com.example.progettoprogrammazionemobile.AiIntegrationFragment"
+        android:label="AiIntegrationFragment">
+        <action
+            android:id="@+id/action_navigation_AiIntegration_to_navigation_accountFragment"
+            app:destination="@id/navigation_account" />
+        <action
+            android:id="@+id/action_navigation_AiIntegration_to_navigation_operations"
+            app:destination="@id/navigation_operations" />
+        <action
+            android:id="@+id/action_navigation_AiIntegration_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_AiIntegration_to_navigation_investment"
+            app:destination="@id/navigation_investment" />
+        <action
+            android:id="@+id/action_navigation_AiIntegration_to_navigation_chatAi"
+            app:destination="@id/navigation_chatAi" />
     </fragment>
     <fragment
         android:id="@+id/navigation_profile"
@@ -59,5 +98,32 @@
         <action
             android:id="@+id/action_navigation_profile_to_navigation_investment"
             app:destination="@id/navigation_investment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_AiIntegration"
+            app:destination="@id/navigation_AiIntegration" />
+        <action
+            android:id="@+id/action_navigation_profile_to_navigation_chatAi"
+            app:destination="@id/navigation_chatAi" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_chatAi"
+        android:name="com.example.progettoprogrammazionemobile.SpecialFragment"
+        android:label="ChatAIFragment" >
+        <action
+            android:id="@+id/action_navigation_chatAi_to_navigation_account"
+            app:destination="@id/navigation_account" />
+        <action
+            android:id="@+id/action_navigation_chatAi_to_navigation_operations"
+            app:destination="@id/navigation_operations" />
+        <action
+            android:id="@+id/action_navigation_chatAi_to_navigation_profile"
+            app:destination="@id/navigation_profile" />
+        <action
+            android:id="@+id/action_navigation_chatAi_to_navigation_investment"
+            app:destination="@id/navigation_investment" />
+        <action
+            android:id="@+id/action_navigation_chatAi_to_navigation_AiIntegration"
+            app:destination="@id/navigation_AiIntegration" />
     </fragment>
 </navigation>
