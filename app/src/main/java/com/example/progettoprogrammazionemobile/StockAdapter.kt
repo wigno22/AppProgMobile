@@ -29,19 +29,19 @@ class StockAdapter : ListAdapter<StockSymbolWithQuote, StockAdapter.StockViewHol
     inner class StockViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val textName: TextView = itemView.findViewById(R.id.text_action_name)
         private val textCurrentValue: TextView = itemView.findViewById(R.id.text_current_value)
-        private val textMinValue: TextView = itemView.findViewById(R.id.text_min_value)
-        private val textMaxValue: TextView = itemView.findViewById(R.id.text_max_value)
+        private val description: TextView = itemView.findViewById(R.id.text_description)
+
+
         private val textDate: TextView = itemView.findViewById(R.id.text_date)
         private val checkbox: CheckBox = itemView.findViewById(R.id.checkbox_select)
 
         fun bind(stock: StockSymbolWithQuote) {
             textName.text = stock.symbol.symbol
             textCurrentValue.text = "Valore Attuale: ${stock.quote.c}"
-            textMinValue.text = "Minimo: ${stock.quote.l}"
-            textMaxValue.text = "Massimo: ${stock.quote.h}"
+            description.text=stock.symbol.description
 
             // Placeholder for date, which will be set when the item is selected
-            textDate.text = "Data: Not Set"
+            textDate.text = stock.quote.valdata
 
             checkbox.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
@@ -73,11 +73,12 @@ data class StockSymbolWithQuote(
 data class StockSymbol(
     val symbol: String,
     val description: String
+
 )
 
 data class StockQuote(
     val c: Double,  // Prezzo corrente
     val h: Double,  // Prezzo massimo del giorno
     val l: Double,  // Prezzo minimo del giorno
-    val pc: Double  // Prezzo di chiusura precedente
+    var valdata: String
 )

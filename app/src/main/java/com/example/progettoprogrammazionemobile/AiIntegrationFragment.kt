@@ -119,6 +119,7 @@ class AiIntegrationFragment : Fragment() {
     private suspend fun getStockSymbols(apiService: FinnhubApiService, apiKey: String): List<StockSymbol> {
         return withContext(Dispatchers.IO) {
             val response = apiService.getStockSymbols("US", apiKey).execute()
+
             if (response.isSuccessful) {
                 response.body() ?: emptyList()
             } else {
@@ -133,6 +134,7 @@ class AiIntegrationFragment : Fragment() {
             val response = apiService.getStockQuote(symbol, apiKey).execute()
             if (response.isSuccessful) {
                 response.body()
+
             } else {
                 Log.e("AIIntegrationFragment", "Failed to get stock quote for $symbol: ${response.errorBody()?.string()}")
                 null
@@ -146,14 +148,22 @@ class AiIntegrationFragment : Fragment() {
 
     private suspend fun getBestStocks(apiService: FinnhubApiService, apiKey: String): List<StockSymbolWithQuote> {
         val symbols = getStockSymbols(apiService, apiKey)
+
+
         val lowRiskStocks = mutableListOf<StockSymbolWithQuote>()
         var count = 0
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        val currentDate = dateFormat.format(java.util.Date())
 
         for (symbol in symbols) {
             if (count >= 40) {
                 break
             }
             val quote = getStockQuote(apiService, apiKey, symbol.symbol)
+            if (quote != null) {
+                quote.valdata = currentDate
+            }
+
             quote?.let {
                 val risk = calculateRisk(it)
                 if (risk < 0.1) {
@@ -172,8 +182,7 @@ class AiIntegrationFragment : Fragment() {
         val userDocRef = db.collection(uid).document("Account").collection("Azioni")
         val batch = db.batch()
 
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val currentDate = dateFormat.format(java.util.Date())
+
 
         for (stock in stocks) {
             val quote = stock.quote
@@ -181,13 +190,13 @@ class AiIntegrationFragment : Fragment() {
             val docRef = userDocRef.document(symbol.symbol)
             val data = hashMapOf(
                 "nomeAzione" to symbol.description,
-                "cifraAcquisto" to quote.c,
-                "minimoPrezzo" to quote.l,
-                "massimoPrezzo" to quote.h,
-                "reale" to mapOf(
-                    "data" to currentDate,
-                    "valore" to quote.c
-                )
+                "valoreAcq" to quote.c,
+                "dataAcq" to quote.valdata,
+                "valoreUlt" to quote.c,
+                "dataUlt" to quote.valdata,
+                "valoreReal" to quote.c,
+                "dataReal" to quote.valdata
+
             )
             batch.set(docRef, data)
         }
@@ -220,7 +229,7 @@ class AiIntegrationFragment : Fragment() {
             val snapshot = userDocRef.get().await()
             val batch = db.batch()
 
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
             val currentDate = dateFormat.format(java.util.Date())
 
             for (document in snapshot.documents) {
@@ -229,12 +238,8 @@ class AiIntegrationFragment : Fragment() {
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
                     batch.update(docRef, mapOf(
-                        "minimoPrezzo" to quote.l,
-                        "massimoPrezzo" to quote.h,
-                        "reale" to mapOf(
-                            "data" to currentDate,
-                            "valore" to quote.c
-                        )
+                        "valoreReal" to quote.c,
+                        "dataReal" to currentDate
                     ))
                 }
             }
@@ -258,18 +263,19 @@ class AiIntegrationFragment : Fragment() {
             val investmentData = StringBuilder()
             for (document in snapshot.documents) {
                 val data = document.data
+
                 val stockName = data?.get("nomeAzione") as? String
-                val purchaseAmount = data?.get("cifraAcquisto") as? Double
-                val currentAmount = (data?.get("reale") as? Map<*, *>)?.get("valore") as? Double
-                val minPrice = data?.get("minimoPrezzo") as? Double
-                val maxPrice = data?.get("massimoPrezzo") as? Double
+                val purchaseAmount = data?.get("valoreAcq") as? Double
+                val currentAmount = data?.get("valoreUlt") as?  Double
+                val dateult= data?.get("dataUlt") as? String
+
+
 
                 if (stockName != null) {
                     investmentData.append("Name: $stockName\n")
                     investmentData.append("Purchase Price: $purchaseAmount\n")
                     investmentData.append("Current Value: $currentAmount\n")
-                    investmentData.append("Minimum Price: $minPrice\n")
-                    investmentData.append("Maximum Price: $maxPrice\n\n")
+                    investmentData.append("Current Date: $dateult\n")
                 }
             }
             investmentDataTextView.text = investmentData.toString()
