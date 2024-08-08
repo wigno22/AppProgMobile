@@ -19,13 +19,18 @@ import kotlinx.coroutines.withContext
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.util.Log
+import android.widget.EditText
+import android.widget.ProgressBar
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.concurrent.TimeUnit
+import okhttp3.OkHttpClient
+import java.text.NumberFormat
 
 class AiIntegrationFragment : Fragment() {
 
-    private val apiKey = "cqpm661r01qmfvajvh1gcqpm661r01qmfvajvh20"
+    private val apiKey = "cqqcno1r01qouko6v7q0cqqcno1r01qouko6v7qg"
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: StockAdapter
     private lateinit var investButton: Button
@@ -34,6 +39,8 @@ class AiIntegrationFragment : Fragment() {
     private lateinit var stockSelectionContainer: View
     private lateinit var investmentDataContainer: View
     private lateinit var investmentDataTextView: TextView
+    private lateinit var progressBar: ProgressBar
+    private var exchangeRate: Double = 1.09
     private val db = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
 
@@ -49,6 +56,7 @@ class AiIntegrationFragment : Fragment() {
         stockSelectionContainer = view.findViewById(R.id.stock_selection_container)
         investmentDataContainer = view.findViewById(R.id.investment_data_container)
         investmentDataTextView = view.findViewById(R.id.investment_data)
+        progressBar = view.findViewById(R.id.progressBar)
 
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         adapter = StockAdapter()
@@ -62,6 +70,7 @@ class AiIntegrationFragment : Fragment() {
             lifecycleScope.launch {
                 try {
                     fetchBestStocks()
+                   // fetchExchangeRate()
                 } catch (e: Exception) {
                     Log.e("AIIntegrationFragment", "Error fetching stocks", e)
                 }
@@ -95,23 +104,72 @@ class AiIntegrationFragment : Fragment() {
         return view
     }
 
-    private suspend fun fetchBestStocks() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://finnhub.io/api/v1/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-        val service = retrofit.create(FinnhubApiService::class.java)
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://finnhub.io/api/v1/")
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    private val service = retrofit.create(FinnhubApiService::class.java)
+
+
+
+    private fun fetchExchangeRate() {
+        lifecycleScope.launch {
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://v6.exchangerate-api.com/v6/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+                val api = retrofit.create(ExchangeRateApiService::class.java)
+                val response = api.getExchangeRates("47a1ca6a80-0abeff07df-shwjzm", "EUR", "USD")
+
+                // Verifica che il body non sia null e recupera il valore del tasso di cambio
+                exchangeRate = response.conversion_rate
+                Log.d("AIIntegrationFragment", "Exchange Rate EUR/USD: $exchangeRate")
+
+            } catch (e: Exception) {
+                Log.e("AIIntegrationFragment", "Failed to fetch exchange rate: ${e.message}")
+                Toast.makeText(requireContext(), "Errore nel recupero del tasso di cambio.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+
+
+
+
+
+    private suspend fun fetchBestStocks() {
+        withContext(Dispatchers.Main) {
+            progressBar.visibility = View.VISIBLE
+            investButton.visibility = View.GONE // Nascondi il pulsante Invest durante il caricamento
+        }
+
         try {
             val bestStocks = getBestStocks(service, apiKey)
             val randomStocks = bestStocks.shuffled().take(5)
             Log.d("AIIntegrationFragment", "Fetched best stocks: $randomStocks")
-            adapter.submitList(randomStocks)
-            investButton.visibility = View.VISIBLE // Assicurati che il bottone Invest sia visibile
+
+            withContext(Dispatchers.Main) {
+                adapter.submitList(randomStocks)
+                investButton.visibility = View.VISIBLE // Assicurati che il bottone Invest sia visibile
+            }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), "Failed to fetch stocks: ${e.message}", Toast.LENGTH_LONG).show()
                 Log.e("AIIntegrationFragment", "Failed to fetch stocks", e)
+            }
+        } finally {
+            withContext(Dispatchers.Main) {
+                progressBar.visibility = View.GONE
             }
         }
     }
@@ -119,7 +177,6 @@ class AiIntegrationFragment : Fragment() {
     private suspend fun getStockSymbols(apiService: FinnhubApiService, apiKey: String): List<StockSymbol> {
         return withContext(Dispatchers.IO) {
             val response = apiService.getStockSymbols("US", apiKey).execute()
-
             if (response.isSuccessful) {
                 response.body() ?: emptyList()
             } else {
@@ -134,7 +191,6 @@ class AiIntegrationFragment : Fragment() {
             val response = apiService.getStockQuote(symbol, apiKey).execute()
             if (response.isSuccessful) {
                 response.body()
-
             } else {
                 Log.e("AIIntegrationFragment", "Failed to get stock quote for $symbol: ${response.errorBody()?.string()}")
                 null
@@ -148,7 +204,6 @@ class AiIntegrationFragment : Fragment() {
 
     private suspend fun getBestStocks(apiService: FinnhubApiService, apiKey: String): List<StockSymbolWithQuote> {
         val symbols = getStockSymbols(apiService, apiKey)
-
 
         val lowRiskStocks = mutableListOf<StockSymbolWithQuote>()
         var count = 0
@@ -180,24 +235,44 @@ class AiIntegrationFragment : Fragment() {
     private suspend fun saveInvestments(stocks: List<StockSymbolWithQuote>) {
         val uid = user?.uid ?: return
         val userDocRef = db.collection(uid).document("Account").collection("Azioni")
+        val accountDocRef = db.collection(uid).document("Account")
         val batch = db.batch()
+
+        //val numcodAzioni = fetchNumberOfStocks()
+
+        // Ottieni il numero di azioni dal documento Account
+        val cifrainAzioni = try {
+            val accountSnapshot = accountDocRef.get().await()
+            accountSnapshot.getLong("cifraInAzioni")?.toInt() ?: 1 // Imposta un valore predefinito se non trovato
+        } catch (e: Exception) {
+            Log.e("AIIntegrationFragment", "Failed to fetch number of stocks: ${e.message}")
+            1 // Imposta un valore predefinito in caso di errore
+        }
 
 
 
         for (stock in stocks) {
             val quote = stock.quote
             val symbol = stock.symbol
+            val numstocks = ((cifrainAzioni*exchangeRate)/ stocks.size) / stock.quote.c
             val docRef = userDocRef.document(symbol.symbol)
+            val valoreAcqEuro = quote.c * exchangeRate
             val data = hashMapOf(
                 "nomeAzione" to symbol.description,
-                "valoreAcq" to quote.c,
+                "valorecambioAcq" to exchangeRate,
+                "valoreAcq$" to quote.c,
                 "dataAcq" to quote.valdata,
-                "valoreUlt" to quote.c,
+                "valorecambioUlt" to exchangeRate,
+                "valoreUlt$" to quote.c,
                 "dataUlt" to quote.valdata,
-                "valoreReal" to quote.c,
-                "dataReal" to quote.valdata
-
+                "valorecambioReal" to exchangeRate,
+                "valoreReal$" to quote.c,
+                "dataReal" to quote.valdata,
+                "numeroAzioni" to numstocks
             )
+
+            Log.d("AIIntegrationFragment", "Saving stock: $symbol, valoreAcqEuro: $valoreAcqEuro, quote.c: ${quote.c}")
+
             batch.set(docRef, data)
         }
 
@@ -215,9 +290,23 @@ class AiIntegrationFragment : Fragment() {
         }
     }
 
+
+    private suspend fun fetchNumberOfStocks(): Int? {
+        val uid = user?.uid ?: return null
+        val accountDocRef = db.collection(uid).document("Account")
+        return try {
+            val accountSnapshot = accountDocRef.get().await()
+            accountSnapshot.getLong("Azioni")?.toInt()
+        } catch (e: Exception) {
+            Log.e("AIIntegrationFragment", "Failed to fetch number of stocks: ${e.message}")
+            null
+        }
+    }
+
     private suspend fun updateAllStockValues() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://finnhub.io/api/v1/")
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
@@ -237,15 +326,29 @@ class AiIntegrationFragment : Fragment() {
                 val quote = getStockQuote(service, apiKey, symbol)
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
-                    batch.update(docRef, mapOf(
-                        "valoreReal" to quote.c,
-                        "dataReal" to currentDate
-                    ))
+                    val valoreUlt = document.getDouble("valoreUlt") ?: 0.0
+                    val valoreUltEuro = valoreUlt * exchangeRate
+
+                    batch.update(docRef, "valoreReal", valoreUltEuro)
+                    batch.update(docRef, "dataReal", currentDate)
+
+                    if (quote.c * exchangeRate > valoreUltEuro) {
+                        // Mostra un Toast se il valore è maggiore
+                        Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
+                    } else {
+                        // Mostra un Toast se il valore non è maggiore
+                        Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    batch.update(docRef, "valoreUlt", quote.c * exchangeRate)
+                    batch.update(docRef, "dataUlt", currentDate)
                 }
             }
 
             batch.commit().await()
-            Toast.makeText(requireContext(), "Stock values updated successfully!", Toast.LENGTH_SHORT).show()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Stock values updated successfully!", Toast.LENGTH_SHORT).show()
+            }
         } catch (e: Exception) {
             withContext(Dispatchers.Main) {
                 Toast.makeText(requireContext(), "Failed to update stock values: ${e.message}", Toast.LENGTH_LONG).show()
@@ -253,6 +356,7 @@ class AiIntegrationFragment : Fragment() {
             }
         }
     }
+
 
     private suspend fun showInvestmentData() {
         val uid = user?.uid ?: return
@@ -265,17 +369,23 @@ class AiIntegrationFragment : Fragment() {
                 val data = document.data
 
                 val stockName = data?.get("nomeAzione") as? String
-                val purchaseAmount = data?.get("valoreAcq") as? Double
-                val currentAmount = data?.get("valoreUlt") as?  Double
-                val dateult= data?.get("dataUlt") as? String
+                val purchaseAmount = data?.get("valoreAcq$") as? Double
+                val realAmount = data?.get("valoreReal$") as?  Double
+                val currentAmount = data?.get("valoreUlt$") as?  Double
+                val dateUlt = data?.get("dataUlt") as? String
+                val numStocks = data?.get("numeroAzioni") as? Int
 
-
+                val numberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY) // Locale per EUR
 
                 if (stockName != null) {
                     investmentData.append("Name: $stockName\n")
-                    investmentData.append("Purchase Price: $purchaseAmount\n")
-                    investmentData.append("Current Value: $currentAmount\n")
-                    investmentData.append("Current Date: $dateult\n")
+                    investmentData.append("Price\n")
+                    investmentData.append("Purchase: ${purchaseAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Last: ${realAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Current: ${currentAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Current Date: ${dateUlt ?: "N/A"}\n")
+                    investmentData.append("Number of Stocks: ${numStocks ?: "N/A"}\n")
+                    investmentData.append("\n")
                 }
             }
             investmentDataTextView.text = investmentData.toString()
@@ -288,4 +398,5 @@ class AiIntegrationFragment : Fragment() {
             Toast.makeText(requireContext(), "Failed to fetch investment data: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
+
 }

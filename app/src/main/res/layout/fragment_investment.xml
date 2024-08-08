@@ -9,7 +9,6 @@
         android:padding="16dp"
         >
 
-
         <!-- Testo per il saldo medio e campo di input -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,7 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:inputType="numberDecimal"
                 android:hint=""
                 android:textColor="@color/colorNeutral"
                 android:textSize="17dp"/>
@@ -149,8 +147,7 @@
                 android:layout_width="97dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:hint="____________ "
-                android:inputType="numberDecimal"
+                android:hint="____________"
                 android:textSize="17dp" />
 
             <TextView
@@ -181,8 +178,7 @@
                 android:layout_width="98dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:hint="____________ "
-                android:inputType="numberDecimal"
+                android:hint="____________"
                 android:textSize="17dp" />
 
             <TextView
@@ -193,108 +189,7 @@
                 android:textSize="17dp"/>
         </LinearLayout>
 
-        <!-- Liquidità -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="16dp">
 
-            <TextView
-                android:id="@+id/liquidita_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Liquidità:"
-                android:textSize="17dp"/>
 
-            <TextView
-                android:id="@+id/liquidita_cifra"
-                android:layout_width="97dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:hint="____________"
-                android:inputType="numberDecimal"
-                android:textSize="17dp" />
-
-            <TextView
-                android:id="@+id/liquidita_fattore_rischio"
-                android:layout_width="179dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textSize="17dp" />
-        </LinearLayout>
-
-        <!--
-        <TextView
-            android:id="@+id/azioni_suggerite_textview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:layout_marginTop="15dp"
-            android:text="Azioni suggerite:"
-            android:textSize="18sp"
-            />
-
-         //Previsione di rendimento
-        <TextView
-            android:id="@+id/previsione_rendimento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:textSize="17dp"/>-->
-
-        <!-- Nuova sezione per le migliori azioni e fondi -->
-        <!-- RecyclerView per la chat -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/chat_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="221dp"
-            android:layout_marginTop="35dp"
-            app:layout_constraintBottom_toTopOf="@id/chat_input_container"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Barra di inserimento messaggi e pulsante per inviare -->
-        <LinearLayout
-            android:id="@+id/chat_input_container"
-            android:layout_width="match_parent"
-            android:layout_height="54dp"
-            android:background="@drawable/message_background"
-            android:orientation="horizontal"
-            android:padding="8dp">
-
-            <EditText
-                android:id="@+id/chat_input"
-                android:layout_width="244dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:hint="Type a message"
-                android:inputType="text" />
-
-            <Button
-                android:id="@+id/send_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:text="Send"
-                android:textColor="@color/white"
-                android:textStyle="italic" />
-        </LinearLayout>
-
-            <!--
-            <Button
-                android:id="@+id/switch_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mostra Fondi" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/migliori_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"/>-->
-        </LinearLayout>
-
+    </LinearLayout>
 </layout>

@@ -17,10 +17,13 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.BuildConfig
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.text.DecimalFormat
 import java.util.*
 
@@ -39,23 +42,22 @@ class InvestmentFragment : Fragment() {
     private lateinit var azioniFattoreRischioTextView: TextView
     private lateinit var fondiFattoreRischioTextView: TextView
     private lateinit var liquiditaFattoreRischioTextView: TextView
-    private lateinit var miglioriRecyclerView: RecyclerView
-    private lateinit var azioniSuggeriteTextView: TextView
     private lateinit var chatRecyclerView: RecyclerView
     private lateinit var chatInput: EditText
     private lateinit var sendButton: Button
 
-    private val messages = mutableListOf<ChatMessage>()
-    private lateinit var chatAdapter: ChatAdapter
+    //private val messages = mutableListOf<ChatMessage>()
+    //private lateinit var chatAdapter: ChatAdapter
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var saldoMedio: Double = 0.0
+    private var exchangeRate: Double = 1.09
     private var azioniFattoreRischio: Int = 0
     private var fondiFattoreRischio: Int = 0
     private var liquiditaFattoreRischio: Int = 0
 
-    data class ChatMessage(val text: String, val isUser: Boolean)
+    //data class ChatMessage(val text: String, val isUser: Boolean)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,46 +70,106 @@ class InvestmentFragment : Fragment() {
         radioGroupRischio = view.findViewById(R.id.radio_group_rischio)
         azioniCifraTextView = view.findViewById(R.id.azioni_cifra)
         fondiCifraTextView = view.findViewById(R.id.fondi_cifra)
-        liquiditaCifraTextView = view.findViewById(R.id.liquidita_cifra)
+
         confirmButton = view.findViewById(R.id.confirm_button)
         periodoSpinner = view.findViewById(R.id.periodo_spinner)
-        // previsioneRendimentoTextView = view.findViewById(R.id.previsione_rendimento)
+
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
         fondiFattoreRischioTextView = view.findViewById(R.id.fondi_fattore_rischio)
-        liquiditaFattoreRischioTextView = view.findViewById(R.id.liquidita_fattore_rischio)
-        //azioniSuggeriteTextView = view.findViewById(R.id.azioni_suggerite_textview)
-        chatRecyclerView = view.findViewById(R.id.chat_recyclerview)
-        chatInput = view.findViewById(R.id.chat_input)
-        sendButton = view.findViewById(R.id.send_button)
-        //miglioriRecyclerView = view.findViewById(R.id.chat_recyclerview) // Inizializzazione aggiunta
 
+
+        //chatRecyclerView = view.findViewById(R.id.chat_recyclerview)
+        //chatInput = view.findViewById(R.id.chat_input)
+        //sendButton = view.findViewById(R.id.send_button)
+
+        azioniFattoreRischioTextView.text = "<10%"
+        fondiFattoreRischioTextView.text = "<5%"
+
+        //fetchExchangeRate()
+        showUserData()
         setupPeriodoSpinner()
-        setupRecyclerView()
         fetchSaldoMedioTrimestrale()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
-        chatAdapter = ChatAdapter(messages)
+        //chatAdapter = ChatAdapter(messages)
 
-        chatRecyclerView.adapter = chatAdapter
-        chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        //chatRecyclerView.adapter = chatAdapter
+        //chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        sendButton.setOnClickListener { sendMessage() }
+        //sendButton.setOnClickListener { sendMessage() }
 
         return view
     }
 
-    private fun sendMessage() {
+    private fun showUserData() {
+        val user = auth.currentUser
+        val UID = user?.uid
+        if (UID != null) {
+            val userDocRef = db.collection(UID).document("Account")
+
+            userDocRef.get().addOnSuccessListener { document ->
+                if (document != null && document.exists()) {
+                    val livelloRischio = document.getLong("livelloRischio")?.toInt() ?: 1
+                    val saldoTrimestraleMedio = document.getDouble("saldoTrimestraleMedio") ?: 0.0
+                    val periodoInvestimento = document.getLong("periodoInvestimento")?.toInt() ?: 0
+                    val cifraInvestimento = document.getDouble("cifraInvestimento") ?: 0.0
+
+                    // Aggiorna le viste con i dati recuperati
+                    saldoCifraEditText.setText(saldoTrimestraleMedio.toString())
+                    cifraInvestimentoEditText.setText(cifraInvestimento.toString())
+
+                    // Imposta il periodo nello Spinner confrontando direttamente con il valore
+                    for (i in 0 until periodoSpinner.count) {
+                        val periodo = periodoSpinner.getItemAtPosition(i).toString()
+                        if (periodo.startsWith(periodoInvestimento.toString())) {
+                            periodoSpinner.setSelection(i)
+                            break
+                        }
+                    }
+
+                    // Imposta il livello di rischio nel RadioGroup
+                    when (livelloRischio) {
+                        1 -> radioGroupRischio.check(R.id.rischio_basso)
+                        2 -> radioGroupRischio.check(R.id.rischio_medio)
+                        3 -> radioGroupRischio.check(R.id.rischio_alto)
+                    }
+
+                    // Calcola le quote azioni e fondi
+                    val quotaazioni = when (livelloRischio) {
+                        1 -> cifraInvestimento * 0.4
+                        2 -> cifraInvestimento * 0.5
+                        3 -> cifraInvestimento * 0.6
+                        else -> 0.0
+                    }
+                    val quotafondi = cifraInvestimento - quotaazioni
+
+                    azioniCifraTextView.text = quotaazioni.toString()
+                    fondiCifraTextView.text = quotafondi.toString()
+
+                } else {
+                    Toast.makeText(requireContext(), "Nessun dato trovato per l'utente.", Toast.LENGTH_LONG).show()
+                }
+            }.addOnFailureListener { e ->
+                Toast.makeText(requireContext(), "Errore nel recupero dei dati: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Toast.makeText(requireContext(), "Utente non autenticato.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+    /* private fun sendMessage() {
         val messageText = chatInput.text.toString()
         if (messageText.isNotBlank()) {
             val userMessage = ChatMessage(messageText, true)
             messages.add(userMessage)
-            chatAdapter.notifyItemInserted(messages.size - 1)
+            //chatAdapter.notifyItemInserted(messages.size - 1)
             chatRecyclerView.scrollToPosition(messages.size - 1)
             chatInput.text.clear()
-            lifecycleScope.launch { sendToAI(messageText) }
+            //lifecycleScope.launch { sendToAI(messageText) }
         }
     }
 
-    private suspend fun sendToAI(messageText: String) = withContext(Dispatchers.IO) {
+   private suspend fun sendToAI(messageText: String) = withContext(Dispatchers.IO) {
         try {
             val generativeModel = GenerativeModel(
                 modelName = "gemini-1.5-flash",
@@ -128,7 +190,33 @@ class InvestmentFragment : Fragment() {
         } catch (e: Exception) {
             Log.e("InvestmentFragment", "Failed to generate AI content: ${e.message}")
         }
+    }*/
+
+    private fun fetchExchangeRate() {
+        lifecycleScope.launch {
+            try {
+                val retrofit = Retrofit.Builder()
+                    .baseUrl("https://v6.exchangerate-api.com/v6/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+
+                val api = retrofit.create(ExchangeRateApiService::class.java)
+                val response = api.getExchangeRates("47a1ca6a80-0abeff07df-shwjzm", "EUR", "USD")
+
+                // Verifica che il body non sia null e recupera il valore del tasso di cambio
+                exchangeRate = response.conversion_rate
+                Log.d("AIIntegrationFragment", "Exchange Rate EUR/USD: $exchangeRate")
+
+            } catch (e: Exception) {
+                Log.e("AIIntegrationFragment", "Failed to fetch exchange rate: ${e.message}")
+                Toast.makeText(requireContext(), "Errore nel recupero del tasso di cambio.", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
+
+
+
 
     private fun setupPeriodoSpinner() {
         val periodi = arrayOf("6 mesi", "12 mesi", "18 mesi", "24 mesi", "36 mesi")
@@ -137,9 +225,7 @@ class InvestmentFragment : Fragment() {
         periodoSpinner.adapter = adapter
     }
 
-    private fun setupRecyclerView() {
-       // miglioriRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-    }
+
 
     private fun fetchSaldoMedioTrimestrale() {
         val user = auth.currentUser
@@ -184,7 +270,7 @@ class InvestmentFragment : Fragment() {
         }
     }
 
-    private fun generateAIContent() {
+   /* private fun generateAIContent() {
         lifecycleScope.launch {
             try {
                 val responseText = generateContent("What are the 5 best stocks to invest in right now?")
@@ -208,13 +294,22 @@ class InvestmentFragment : Fragment() {
         } catch (e: Exception) {
             "Error: ${e.message}"
         }
-    }
+    }*/
 
 
     private fun onConfirmButtonClick() {
         val cifraInvestimento = cifraInvestimentoEditText.text.toString().toDoubleOrNull() ?: return
+
+        // Controllo se la cifra di investimento supera il saldo medio trimestrale
+        if (cifraInvestimento > saldoMedio) {
+            Toast.makeText(requireContext(), "La cifra di investimento non può superare il saldo medio trimestrale.", Toast.LENGTH_LONG).show()
+            return
+        }
+
         val selectedPeriodo = periodoSpinner.selectedItem.toString()
         val periodo = selectedPeriodo.split(" ")[0].toInt()
+        var quotaazioni = 0.0
+        var quotafondi = 0.0
 
         val rischioId = radioGroupRischio.checkedRadioButtonId
         val fattoreRischio = when (rischioId) {
@@ -223,10 +318,46 @@ class InvestmentFragment : Fragment() {
             R.id.rischio_alto -> 3
             else -> 1
         }
+        if (fattoreRischio == 1) {
+            quotaazioni = cifraInvestimento * 0.4
+            quotafondi = cifraInvestimento * 0.6
+        } else if (fattoreRischio == 2) {
+            quotaazioni = cifraInvestimento * 0.5
+            quotafondi = cifraInvestimento * 0.5
+        } else {
+            quotaazioni = cifraInvestimento * 0.6
+            quotafondi = cifraInvestimento * 0.4
+        }
 
-        val rendimentoPrevisto = calcolaRendimentoPrevisto(cifraInvestimento, periodo, fattoreRischio)
-        previsioneRendimentoTextView.text = rendimentoPrevisto.toString()
+        azioniCifraTextView.text = quotaazioni.toString()
+        fondiCifraTextView.text = quotafondi.toString()
+
+        val uid = auth.uid
+        if (uid != null) {
+            val docref = db.collection(uid).document("Account")
+
+            val accountData = hashMapOf(
+                "livelloRischio" to fattoreRischio,
+                "saldoTrimestraleMedio" to saldoMedio,
+                "periodoInvestimento" to periodo,
+                "cifraInvestimento" to cifraInvestimento,
+                "cifraInAzioni" to quotaazioni,
+                "cifraInFondi" to quotafondi,
+                "exchangeRate" to exchangeRate
+            )
+
+            docref.set(accountData, SetOptions.merge())
+                .addOnSuccessListener {
+
+                    Toast.makeText(requireContext(), "Dati salvati con successo!", Toast.LENGTH_SHORT).show()
+                }
+                .addOnFailureListener { e ->
+
+                    Toast.makeText(requireContext(), "Errore nel salvataggio: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
+
 
     private fun calcolaRendimentoPrevisto(cifra: Double, periodo: Int, rischio: Int): Double {
         // Placeholder per il calcolo effettivo del rendimento previsto
@@ -237,7 +368,7 @@ class InvestmentFragment : Fragment() {
 
 
 
-
+/*
 class ChatAdapter(private val messages: List<InvestmentFragment.ChatMessage>) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
 
     inner class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -263,5 +394,5 @@ class ChatAdapter(private val messages: List<InvestmentFragment.ChatMessage>) : 
     }
 
     override fun getItemCount() = messages.size
-}
+}*/
 
