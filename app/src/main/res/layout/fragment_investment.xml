@@ -152,19 +152,28 @@
 
             <TextView
                 android:id="@+id/azioni_fattore_rischio"
-                android:layout_width="178dp"
+                android:layout_width="94dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:textSize="17dp" />
+
+            <!-- Bottone per visualizzare le azioni -->
+            <Button
+                android:id="@+id/azioni_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vedi Azioni"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
         <!-- Fondi -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="365dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_marginTop="16dp"
             android:gravity="center_vertical"
-            android:layout_marginTop="16dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/fondi_label"
@@ -183,10 +192,19 @@
 
             <TextView
                 android:id="@+id/fondi_fattore_rischio"
-                android:layout_width="wrap_content"
+                android:layout_width="94dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textSize="17dp"/>
+                android:textSize="17dp" />
+
+            <!-- Bottone per visualizzare i fondi -->
+            <Button
+                android:id="@+id/fondi_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vedi Fondi"
+                android:layout_marginStart="8dp"
+                android:visibility="gone"/>
         </LinearLayout>
 
 

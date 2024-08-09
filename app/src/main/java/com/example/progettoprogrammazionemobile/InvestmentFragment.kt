@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.ai.client.generativeai.GenerativeModel
@@ -35,29 +36,19 @@ class InvestmentFragment : Fragment() {
     private lateinit var radioGroupRischio: RadioGroup
     private lateinit var azioniCifraTextView: TextView
     private lateinit var fondiCifraTextView: TextView
-    private lateinit var liquiditaCifraTextView: TextView
     private lateinit var confirmButton: Button
     private lateinit var periodoSpinner: Spinner
-    private lateinit var previsioneRendimentoTextView: TextView
     private lateinit var azioniFattoreRischioTextView: TextView
     private lateinit var fondiFattoreRischioTextView: TextView
-    private lateinit var liquiditaFattoreRischioTextView: TextView
-    private lateinit var chatRecyclerView: RecyclerView
-    private lateinit var chatInput: EditText
-    private lateinit var sendButton: Button
+    private lateinit var azioniButton: Button
+    private lateinit var fondiButton: Button
 
-    //private val messages = mutableListOf<ChatMessage>()
-    //private lateinit var chatAdapter: ChatAdapter
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
     private var saldoMedio: Double = 0.0
     private var exchangeRate: Double = 1.09
-    private var azioniFattoreRischio: Int = 0
-    private var fondiFattoreRischio: Int = 0
-    private var liquiditaFattoreRischio: Int = 0
 
-    //data class ChatMessage(val text: String, val isUser: Boolean)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,13 +65,12 @@ class InvestmentFragment : Fragment() {
         confirmButton = view.findViewById(R.id.confirm_button)
         periodoSpinner = view.findViewById(R.id.periodo_spinner)
 
+        azioniButton = view.findViewById(R.id.azioni_button)
+        fondiButton = view.findViewById(R.id.fondi_button)
+
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
         fondiFattoreRischioTextView = view.findViewById(R.id.fondi_fattore_rischio)
 
-
-        //chatRecyclerView = view.findViewById(R.id.chat_recyclerview)
-        //chatInput = view.findViewById(R.id.chat_input)
-        //sendButton = view.findViewById(R.id.send_button)
 
         azioniFattoreRischioTextView.text = "<10%"
         fondiFattoreRischioTextView.text = "<5%"
@@ -90,13 +80,9 @@ class InvestmentFragment : Fragment() {
         setupPeriodoSpinner()
         fetchSaldoMedioTrimestrale()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
-        //chatAdapter = ChatAdapter(messages)
 
-        //chatRecyclerView.adapter = chatAdapter
-        //chatRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        //sendButton.setOnClickListener { sendMessage() }
-
+        azioniButton.setOnClickListener { navigateToAIIntegrationFragment("azioni") }
+        fondiButton.setOnClickListener { navigateToAIIntegrationFragment("fondi") }
         return view
     }
 
@@ -145,52 +131,32 @@ class InvestmentFragment : Fragment() {
                     azioniCifraTextView.text = quotaazioni.toString()
                     fondiCifraTextView.text = quotafondi.toString()
 
+                    // Imposta visibilità dei bottoni
+                    azioniButton.visibility = if (quotaazioni > 0) View.VISIBLE else View.INVISIBLE
+                    fondiButton.visibility = if (quotafondi > 0) View.VISIBLE else View.INVISIBLE
+
                 } else {
                     Toast.makeText(requireContext(), "Nessun dato trovato per l'utente.", Toast.LENGTH_LONG).show()
+                    // Se nessun dato trovato, nascondi i bottoni
+                    azioniButton.visibility = View.INVISIBLE
+                    fondiButton.visibility = View.INVISIBLE
                 }
             }.addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Errore nel recupero dei dati: ${e.message}", Toast.LENGTH_SHORT).show()
+                // Gestisci anche i bottoni in caso di errore
+                azioniButton.visibility = View.INVISIBLE
+                fondiButton.visibility = View.INVISIBLE
             }
         } else {
             Toast.makeText(requireContext(), "Utente non autenticato.", Toast.LENGTH_SHORT).show()
+            // Gestisci anche i bottoni in caso di utente non autenticato
+            azioniButton.visibility = View.INVISIBLE
+            fondiButton.visibility = View.INVISIBLE
         }
     }
 
 
-    /* private fun sendMessage() {
-        val messageText = chatInput.text.toString()
-        if (messageText.isNotBlank()) {
-            val userMessage = ChatMessage(messageText, true)
-            messages.add(userMessage)
-            //chatAdapter.notifyItemInserted(messages.size - 1)
-            chatRecyclerView.scrollToPosition(messages.size - 1)
-            chatInput.text.clear()
-            //lifecycleScope.launch { sendToAI(messageText) }
-        }
-    }
 
-   private suspend fun sendToAI(messageText: String) = withContext(Dispatchers.IO) {
-        try {
-            val generativeModel = GenerativeModel(
-                modelName = "gemini-1.5-flash",
-                apiKey = "AIzaSyCe2AHQoV22Njr7MWcPwoEHnXJQpPIlGFw"
-            )
-            val chat = generativeModel.startChat(
-                history = messages.map {
-                    content(role = if (it.isUser) "user" else "model") { text(it.text) }
-                }
-            )
-            val aiResponse = chat.sendMessage(messageText)
-            withContext(Dispatchers.Main) {
-                val aiMessage = ChatMessage(aiResponse.text ?: "No response", false)
-                messages.add(aiMessage)
-                chatAdapter.notifyItemInserted(messages.size - 1)
-                chatRecyclerView.scrollToPosition(messages.size - 1)
-            }
-        } catch (e: Exception) {
-            Log.e("InvestmentFragment", "Failed to generate AI content: ${e.message}")
-        }
-    }*/
 
     private fun fetchExchangeRate() {
         lifecycleScope.launch {
@@ -270,31 +236,6 @@ class InvestmentFragment : Fragment() {
         }
     }
 
-   /* private fun generateAIContent() {
-        lifecycleScope.launch {
-            try {
-                val responseText = generateContent("What are the 5 best stocks to invest in right now?")
-                azioniSuggeriteTextView.text = responseText
-                Log.d("InvestmentFragment", "Generated AI content: $responseText")
-            } catch (e: Exception) {
-                Log.e("InvestmentFragment", "Failed to generate AI content: ${e.message}")
-            }
-        }
-    }
-
-    private suspend fun generateContent(prompt: String): String = withContext(Dispatchers.IO) {
-        try {
-            val generativeModel = GenerativeModel(
-                modelName = "gemini-1.5-flash",
-                apiKey = "AIzaSyCe2AHQoV22Njr7MWcPwoEHnXJQpPIlGFw"
-            )
-
-            val response = generativeModel.generateContent(prompt)
-            response.text ?: "No response"
-        } catch (e: Exception) {
-            "Error: ${e.message}"
-        }
-    }*/
 
 
     private fun onConfirmButtonClick() {
@@ -356,43 +297,27 @@ class InvestmentFragment : Fragment() {
                     Toast.makeText(requireContext(), "Errore nel salvataggio: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
+
+        azioniButton.visibility = View.VISIBLE
+        fondiButton.visibility = View.VISIBLE
+    }
+
+    private fun navigateToAIIntegrationFragment(type: String) {
+        // Creazione del bundle con il tipo di investimento
+        val bundle = Bundle().apply {
+            putString("investment_type", type)
+        }
+
+        // Ottenere il NavController
+        val navController = findNavController()
+
+        // Navigare verso il fragment AiIntegrationFragment
+        navController.navigate(R.id.navigation_AiIntegration, bundle)
     }
 
 
-    private fun calcolaRendimentoPrevisto(cifra: Double, periodo: Int, rischio: Int): Double {
-        // Placeholder per il calcolo effettivo del rendimento previsto
-        return cifra * periodo * rischio / 100.0
-    }
 }
 
 
 
-
-/*
-class ChatAdapter(private val messages: List<InvestmentFragment.ChatMessage>) : RecyclerView.Adapter<ChatAdapter.ChatViewHolder>() {
-
-    inner class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val messageTextView: TextView = view.findViewById(R.id.message_text_view)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_chat_message, parent, false)
-        return ChatViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
-        val message = messages[position]
-        holder.messageTextView.text = message.text
-        // Configura l'aspetto del messaggio in base al fatto che sia dell'utente o dell'AI
-        if (message.isUser) {
-            holder.messageTextView.gravity = Gravity.END
-            holder.messageTextView.setBackgroundResource(R.drawable.user_message_background)
-        } else {
-            holder.messageTextView.gravity = Gravity.START
-            holder.messageTextView.setBackgroundResource(R.drawable.ai_message_background)
-        }
-    }
-
-    override fun getItemCount() = messages.size
-}*/
 
