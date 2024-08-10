@@ -27,15 +27,21 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 import okhttp3.OkHttpClient
 import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Date
 
 class AiIntegrationFragment : Fragment() {
 
-    private val apiKey = "cqqcno1r01qouko6v7q0cqqcno1r01qouko6v7qg"
+    private val apiKey = "cqrngv9r01quefaheobgcqrngv9r01quefaheoc0"
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: StockAdapter
     private lateinit var investButton: Button
     private lateinit var showStocksButton: Button
     private lateinit var updateValuesButton: Button
+    private lateinit var sellAllButton: Button
     private lateinit var stockSelectionContainer: View
     private lateinit var investmentDataContainer: View
     private lateinit var investmentDataTextView: TextView
@@ -53,6 +59,7 @@ class AiIntegrationFragment : Fragment() {
         investButton = view.findViewById(R.id.button_invest)
         showStocksButton = view.findViewById(R.id.button_show_stocks)
         updateValuesButton = view.findViewById(R.id.button_update_values)
+        sellAllButton = view.findViewById(R.id.button_sellall)
         stockSelectionContainer = view.findViewById(R.id.stock_selection_container)
         investmentDataContainer = view.findViewById(R.id.investment_data_container)
         investmentDataTextView = view.findViewById(R.id.investment_data)
@@ -66,11 +73,10 @@ class AiIntegrationFragment : Fragment() {
             stockSelectionContainer.visibility = View.VISIBLE
             investmentDataContainer.visibility = View.GONE
             showStocksButton.visibility = View.GONE
-            updateValuesButton.visibility = View.GONE // Nascondi il bottone aggiorna valori
+            updateValuesButton.visibility = View.GONE
             lifecycleScope.launch {
                 try {
                     fetchBestStocks()
-                   // fetchExchangeRate()
                 } catch (e: Exception) {
                     Log.e("AIIntegrationFragment", "Error fetching stocks", e)
                 }
@@ -84,6 +90,7 @@ class AiIntegrationFragment : Fragment() {
             } else {
                 lifecycleScope.launch {
                     saveInvestments(selectedStocks)
+                    registerInvestmentTransaction(selectedStocks)
                     showInvestmentData()
                 }
             }
@@ -93,6 +100,12 @@ class AiIntegrationFragment : Fragment() {
             lifecycleScope.launch {
                 updateAllStockValues()
                 showInvestmentData()
+            }
+        }
+
+        sellAllButton.setOnClickListener {
+            lifecycleScope.launch {
+                sellAllStocks()
             }
         }
 
@@ -118,7 +131,56 @@ class AiIntegrationFragment : Fragment() {
 
     private val service = retrofit.create(FinnhubApiService::class.java)
 
+    private suspend fun showInvestmentData() {
+        val uid = user?.uid ?: return
+        val userDocRef = db.collection(uid).document("Account").collection("Azioni")
+        try {
+            val snapshot = userDocRef.get().await()
 
+            if (snapshot.isEmpty) {
+               // Se non ci sono azioni, carica le migliori azioni disponibili automaticamente
+                showStocksButton.visibility = View.VISIBLE // Nascondi il pulsante Visualizza Azioni se non ci sono azioni
+                return
+            }
+
+            val investmentData = StringBuilder()
+            for (document in snapshot.documents) {
+                val data = document.data
+
+                val stockName = data?.get("nomeAzione") as? String
+                val purchaseAmount = data?.get("valoreAcq$") as? Double
+                val realAmount = data?.get("valoreReal$") as? Double
+                val currentAmount = data?.get("valoreUlt$") as? Double
+                val dateUlt = data?.get("dataUlt") as? String
+                val numStocks = data?.get("numeroAzioni") as? Int
+
+                val numberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
+
+                if (stockName != null) {
+                    investmentData.append("Name: $stockName\n")
+                    investmentData.append("Price\n")
+                    investmentData.append("Purchase: ${purchaseAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Last: ${realAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Current: ${currentAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
+                    investmentData.append("Current Date: ${dateUlt ?: "N/A"}\n")
+                    investmentData.append("Number of Stocks: ${numStocks ?: "N/A"}\n")
+                    investmentData.append("\n")
+                }
+            }
+
+            investmentDataTextView.text = investmentData.toString()
+            stockSelectionContainer.visibility = View.GONE
+            investmentDataContainer.visibility = View.VISIBLE
+            showStocksButton.visibility = View.GONE // Nascondi il pulsante Visualizza Azioni se ci sono già azioni
+            updateValuesButton.visibility = View.VISIBLE
+            sellAllButton.visibility = View.VISIBLE
+        } catch (e: Exception) {
+            Log.e("AIIntegrationFragment", "Failed to fetch investment data", e)
+            if (isAdded) {
+                Toast.makeText(requireContext(), "Failed to fetch investment data: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
     private fun fetchExchangeRate() {
         lifecycleScope.launch {
@@ -141,11 +203,6 @@ class AiIntegrationFragment : Fragment() {
             }
         }
     }
-
-
-
-
-
 
     private suspend fun fetchBestStocks() {
         withContext(Dispatchers.Main) {
@@ -186,22 +243,6 @@ class AiIntegrationFragment : Fragment() {
         }
     }
 
-    private suspend fun getStockQuote(apiService: FinnhubApiService, apiKey: String, symbol: String): StockQuote? {
-        return withContext(Dispatchers.IO) {
-            val response = apiService.getStockQuote(symbol, apiKey).execute()
-            if (response.isSuccessful) {
-                response.body()
-            } else {
-                Log.e("AIIntegrationFragment", "Failed to get stock quote for $symbol: ${response.errorBody()?.string()}")
-                null
-            }
-        }
-    }
-
-    private fun calculateRisk(quote: StockQuote): Double {
-        return (quote.h - quote.l) / quote.c
-    }
-
     private suspend fun getBestStocks(apiService: FinnhubApiService, apiKey: String): List<StockSymbolWithQuote> {
         val symbols = getStockSymbols(apiService, apiKey)
 
@@ -211,12 +252,16 @@ class AiIntegrationFragment : Fragment() {
         val currentDate = dateFormat.format(java.util.Date())
 
         for (symbol in symbols) {
-            if (count >= 40) {
+            if (count >= 20) { // Riduci il numero di richieste
                 break
             }
             val quote = getStockQuote(apiService, apiKey, symbol.symbol)
+
             if (quote != null) {
                 quote.valdata = currentDate
+            } else {
+                // Se la chiamata API fallisce, interrompi il ciclo
+                break
             }
 
             quote?.let {
@@ -230,6 +275,27 @@ class AiIntegrationFragment : Fragment() {
 
         Log.d("AIIntegrationFragment", "Calculated low risk stocks: $lowRiskStocks")
         return lowRiskStocks
+    }
+
+    private suspend fun getStockQuote(apiService: FinnhubApiService, apiKey: String, symbol: String): StockQuote? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getStockQuote(symbol, apiKey).execute()
+                if (response.isSuccessful) {
+                    response.body()
+                } else {
+                    Log.e("AIIntegrationFragment", "Failed to get stock quote for $symbol: ${response.errorBody()?.string()}")
+                    null
+                }
+            } catch (e: Exception) {
+                Log.e("AIIntegrationFragment", "Exception during API call for $symbol: ${e.message}")
+                null
+            }
+        }
+    }
+
+    private fun calculateRisk(quote: StockQuote): Double {
+        return (quote.h - quote.l) / quote.c
     }
 
     private suspend fun saveInvestments(stocks: List<StockSymbolWithQuote>) {
@@ -289,7 +355,6 @@ class AiIntegrationFragment : Fragment() {
             }
         }
     }
-
 
     private suspend fun fetchNumberOfStocks(): Int? {
         val uid = user?.uid ?: return null
@@ -358,44 +423,90 @@ class AiIntegrationFragment : Fragment() {
     }
 
 
-    private suspend fun showInvestmentData() {
+
+
+    private suspend fun registerInvestmentTransaction(stocks: List<StockSymbolWithQuote>) {
+        val uid = user?.uid ?: return
+        val userDocRef = db.collection(uid).document("Account").collection("Transaction")
+
+        val accountDocRef = db.collection(uid).document("Account")
+
+        val cifrainAzioni = try {
+            val accountSnapshot = accountDocRef.get().await()
+            accountSnapshot.getLong("cifraInAzioni")?.toInt() ?: 1
+        } catch (e: Exception) {
+            Log.e("AIIntegrationFragment", "Failed to fetch number of stocks: ${e.message}")
+            1
+        }
+
+        val currentDateTime = LocalDateTime.now()
+
+        // Converti il nuovo oggetto LocalDateTime in un oggetto Date
+        val formattedDateTime = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant())
+
+        val data = hashMapOf(
+            "amount" to cifrainAzioni,
+            "category" to "Stock Investment",
+            "outgoing" to true,
+            "date" to formattedDateTime,
+            "uid" to uid
+        )
+
+        try {
+            userDocRef.document(formattedDateTime.toString()).set(data).await() // Usa la data come ID del documento
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Investment transaction registered successfully!", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Failed to register transaction: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("AIIntegrationFragment", "Failed to register transaction", e)
+            }
+        }
+    }
+
+    private suspend fun sellAllStocks() {
         val uid = user?.uid ?: return
         val userDocRef = db.collection(uid).document("Account").collection("Azioni")
+        val transactionDocRef = db.collection(uid).document("Account").collection("Transaction")
+
         try {
             val snapshot = userDocRef.get().await()
-
-            val investmentData = StringBuilder()
-            for (document in snapshot.documents) {
-                val data = document.data
-
-                val stockName = data?.get("nomeAzione") as? String
-                val purchaseAmount = data?.get("valoreAcq$") as? Double
-                val realAmount = data?.get("valoreReal$") as?  Double
-                val currentAmount = data?.get("valoreUlt$") as?  Double
-                val dateUlt = data?.get("dataUlt") as? String
-                val numStocks = data?.get("numeroAzioni") as? Int
-
-                val numberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY) // Locale per EUR
-
-                if (stockName != null) {
-                    investmentData.append("Name: $stockName\n")
-                    investmentData.append("Price\n")
-                    investmentData.append("Purchase: ${purchaseAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
-                    investmentData.append("Last: ${realAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
-                    investmentData.append("Current: ${currentAmount?.let { numberFormat.format(it) } ?: "N/A"}\n")
-                    investmentData.append("Current Date: ${dateUlt ?: "N/A"}\n")
-                    investmentData.append("Number of Stocks: ${numStocks ?: "N/A"}\n")
-                    investmentData.append("\n")
-                }
+            val totalValue = snapshot.documents.sumOf { document ->
+                val currentAmount = document.getDouble("valoreUlt$") ?: 0.0
+                val numStocks = document.getDouble("numeroAzioni") ?: 0.0
+                currentAmount * numStocks / exchangeRate
             }
-            investmentDataTextView.text = investmentData.toString()
-            stockSelectionContainer.visibility = View.GONE
-            investmentDataContainer.visibility = View.VISIBLE
-            showStocksButton.visibility = View.VISIBLE
-            updateValuesButton.visibility = View.VISIBLE // Mostra il bottone aggiorna valori
+
+            val currentDateTime = LocalDateTime.now()
+
+            // Converti il nuovo oggetto LocalDateTime in un oggetto Date
+            val formattedDateTime = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant())
+
+            // Registra la transazione di vendita
+            val transactionData = hashMapOf(
+                "amount" to totalValue,
+                "category" to "Stock Sale",
+                "outgoing" to false,
+                "date" to formattedDateTime,
+                "uid" to uid
+            )
+            transactionDocRef.document(formattedDateTime.toString()).set(transactionData).await() // Usa la data come ID del documento
+
+            // Rimuovi tutte le azioni dal database
+            for (document in snapshot.documents) {
+                userDocRef.document(document.id).delete().await()
+            }
+
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "All stocks sold successfully! Funds have been updated.", Toast.LENGTH_SHORT).show()
+                showInvestmentData()
+            }
         } catch (e: Exception) {
-            Log.e("AIIntegrationFragment", "Failed to fetch investment data", e)
-            Toast.makeText(requireContext(), "Failed to fetch investment data: ${e.message}", Toast.LENGTH_LONG).show()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(requireContext(), "Failed to sell all stocks: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("AIIntegrationFragment", "Failed to sell all stocks", e)
+            }
         }
     }
 

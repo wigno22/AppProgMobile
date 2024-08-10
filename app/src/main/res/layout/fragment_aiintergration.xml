@@ -1,24 +1,18 @@
-<!-- fragment_aiintergration.xml -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-
+    <!-- Bottone per mostrare le azioni -->
     <Button
         android:id="@+id/button_show_stocks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Show Stocks" />
 
-    <Button
-        android:id="@+id/button_update_values"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aggiorna Valori"
-        android:visibility="gone" />
-
+    <!-- Barra di progresso -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -26,6 +20,7 @@
         android:layout_gravity="center"
         android:visibility="gone" />
 
+    <!-- Layout per la selezione delle azioni -->
     <LinearLayout
         android:id="@+id/stock_selection_container"
         android:layout_width="match_parent"
@@ -33,13 +28,14 @@
         android:orientation="vertical"
         android:visibility="gone">
 
+        <!-- RecyclerView per mostrare le azioni -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:maxHeight="300dp" /> <!-- Imposta un'altezza massima -->
+            android:layout_height="wrap_content"
+            android:maxHeight="300dp" />
 
+        <!-- Bottone per investire -->
         <Button
             android:id="@+id/button_invest"
             android:layout_width="wrap_content"
@@ -48,17 +44,45 @@
             android:visibility="visible" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/investment_data_container"
+    <!-- ScrollView per la schermata delle azioni già possedute -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/investment_data"
+        <LinearLayout
+            android:id="@+id/investment_data_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Investment Data" />
-    </LinearLayout>
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Testo per mostrare i dati di investimento -->
+            <TextView
+                android:id="@+id/investment_data"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Investment Data" />
+
+            <!-- Bottone per aggiornare i valori -->
+            <Button
+                android:id="@+id/button_update_values"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aggiorna Valori"
+                android:layout_marginTop="16dp" />
+
+            <!-- Bottone per vendere tutte le azioni -->
+            <Button
+                android:id="@+id/button_sellall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sell All Stocks"
+                android:textColor="@android:color/white"
+                android:background="@color/colorAccent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
