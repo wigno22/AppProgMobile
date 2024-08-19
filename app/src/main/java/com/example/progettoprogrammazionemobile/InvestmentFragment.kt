@@ -158,32 +158,6 @@ class InvestmentFragment : Fragment() {
 
 
 
-    private fun fetchExchangeRate() {
-        lifecycleScope.launch {
-            try {
-                val retrofit = Retrofit.Builder()
-                    .baseUrl("https://v6.exchangerate-api.com/v6/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-
-                val api = retrofit.create(ExchangeRateApiService::class.java)
-                val response = api.getExchangeRates("47a1ca6a80-0abeff07df-shwjzm", "EUR", "USD")
-
-                // Verifica che il body non sia null e recupera il valore del tasso di cambio
-                exchangeRate = response.conversion_rate
-                Log.d("AIIntegrationFragment", "Exchange Rate EUR/USD: $exchangeRate")
-
-            } catch (e: Exception) {
-                Log.e("AIIntegrationFragment", "Failed to fetch exchange rate: ${e.message}")
-                Toast.makeText(requireContext(), "Errore nel recupero del tasso di cambio.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-
-
-
-
     private fun setupPeriodoSpinner() {
         val periodi = arrayOf("6 mesi", "12 mesi", "18 mesi", "24 mesi", "36 mesi")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, periodi)

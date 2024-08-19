@@ -71,83 +71,85 @@
 
     <LinearLayout
         android:layout_width="376dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_height="214dp"
+        android:layout_marginTop="15dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/border"
             android:orientation="horizontal">
 
-        <TextView
-            android:layout_width="184dp"
-            android:layout_height="match_parent"
-            android:layout_marginBottom="10dp"
-            android:background="@drawable/border"
-            android:text="Phone Number:"
-            android:textSize="18sp" />
+            <TextView
+                android:layout_width="184dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Phone Number:"
+                android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/Tphone"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Phone Number"
-            android:inputType="phone"
-            android:padding="10dp"/>
+            <EditText
+                android:id="@+id/Tphone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Phone Number"
+                android:inputType="phone"
+                android:padding="10dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/border"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="183dp"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/border"
+                android:gravity="center"
                 android:text="Fixed Outcome:"
                 android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/TfixedOut"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Fixed Expenses"
-            android:inputType="numberDecimal"
-            android:padding="10dp"
-            android:text="@{viewModel.fixedOut}"/>
+            <EditText
+                android:id="@+id/TfixedOut"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="Fixed Expenses"
+                android:inputType="numberDecimal"
+                android:padding="10dp"
+                android:text="@{viewModel.fixedOut}" />
 
         </LinearLayout>
 
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/border"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="184dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
-                android:background="@drawable/border"
+                android:gravity="center"
                 android:text="Fixed Income:"
                 android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/TfixedIn"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Fixed Income"
-            android:inputType="numberDecimal"
-            android:padding="10dp"
-            android:text="@{viewModel.fixedEntries}"/>
+
+            <EditText
+                android:id="@+id/TfixedIn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Fixed Income"
+                android:inputType="numberDecimal"
+                android:padding="10dp"
+                android:text="@{viewModel.fixedEntries}" />
+
         </LinearLayout>
+
     </LinearLayout>
 
     <Button

@@ -96,7 +96,7 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
-
+    implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
 
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
@@ -104,9 +104,6 @@ dependencies {
 
     implementation ("androidx.fragment:fragment-ktx:1.3.6")
 
-    //implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
-
-    //implementation("com.yahoofinance-api:YahooFinanceAPI:3.15.0")
 
     implementation(kotlin("stdlib"))
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
@@ -131,10 +128,6 @@ dependencies {
     implementation ("com.google.firebase:firebase-messaging:23.0.0")
     implementation ("com.google.firebase:firebase-firestore:24.0.0")
     implementation ("com.google.firebase:firebase-vertex-ai:1.0.0")
-
-
-
-
 
     */
 
