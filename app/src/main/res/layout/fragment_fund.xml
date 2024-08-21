@@ -1,0 +1,89 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Bottone per mostrare le azioni -->
+    <Button
+        android:id="@+id/button_show_crypto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Funds" />
+
+    <!-- Barra di progresso -->
+    <ProgressBar
+        android:id="@+id/progressBarCrypto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- Layout per la selezione delle azioni -->
+    <LinearLayout
+        android:id="@+id/crypto_selection_container"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- RecyclerView per mostrare le azioni -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_crypto"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.8" />
+
+        <Button
+            android:id="@+id/button_invest_crypto"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.2"
+            android:background="@android:color/holo_blue_light"
+            android:text="Invest" />
+    </LinearLayout>
+
+
+    <!-- ScrollView per la schermata delle azioni già possedute -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:id="@+id/investment_data_container_crypto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- Testo per mostrare i dati di investimento -->
+            <TextView
+                android:id="@+id/investment_data_crypto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Investment Data" />
+
+            <!-- Bottone per aggiornare i valori -->
+            <Button
+                android:id="@+id/button_update_values_crypto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Aggiorna Valori"
+                android:layout_marginTop="16dp" />
+
+            <!-- Bottone per vendere tutte le azioni -->
+            <Button
+                android:id="@+id/button_sellallcrypto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sell All Stocks"
+                android:textColor="@android:color/white"
+                android:background="@color/colorAccent"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

@@ -1,9 +1,9 @@
 package com.example.progettoprogrammazionemobile
 
-import com.google.gson.annotations.SerializedName
-import okhttp3.ResponseBody
+import com.google.android.gms.common.api.Response
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -25,8 +25,9 @@ interface FinnhubApiService {
         @Query("symbol") symbol: String,
         @Query("token") apiKey: String
     ): ExchangeRateResponse
-}
 
+
+}
 
 
 
@@ -39,11 +40,9 @@ interface ExchangeRateApiService {
     ): ExchangeRateResponseE
 }
 
-
 data class ExchangeRateResponseE(
     val conversion_rate: Double
 )
-
 
 // Finnhub Response Model
 data class ExchangeRateResponse(
@@ -55,68 +54,61 @@ data class StockSymbolWithQuote(
     val quote: StockQuote
 )
 
-
 data class StockSymbol(
     val symbol: String,
     val description: String
-)
 
+)
 
 data class StockQuote(
     val c: Double,  // Prezzo corrente
     val h: Double,  // Prezzo massimo del giorno
     val l: Double,  // Prezzo minimo del giorno
-    val o: Double,  // Prezzo di apertura
-    val pc: Double, // Prezzo di chiusura precedente
-    var valdata: String // Data del prezzo
+    var valdata: String
 )
 
+interface CoinMarketCapApiService {
+    @GET("cryptocurrency/listings/latest")
+    fun getCryptoSymbols(
+        @Query("CMC_PRO_API_KEY") apiKey: String
+    ): Call<CryptoListingsResponse>
 
-
-interface YahooFinanceApiService {
-    @GET("v1/finance/search")
-    fun getFundSymbols(
-        @Query("q") query: String,
-        @Query("quotesCount") quotesCount: Int = 5,
-        @Query("region") region: String = "US"
-    ): Call<ResponseBody>
-
-    @GET("v8/finance/chart/{symbol}")
-    fun getFundQuote(
-        @Path("symbol") symbol: String,
-        @Query("region") region: String = "US",
-        @Query("interval") interval: String = "1d"
-    ): Call<ResponseBody>
+    @GET("cryptocurrency/quotes/latest")
+    fun getCryptoQuote(
+        @Query("symbol") symbol: String,
+        @Query("CMC_PRO_API_KEY") apiKey: String
+    ): Call<CryptoQuoteResponse>
 }
 
-
-
-
-data class FundSymbolWithQuote(
-    val symbol: FundSymbol,
-    var quote: FundQuote
-) {
-    // Questo costruttore senza argomenti è necessario per la deserializzazione di Firebase Firestore
-}
-
-data class FundSymbolsResponse(
-    @SerializedName("data")
-    val data: List<FundSymbol>?
+data class CryptoListingsResponse(
+    val data: List<CryptoSymbol>
 )
 
-data class FundSymbol(
-    val symbol: String = "",
-    val name: String = "",
-    val description: String = ""
+data class CryptoQuoteResponse(
+    val data: Map<String, CryptoQuoteDetails>
+)
+
+data class CryptoQuoteDetails(
+    val quote: Map<String, CryptoQuote>
+)
+
+data class CryptoSymbol(
+    val symbol: String,
+    val name: String,
+    val slug: String,
+    val cmc_rank: Int
+)
+
+data class CryptoQuote(
+    val price: Double,
+    val volume_24h: Double,
+    val percent_change_1h: Double,
+    val percent_change_24h: Double,
+    val percent_change_7d: Double
 )
 
 
-data class FundQuote(
-    val symbol: String = "",
-    val c: Double = 0.0,
-    val h: Double = 0.0,
-    val l: Double = 0.0,
-    val o: Double = 0.0,
-    val pc: Double = 0.0,
-    var valdata: String = ""
+data class CryptoSymbolWithQuote(
+    val symbol: CryptoSymbol,
+    val quote: CryptoQuote
 )

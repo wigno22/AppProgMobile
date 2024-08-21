@@ -81,8 +81,8 @@ class InvestmentFragment : Fragment() {
         fetchSaldoMedioTrimestrale()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
 
-        azioniButton.setOnClickListener { navigateToAIIntegrationFragment("azioni") }
-        fondiButton.setOnClickListener { navigateToAIIntegrationFragment("fondi") }
+        azioniButton.setOnClickListener { navigatetoFragment("azioni") }
+        fondiButton.setOnClickListener { navigatetoFragment("fondi") }
         return view
     }
 
@@ -276,17 +276,15 @@ class InvestmentFragment : Fragment() {
         fondiButton.visibility = View.VISIBLE
     }
 
-    private fun navigateToAIIntegrationFragment(type: String) {
+    private fun navigatetoFragment(type: String) {
         // Creazione del bundle con il tipo di investimento
-        val bundle = Bundle().apply {
-            putString("investment_type", type)
-        }
 
         // Ottenere il NavController
         val navController = findNavController()
 
-        // Navigare verso il fragment AiIntegrationFragment
-        navController.navigate(R.id.navigation_AiIntegration, bundle)
+        if (type=="azioni")navController.navigate(R.id.navigation_stock) else if (type=="fondi") navController.navigate(R.id.navigation_fund)
+
+
     }
 
 

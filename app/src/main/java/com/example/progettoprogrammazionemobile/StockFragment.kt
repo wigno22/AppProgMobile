@@ -36,7 +36,7 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.util.Date
 
-class AiIntegrationFragment : Fragment() {
+class StockFragment : Fragment() {
 
     private val apiKey = "cqrngv9r01quefaheobgcqrngv9r01quefaheoc0"
     //private val apiKeyAlpha = "IAR74U1H4BNDN1BP"
@@ -59,7 +59,7 @@ class AiIntegrationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_aiintergration, container, false)
+        val view = inflater.inflate(R.layout.fragment_stock, container, false)
         recyclerView = view.findViewById(R.id.recycler_view)
         investButton = view.findViewById(R.id.button_invest)
         showStocksButton = view.findViewById(R.id.button_show_stocks)

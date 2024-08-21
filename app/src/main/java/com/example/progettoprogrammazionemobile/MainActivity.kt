@@ -30,7 +30,7 @@ class profilefrg : Fragment(R.layout.fragment_profile)
 class accountfrg : Fragment(R.layout.fragment_account)
 class operationfrg : Fragment(R.layout.fragment_operation)
 class investmentfrg : Fragment(R.layout.fragment_investment)
-class aiintegrationfrg : Fragment(R.layout.fragment_aiintergration)
+class aiintegrationfrg : Fragment(R.layout.fragment_stock)
 class chataifrg : Fragment(R.layout.fragment_chatai)
 
 class MainActivity : AppCompatActivity() {
