@@ -28,9 +28,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:gravity="right"
+
                 android:hint=""
                 android:textColor="@color/colorNeutral"
-                android:textSize="17dp"/>
+                android:textSize="17dp" />
         </LinearLayout>
 
         <!-- Scelta del livello di rischio -->
@@ -93,6 +95,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:inputType="numberDecimal"
+                android:gravity="right"
                 android:hint=" "
                 android:textSize="17dp"/>
         </LinearLayout>
@@ -124,7 +127,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Piano d'investimento"
+            android:text="Proponi Piano d'investimento"
             android:textColor="@color/white"
             android:textSize="17dp"/>
 
@@ -134,27 +137,45 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+
             <TableLayout
-                android:layout_width="287dp"
+                android:layout_width="284dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
-                android:background="@color/lavanda"
-                android:stretchColumns="1,2,3,4,5"
-                >
+                android:layout_marginTop="10dp"
+                android:stretchColumns="1,2,3,4,5">
 
                 <!-- Intestazione della tabella -->
+
+                <TableRow
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary">
+
+                    <TextView
+                        android:id="@+id/azioni_label"
+                        android:gravity="center"
+                        android:text="Azioni"
+
+                        android:textColor="@android:color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+                </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/colorPrimary"
+                    android:textSize="10dp">
+
 
                     <TextView
                         android:id="@+id/transactionAmountTitle"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Valore"
+                        android:text="Acquisto"
                         android:textColor="@android:color/white"
-                        android:textSize="14sp" />
+                        android:textSize="18dp" />
 
                     <TextView
                         android:id="@+id/transactionPercentageTitle"
@@ -163,7 +184,7 @@
                         android:gravity="center"
                         android:text="Risk"
                         android:textColor="@android:color/white"
-                        android:textSize="14sp" />
+                        android:textSize="18dp" />
 
                     <TextView
                         android:id="@+id/transactionDateTitle"
@@ -172,7 +193,7 @@
                         android:gravity="center"
                         android:text="Data"
                         android:textColor="@android:color/white"
-                        android:textSize="14sp" />
+                        android:textSize="18dp" />
 
 
                 </TableRow>
@@ -184,29 +205,66 @@
                     android:textSize="10dp">
 
                     <TextView
-                        android:id="@+id/azioni_valore_acquisto"
+                        android:id="@+id/azioni_cifra"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="right"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="_______" />
 
                     <TextView
                         android:id="@+id/azioni_percentuale_rischio"
-                        android:layout_width="40dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
 
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="0%" />
 
                     <TextView
                         android:id="@+id/azioni_data_acquisto"
+                        android:layout_width="114dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="17dp"
+                        android:text="DD/MM/YYYY" />
+
+
+                </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:background="@color/colorPrimary"
+                    android:textSize="10dp">
+
+
+                    <TextView
+                        android:id="@+id/transactionAmountTitle2"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
-                        android:text="DD/MM/YYYY" />
+                        android:text="Corrente"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionPercentageTitle2"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Margine"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionDateTitle2"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Data"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
 
 
                 </TableRow>
@@ -222,7 +280,7 @@
                         android:layout_height="wrap_content"
 
                         android:gravity="right"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="_______" />
 
                     <TextView
@@ -230,7 +288,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="0%" />
 
                     <TextView
@@ -238,8 +296,68 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="DD/MM/YYYY" />
+
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/colorPrimary">
+
+                    <TableRow android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/cripto_label"
+                            android:gravity="center"
+                            android:text="Crypto"
+                            android:textColor="@android:color/white"
+                            android:textSize="20dp"
+                            android:textStyle="bold" />
+                    </TableRow>
+
+
+                </TableRow>
+
+
+                <!-- Intestazione della tabella -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="@color/colorPrimary">
+
+
+                    <TextView
+                        android:id="@+id/transactionAmountTitleC"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Acquisto"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionPercentageTitleC"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Risk"
+                        android:textColor="@android:color/white"
+
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionDateTitleC"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Data"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
 
 
                 </TableRow>
@@ -250,12 +368,12 @@
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/crypto_valore_acquisto"
+                        android:id="@+id/crypto_cifra"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="right"
 
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="_______" />
 
                     <TextView
@@ -263,7 +381,7 @@
                         android:layout_width="40dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="0%" />
 
                     <TextView
@@ -271,10 +389,46 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="DD/MM/YYYY" />
                 </TableRow>
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
 
+                    android:background="@color/colorPrimary"
+                    android:textSize="10dp">
+
+
+                    <TextView
+                        android:id="@+id/transactionAmountTitle3"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Corrente"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionPercentageTitle3"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Margine"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+                    <TextView
+                        android:id="@+id/transactionDateTitle3"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Data"
+                        android:textColor="@android:color/white"
+                        android:textSize="18dp" />
+
+
+                </TableRow>
                 <!-- Riga 2 per "Crypto" - Valore attuale -->
                 <TableRow
                     android:layout_width="match_parent"
@@ -283,17 +437,17 @@
                     <TextView
                         android:id="@+id/crypto_valore_attuale"
                         android:layout_width="80dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="right"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="_______" />
 
                     <TextView
                         android:id="@+id/crypto_percentuale_rendimento"
                         android:layout_width="40dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="0%" />
 
                     <TextView
@@ -301,7 +455,7 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="8dp"
+                        android:padding="17dp"
                         android:text="DD/MM/YYYY" />
 
                 </TableRow>
@@ -310,106 +464,37 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="60dp">
+                android:layout_height="374dp"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical">
 
                 <Button
                     android:id="@+id/azioni_button"
-                    android:layout_width="match_parent"
+                    android:layout_width="72dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="50dp"
                     android:padding="8dp"
                     android:text="Dettagli"
-                    android:textSize="10dp"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/white"
+                    android:textSize="10dp" />
+
 
                 <Button
                     android:id="@+id/crypto_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="160dp"
+                    android:padding="8dp"
                     android:text="Dettagli"
                     android:textColor="@color/white"
-                    android:padding="8dp"
-                    android:textSize="10dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp" />
+                    android:textSize="10dp" />
+
 
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Azioni -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="16dp">
-
-            <TextView
-                android:id="@+id/azioni_label"
-                android:layout_width="68dp"
-                android:layout_height="wrap_content"
-                android:text="Azioni:"
-                android:textSize="17dp" />
-
-            <TextView
-                android:id="@+id/azioni_cifra"
-                android:layout_width="98dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:hint="____________"
-                android:textSize="17dp" />
-
-            <TextView
-                android:id="@+id/azioni_fattore_rischio"
-                android:layout_width="94dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textSize="17dp"
-                android:text="0%"
-                android:gravity="right"/>
-
-
-        </LinearLayout>
-
-        <!-- Fondi -->
-        <LinearLayout
-            android:layout_width="365dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/crypto_label"
-                android:layout_width="68dp"
-                android:layout_height="wrap_content"
-                android:text="Crypto:"
-                android:textSize="17dp" />
-
-            <TextView
-                android:id="@+id/crypto_cifra"
-                android:layout_width="98dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:hint="____________"
-                android:textSize="17dp" />
-
-            <TextView
-                android:id="@+id/crypto_fattore_rischio"
-                android:layout_width="94dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:textSize="17dp"
-                android:text="0%"
-                android:gravity="right"/>
-
-
-        </LinearLayout>
 
 
     </LinearLayout>

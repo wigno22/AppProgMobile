@@ -42,7 +42,8 @@ class InvestmentFragment : Fragment() {
     private lateinit var CryptoFattoreRischioTextView: TextView
     private lateinit var azioniButton: Button
     private lateinit var cryptoButton: Button
-
+    private lateinit var azioni_valore_attuale: TextView
+    private lateinit var crypto_valore_attuale: TextView
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -71,6 +72,10 @@ class InvestmentFragment : Fragment() {
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_percentuale_rischio)
         CryptoFattoreRischioTextView = view.findViewById(R.id.crypto_percentuale_rischio)
 
+        azioni_valore_attuale =  view.findViewById(R.id.azioni_valore_attuale)
+        crypto_valore_attuale = view.findViewById(R.id.crypto_valore_attuale)
+
+
 
         azioniFattoreRischioTextView.text = "<10%"
         CryptoFattoreRischioTextView.text = "<5%"
@@ -79,6 +84,8 @@ class InvestmentFragment : Fragment() {
         showUserData()
         setupPeriodoSpinner()
         fetchSaldoMedioTrimestrale()
+        fetchSaldoAzioni()
+        fetchSaldoCrypto()
         confirmButton.setOnClickListener { onConfirmButtonClick() }
 
         azioniButton.setOnClickListener { navigatetoFragment("azioni") }
@@ -163,6 +170,86 @@ class InvestmentFragment : Fragment() {
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, periodi)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         periodoSpinner.adapter = adapter
+    }
+
+    private fun fetchSaldoAzioni() {
+        val user = auth.currentUser
+        val UID = user?.uid
+        if (UID != null) {
+            val userDocRef = db.collection(UID).document("Account")
+            val threeMonthsAgo = Calendar.getInstance().apply {
+                add(Calendar.MONTH, -3)
+            }.time
+
+            val transactionsRef = userDocRef.collection("Azioni")
+
+
+            transactionsRef.get().addOnSuccessListener { querySnapshot ->
+                var saldoAzTotale = 0.0
+
+                Log.d("InvestimentiFragment", "Number of documents: ${querySnapshot.documents.size}")
+
+                for (document in querySnapshot.documents) {
+                    var qta = document.getDouble("numeroAzioni") ?: 0.0
+                    var amount = document.getDouble("valoreUlt") ?: 0.0
+
+                    saldoAzTotale +=(amount * qta)
+
+                    Log.d("InvestimentiFragment", "Document: $document, Amount: $amount, Running Total: $saldoAzTotale")
+                }
+
+
+                val decimalFormat = DecimalFormat("#.0")
+                val AzioniFormatted = decimalFormat.format(saldoAzTotale)
+
+                azioni_valore_attuale.setText(AzioniFormatted)
+
+                Log.d("InvestimentiFragment", "Saldo medio: $saldoAzTotale")
+            }.addOnFailureListener { exception ->
+                Log.e("InvestimentiFragment", "Failed to fetch transactions: ${exception.message}")
+            }
+        } else {
+            Log.e("InvestimentiFragment", "User ID is null")
+        }
+    }
+
+    private fun fetchSaldoCrypto() {
+        val user = auth.currentUser
+        val UID = user?.uid
+        if (UID != null) {
+            val userDocRef = db.collection(UID).document("Account")
+            val threeMonthsAgo = Calendar.getInstance().apply {
+                add(Calendar.MONTH, -3)
+            }.time
+
+            val transactionsRef = userDocRef.collection("Criptovalute")
+
+            transactionsRef.get().addOnSuccessListener { querySnapshot ->
+                var saldoCryTotale = 0.0
+
+                Log.d("InvestimentiFragment", "Number of documents: ${querySnapshot.documents.size}")
+
+                for (document in querySnapshot.documents) {
+                    var amount = document.getDouble("valoreUlt€") ?: 0.0
+                    var qta = document.getDouble("numeroCriptovalute") ?: 0.0
+                    saldoCryTotale += amount * qta
+
+                    Log.d("InvestimentiFragment", "Document: $document, Amount: $amount, Running Total: $saldoCryTotale")
+                }
+
+
+                val decimalFormat = DecimalFormat("#.0")
+                val CryptoFormatted = decimalFormat.format(saldoCryTotale)
+
+                crypto_valore_attuale.setText(CryptoFormatted)
+
+                Log.d("InvestimentiFragment", "Saldo medio: $crypto_valore_attuale")
+            }.addOnFailureListener { exception ->
+                Log.e("InvestimentiFragment", "Failed to fetch transactions: ${exception.message}")
+            }
+        } else {
+            Log.e("InvestimentiFragment", "User ID is null")
+        }
     }
 
 
