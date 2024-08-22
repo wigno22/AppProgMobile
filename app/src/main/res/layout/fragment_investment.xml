@@ -124,8 +124,222 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Visualizza Piano d'investimento"
+            android:text="Piano d'investimento"
+            android:textColor="@color/white"
             android:textSize="17dp"/>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TableLayout
+                android:layout_width="287dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:background="@color/lavanda"
+                android:stretchColumns="1,2,3,4,5"
+                >
+
+                <!-- Intestazione della tabella -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/transactionAmountTitle"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Valore"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/transactionPercentageTitle"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Risk"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/transactionDateTitle"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="Data"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp" />
+
+
+                </TableRow>
+
+                <!-- Riga 1 per "Azioni" - Valore d'acquisto -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="10dp">
+
+                    <TextView
+                        android:id="@+id/azioni_valore_acquisto"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="_______" />
+
+                    <TextView
+                        android:id="@+id/azioni_percentuale_rischio"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="0%" />
+
+                    <TextView
+                        android:id="@+id/azioni_data_acquisto"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="DD/MM/YYYY" />
+
+
+                </TableRow>
+
+                <!-- Riga 2 per "Azioni" - Valore attuale -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/azioni_valore_attuale"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="_______" />
+
+                    <TextView
+                        android:id="@+id/azioni_percentuale_rendimento"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="0%" />
+
+                    <TextView
+                        android:id="@+id/azioni_data_attuale"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="DD/MM/YYYY" />
+
+
+                </TableRow>
+
+                <!-- Riga 1 per "Crypto" - Valore d'acquisto -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/crypto_valore_acquisto"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+
+                        android:padding="8dp"
+                        android:text="_______" />
+
+                    <TextView
+                        android:id="@+id/crypto_percentuale_rischio"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="0%" />
+
+                    <TextView
+                        android:id="@+id/crypto_data_acquisto"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="DD/MM/YYYY" />
+                </TableRow>
+
+                <!-- Riga 2 per "Crypto" - Valore attuale -->
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/crypto_valore_attuale"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="right"
+                        android:padding="8dp"
+                        android:text="_______" />
+
+                    <TextView
+                        android:id="@+id/crypto_percentuale_rendimento"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="0%" />
+
+                    <TextView
+                        android:id="@+id/crypto_data_attuale"
+                        android:layout_width="80dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="8dp"
+                        android:text="DD/MM/YYYY" />
+
+                </TableRow>
+
+            </TableLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="60dp">
+
+                <Button
+                    android:id="@+id/azioni_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:padding="8dp"
+                    android:text="Dettagli"
+                    android:textSize="10dp"
+                    android:textColor="@color/white" />
+
+                <Button
+                    android:id="@+id/crypto_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dettagli"
+                    android:textColor="@color/white"
+                    android:padding="8dp"
+                    android:textSize="10dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <!-- Azioni -->
         <LinearLayout
@@ -137,14 +351,14 @@
 
             <TextView
                 android:id="@+id/azioni_label"
-                android:layout_width="69dp"
+                android:layout_width="68dp"
                 android:layout_height="wrap_content"
                 android:text="Azioni:"
                 android:textSize="17dp" />
 
             <TextView
                 android:id="@+id/azioni_cifra"
-                android:layout_width="97dp"
+                android:layout_width="98dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:hint="____________"
@@ -155,16 +369,11 @@
                 android:layout_width="94dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textSize="17dp" />
+                android:textSize="17dp"
+                android:text="0%"
+                android:gravity="right"/>
 
-            <!-- Bottone per visualizzare le azioni -->
-            <Button
-                android:id="@+id/azioni_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Vedi Azioni"
-                android:layout_marginStart="8dp"
-                android:visibility="gone"/>
+
         </LinearLayout>
 
         <!-- Fondi -->
@@ -195,18 +404,12 @@
                 android:layout_width="94dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:textSize="17dp" />
+                android:textSize="17dp"
+                android:text="0%"
+                android:gravity="right"/>
 
-            <!-- Bottone per visualizzare i fondi -->
-            <Button
-                android:id="@+id/crypto_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Vedi Crypto"
-                android:layout_marginStart="8dp"
-                android:visibility="gone"/>
+
         </LinearLayout>
-
 
 
     </LinearLayout>

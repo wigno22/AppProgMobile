@@ -68,8 +68,8 @@ class InvestmentFragment : Fragment() {
         azioniButton = view.findViewById(R.id.azioni_button)
         cryptoButton = view.findViewById(R.id.crypto_button)
 
-        azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
-        CryptoFattoreRischioTextView = view.findViewById(R.id.crypto_fattore_rischio)
+        azioniFattoreRischioTextView = view.findViewById(R.id.azioni_percentuale_rischio)
+        CryptoFattoreRischioTextView = view.findViewById(R.id.crypto_percentuale_rischio)
 
 
         azioniFattoreRischioTextView.text = "<10%"
