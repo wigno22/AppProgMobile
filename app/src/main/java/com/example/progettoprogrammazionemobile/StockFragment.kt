@@ -149,9 +149,9 @@ class StockFragment : Fragment() {
                 val realAmount = data?.get("valoreReal$") as? Double
                 val currentAmount = data?.get("valoreUlt$") as? Double
                 val dateUlt = data?.get("dataUlt") as? String
-                val numStocks = data?.get("numeroAzioni") as? Int
+                val numStocks = data?.get("numeroAzioni") as? Double
 
-                val numberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
+                val numberFormat = NumberFormat.getCurrencyInstance(Locale.ITALY)
 
                 if (stockName != null) {
                     investmentData.append("Name: $stockName\n")

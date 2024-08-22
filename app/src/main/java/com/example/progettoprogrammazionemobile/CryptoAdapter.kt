@@ -26,17 +26,18 @@ class CryptoAdapter : ListAdapter<CryptoSymbolWithQuote, CryptoAdapter.CryptoVie
     fun getSelectedCrypto(): List<CryptoSymbolWithQuote> = selectedCryptos.toList()
 
     inner class CryptoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        private val textSymbol: TextView = itemView.findViewById(R.id.text_crypto_symbol)
         private val textName: TextView = itemView.findViewById(R.id.text_crypto_name)
         private val textCurrentValue: TextView = itemView.findViewById(R.id.text_current_value)
-        private val description: TextView = itemView.findViewById(R.id.text_description)
-        private val textDate: TextView = itemView.findViewById(R.id.text_date)
         private val checkbox: CheckBox = itemView.findViewById(R.id.checkbox_select)
 
         fun bind(crypto: CryptoSymbolWithQuote) {
-            textName.text = crypto.symbol.symbol
+            textSymbol.text = crypto.symbol.symbol
+            textName.text = crypto.symbol.name
             textCurrentValue.text = "Valore Attuale: ${crypto.quote.price}"
-            description.text = crypto.symbol.symbol
-            textDate.text = crypto.quote.percent_change_24h.toString() // Usa un valore appropriato per la data
+
+            checkbox.setOnCheckedChangeListener(null) // Rimuove l'eventuale listener precedente
+            checkbox.isChecked = selectedCryptos.contains(crypto)
 
             // Imposta un listener per la CheckBox senza causare NullPointerException
             checkbox.setOnCheckedChangeListener { _, isChecked ->
@@ -48,7 +49,6 @@ class CryptoAdapter : ListAdapter<CryptoSymbolWithQuote, CryptoAdapter.CryptoVie
             }
         }
     }
-
 }
 
 class CryptoDiffCallback : DiffUtil.ItemCallback<CryptoSymbolWithQuote>() {

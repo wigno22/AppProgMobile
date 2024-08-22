@@ -171,7 +171,8 @@ class AccountFragment : Fragment() {
 
         //quando cambia saldo e lo voglio stampare cambio colore a seconda del valore
         viewModel.balance.observe(viewLifecycleOwner, androidx.lifecycle.Observer { newBalance ->
-            binding.textView.text = NumberFormat.getCurrencyInstance().format(newBalance)
+            val currencyFormat = NumberFormat.getCurrencyInstance(Locale.ITALY)  // Specifica Locale.IT per l'euro
+            binding.textView.text = currencyFormat.format(newBalance)
 
             if (newBalance < 0.0) {
                 binding.textView.setTextColor(Color.RED)

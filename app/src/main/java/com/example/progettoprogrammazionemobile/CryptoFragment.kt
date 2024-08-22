@@ -1,5 +1,6 @@
 package com.example.progettoprogrammazionemobile
 
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -31,7 +32,7 @@ import java.time.ZoneId
 import java.util.Date
 import kotlin.math.absoluteValue
 
-class FundFragment : Fragment() {
+class CryptoFragment : Fragment() {
 
     private val apiKey = "6e362c44-bcd8-483d-9db5-a3f880533d6f"
     private lateinit var recyclerView: RecyclerView
@@ -52,7 +53,7 @@ class FundFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_fund, container, false)
+        val view = inflater.inflate(R.layout.fragment_crypto, container, false)
         recyclerView = view.findViewById(R.id.recycler_view_crypto)
         investButton = view.findViewById(R.id.button_invest_crypto)
         showStocksButton = view.findViewById(R.id.button_show_crypto)
@@ -157,9 +158,9 @@ class FundFragment : Fragment() {
                 val realAmount = data?.get("valoreReal€") as? Double
                 val currentAmount = data?.get("valoreUlt€") as? Double
                 val dateUlt = data?.get("dataUlt") as? String
-                val numCryptos = data?.get("numeroCriptovalute") as? Int
+                val numCryptos = data?.get("numeroCriptovalute") as? Double
 
-                val numberFormat = NumberFormat.getCurrencyInstance(Locale.GERMANY)
+                val numberFormat = NumberFormat.getCurrencyInstance(Locale.ITALY)
 
                 if (cryptoName != null) {
                     investmentData.append("Name: $cryptoName\n")
@@ -200,9 +201,14 @@ class FundFragment : Fragment() {
             val randomCrypto = bestCrypto.shuffled().take(5)
             Log.d("AIIntegrationFragment", "Fetched best cryptos: $randomCrypto")
 
-
             withContext(Dispatchers.Main) {
-                adapter.submitList(randomCrypto)
+                val formattedCryptos = randomCrypto.map { crypto ->
+                    val formattedPrice = String.format(Locale.US, "%.3f", crypto.quote.price)
+                    crypto.copy(
+                        quote = crypto.quote.copy(price = formattedPrice.toDouble())
+                    )
+                }
+                adapter.submitList(formattedCryptos)
                 investButton.visibility = View.VISIBLE // Assicurati che il bottone Invest sia visibile
             }
         } catch (e: Exception) {
@@ -217,6 +223,7 @@ class FundFragment : Fragment() {
             }
         }
     }
+
 
     private suspend fun getBestCrypto(apiService: CoinMarketCapApiService, apiKey: String): List<CryptoSymbolWithQuote> {
         val symbols = getCryptoSymbols(apiService, apiKey)
@@ -278,14 +285,14 @@ class FundFragment : Fragment() {
 
     private suspend fun saveInvestments(cryptos: List<CryptoSymbolWithQuote>) {
         val uid = user?.uid ?: return
-        val userDocRef = db.collection(uid).document("Account").collection("Fondi")
+        val userDocRef = db.collection(uid).document("Account").collection("Criptovalute")
         val accountDocRef = db.collection(uid).document("Account")
         val batch = db.batch()
 
         // Ottieni il numero di criptovalute dal documento Account
         val cifrainCriptovalute = try {
             val accountSnapshot = accountDocRef.get().await()
-            accountSnapshot.getLong("cifraInFondi")?.toInt() ?: 1 // Imposta un valore predefinito se non trovato
+            accountSnapshot.getLong("cifraInCrypto")?.toInt() ?: 1 // Imposta un valore predefinito se non trovato
         } catch (e: Exception) {
             Log.e("AIIntegrationFragment", "Failed to fetch number of cryptos: ${e.message}")
             1 // Imposta un valore predefinito in caso di errore
@@ -332,13 +339,6 @@ class FundFragment : Fragment() {
 
 
     private suspend fun updateAllCryptoValues() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://finnhub.io/api/v1/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-
-        val service = retrofit.create(CoinMarketCapApiService::class.java)
         val uid = user?.uid ?: return
         val userDocRef = db.collection(uid).document("Account").collection("Criptovalute")
 
@@ -347,7 +347,7 @@ class FundFragment : Fragment() {
             val batch = db.batch()
 
             val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-            val currentDate = dateFormat.format(java.util.Date())
+            val currentDate = dateFormat.format(Date())
 
             for (document in snapshot.documents) {
                 val symbol = document.id
@@ -356,19 +356,24 @@ class FundFragment : Fragment() {
                     val docRef = userDocRef.document(symbol)
                     val valoreUlt = document.getDouble("valoreUlt€") ?: 0.0
                     val valoreUltEuro = valoreUlt * exchangeRate
+                    val currentPrice = quote.price * exchangeRate
 
-                    batch.update(docRef, "valoreReal€", quote.price * exchangeRate)
+                    batch.update(docRef, "valoreReal€", currentPrice)
                     batch.update(docRef, "dataReal", currentDate)
 
-                    if (quote.price * exchangeRate > valoreUltEuro) {
-                        // Mostra un Toast se il valore è maggiore
-                        Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Mostra un Toast se il valore non è maggiore
-                        Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
+                    withContext(Dispatchers.Main) {
+                        if (currentPrice > valoreUltEuro) {
+                            // Colora di verde
+                            investmentDataTextView.setTextColor(Color.GREEN)
+                            Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Colora di rosso
+                            investmentDataTextView.setTextColor(Color.RED)
+                            Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
+                        }
                     }
 
-                    batch.update(docRef, "valoreUlt€", quote.price * exchangeRate)
+                    batch.update(docRef, "valoreUlt€", currentPrice)
                     batch.update(docRef, "dataUlt", currentDate)
                 }
             }
@@ -384,6 +389,7 @@ class FundFragment : Fragment() {
             }
         }
     }
+
     private suspend fun registerInvestmentTransaction(cryptos: List<CryptoSymbolWithQuote>) {
         val uid = user?.uid ?: return
         val userDocRef = db.collection(uid).document("Account").collection("Transaction")
@@ -392,7 +398,7 @@ class FundFragment : Fragment() {
 
         val cifrainCriptovalute = try {
             val accountSnapshot = accountDocRef.get().await()
-            accountSnapshot.getLong("cifraInFondi")?.toInt() ?: 1
+            accountSnapshot.getLong("cifraInCrypto")?.toInt() ?: 1
         } catch (e: Exception) {
             Log.e("AIIntegrationFragment", "Failed to fetch number of cryptos: ${e.message}")
             1
@@ -465,9 +471,5 @@ class FundFragment : Fragment() {
             }
         }
     }
-
-
-
-
 
 }

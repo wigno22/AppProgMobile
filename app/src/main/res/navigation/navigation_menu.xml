@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_menu"
     app:startDestination="@id/navigation_account">
 
@@ -25,8 +24,8 @@
             android:id="@+id/action_navigation_account_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_account_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_account_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
     <fragment
         android:id="@+id/navigation_operations"
@@ -48,8 +47,8 @@
             android:id="@+id/action_navigation_operations_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_operations_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_operations_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
     <fragment
         android:id="@+id/navigation_investment"
@@ -71,8 +70,8 @@
             android:id="@+id/action_navigation_investment_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_investment_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_investment_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
     <fragment
         android:id="@+id/navigation_stock"
@@ -94,30 +93,30 @@
             android:id="@+id/action_navigation_stock_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_stock_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_stock_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_fund"
-        android:name="com.example.progettoprogrammazionemobile.FundFragment"
-        android:label="FundFragment">
+        android:id="@+id/navigation_crypto"
+        android:name="com.example.progettoprogrammazionemobile.CryptoFragment"
+        android:label="CryptoFragment">
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_accountFragment"
+            android:id="@+id/action_navigation_crypto_to_navigation_accountFragment"
             app:destination="@id/navigation_account" />
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_operations"
+            android:id="@+id/action_navigation_crypto_to_navigation_operations"
             app:destination="@id/navigation_operations" />
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_profile"
+            android:id="@+id/action_navigation_crypto_to_navigation_profile"
             app:destination="@id/navigation_profile" />
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_investment"
+            android:id="@+id/action_navigation_crypto_to_navigation_investment"
             app:destination="@id/navigation_investment" />
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_chatAi"
+            android:id="@+id/action_navigation_crypto_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_fund_to_navigation_investment2"
+            android:id="@+id/action_navigation_crypto_to_navigation_investment2"
             app:destination="@id/navigation_investment" />
     </fragment>
     <fragment
@@ -140,8 +139,8 @@
             android:id="@+id/action_navigation_profile_to_navigation_chatAi"
             app:destination="@id/navigation_chatAi" />
         <action
-            android:id="@+id/action_navigation_profile_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_profile_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
 
     <fragment
@@ -164,7 +163,7 @@
             android:id="@+id/action_navigation_chatAi_to_navigation_stock"
             app:destination="@id/navigation_stock" />
         <action
-            android:id="@+id/action_navigation_chatAi_to_navigation_fund"
-            app:destination="@id/navigation_fund" />
+            android:id="@+id/action_navigation_chatAi_to_navigation_crypto"
+            app:destination="@id/navigation_crypto" />
     </fragment>
 </navigation>

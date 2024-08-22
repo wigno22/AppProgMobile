@@ -35,13 +35,13 @@ class InvestmentFragment : Fragment() {
     private lateinit var cifraInvestimentoEditText: EditText
     private lateinit var radioGroupRischio: RadioGroup
     private lateinit var azioniCifraTextView: TextView
-    private lateinit var fondiCifraTextView: TextView
+    private lateinit var CryptoCifraTextView: TextView
     private lateinit var confirmButton: Button
     private lateinit var periodoSpinner: Spinner
     private lateinit var azioniFattoreRischioTextView: TextView
-    private lateinit var fondiFattoreRischioTextView: TextView
+    private lateinit var CryptoFattoreRischioTextView: TextView
     private lateinit var azioniButton: Button
-    private lateinit var fondiButton: Button
+    private lateinit var cryptoButton: Button
 
 
     private val db = FirebaseFirestore.getInstance()
@@ -60,20 +60,20 @@ class InvestmentFragment : Fragment() {
         cifraInvestimentoEditText = view.findViewById(R.id.cifra_investimento)
         radioGroupRischio = view.findViewById(R.id.radio_group_rischio)
         azioniCifraTextView = view.findViewById(R.id.azioni_cifra)
-        fondiCifraTextView = view.findViewById(R.id.fondi_cifra)
+        CryptoCifraTextView = view.findViewById(R.id.crypto_cifra)
 
         confirmButton = view.findViewById(R.id.confirm_button)
         periodoSpinner = view.findViewById(R.id.periodo_spinner)
 
         azioniButton = view.findViewById(R.id.azioni_button)
-        fondiButton = view.findViewById(R.id.fondi_button)
+        cryptoButton = view.findViewById(R.id.crypto_button)
 
         azioniFattoreRischioTextView = view.findViewById(R.id.azioni_fattore_rischio)
-        fondiFattoreRischioTextView = view.findViewById(R.id.fondi_fattore_rischio)
+        CryptoFattoreRischioTextView = view.findViewById(R.id.crypto_fattore_rischio)
 
 
         azioniFattoreRischioTextView.text = "<10%"
-        fondiFattoreRischioTextView.text = "<5%"
+        CryptoFattoreRischioTextView.text = "<5%"
 
         //fetchExchangeRate()
         showUserData()
@@ -82,7 +82,7 @@ class InvestmentFragment : Fragment() {
         confirmButton.setOnClickListener { onConfirmButtonClick() }
 
         azioniButton.setOnClickListener { navigatetoFragment("azioni") }
-        fondiButton.setOnClickListener { navigatetoFragment("fondi") }
+        cryptoButton.setOnClickListener { navigatetoFragment("crypto") }
         return view
     }
 
@@ -126,32 +126,32 @@ class InvestmentFragment : Fragment() {
                         3 -> cifraInvestimento * 0.6
                         else -> 0.0
                     }
-                    val quotafondi = cifraInvestimento - quotaazioni
+                    val quotacrypto = cifraInvestimento - quotaazioni
 
                     azioniCifraTextView.text = quotaazioni.toString()
-                    fondiCifraTextView.text = quotafondi.toString()
+                    CryptoCifraTextView.text = quotacrypto.toString()
 
                     // Imposta visibilità dei bottoni
                     azioniButton.visibility = if (quotaazioni > 0) View.VISIBLE else View.INVISIBLE
-                    fondiButton.visibility = if (quotafondi > 0) View.VISIBLE else View.INVISIBLE
+                    cryptoButton.visibility = if (quotacrypto > 0) View.VISIBLE else View.INVISIBLE
 
                 } else {
                     Toast.makeText(requireContext(), "Nessun dato trovato per l'utente.", Toast.LENGTH_LONG).show()
                     // Se nessun dato trovato, nascondi i bottoni
                     azioniButton.visibility = View.INVISIBLE
-                    fondiButton.visibility = View.INVISIBLE
+                    cryptoButton.visibility = View.INVISIBLE
                 }
             }.addOnFailureListener { e ->
                 Toast.makeText(requireContext(), "Errore nel recupero dei dati: ${e.message}", Toast.LENGTH_SHORT).show()
                 // Gestisci anche i bottoni in caso di errore
                 azioniButton.visibility = View.INVISIBLE
-                fondiButton.visibility = View.INVISIBLE
+                cryptoButton.visibility = View.INVISIBLE
             }
         } else {
             Toast.makeText(requireContext(), "Utente non autenticato.", Toast.LENGTH_SHORT).show()
             // Gestisci anche i bottoni in caso di utente non autenticato
             azioniButton.visibility = View.INVISIBLE
-            fondiButton.visibility = View.INVISIBLE
+            cryptoButton.visibility = View.INVISIBLE
         }
     }
 
@@ -224,7 +224,7 @@ class InvestmentFragment : Fragment() {
         val selectedPeriodo = periodoSpinner.selectedItem.toString()
         val periodo = selectedPeriodo.split(" ")[0].toInt()
         var quotaazioni = 0.0
-        var quotafondi = 0.0
+        var quotacrypto = 0.0
 
         val rischioId = radioGroupRischio.checkedRadioButtonId
         val fattoreRischio = when (rischioId) {
@@ -234,18 +234,18 @@ class InvestmentFragment : Fragment() {
             else -> 1
         }
         if (fattoreRischio == 1) {
-            quotaazioni = cifraInvestimento * 0.4
-            quotafondi = cifraInvestimento * 0.6
+            quotaazioni = cifraInvestimento * 0.6
+            quotacrypto = cifraInvestimento * 0.4
         } else if (fattoreRischio == 2) {
             quotaazioni = cifraInvestimento * 0.5
-            quotafondi = cifraInvestimento * 0.5
+            quotacrypto = cifraInvestimento * 0.5
         } else {
-            quotaazioni = cifraInvestimento * 0.6
-            quotafondi = cifraInvestimento * 0.4
+            quotaazioni = cifraInvestimento * 0.4
+            quotacrypto = cifraInvestimento * 0.6
         }
 
         azioniCifraTextView.text = quotaazioni.toString()
-        fondiCifraTextView.text = quotafondi.toString()
+        CryptoCifraTextView.text = quotacrypto.toString()
 
         val uid = auth.uid
         if (uid != null) {
@@ -257,7 +257,7 @@ class InvestmentFragment : Fragment() {
                 "periodoInvestimento" to periodo,
                 "cifraInvestimento" to cifraInvestimento,
                 "cifraInAzioni" to quotaazioni,
-                "cifraInFondi" to quotafondi,
+                "cifraInCrypto" to quotacrypto,
                 "exchangeRate" to exchangeRate
             )
 
@@ -273,16 +273,15 @@ class InvestmentFragment : Fragment() {
         }
 
         azioniButton.visibility = View.VISIBLE
-        fondiButton.visibility = View.VISIBLE
+        cryptoButton.visibility = View.VISIBLE
     }
 
     private fun navigatetoFragment(type: String) {
-        // Creazione del bundle con il tipo di investimento
 
         // Ottenere il NavController
         val navController = findNavController()
 
-        if (type=="azioni")navController.navigate(R.id.navigation_stock) else if (type=="fondi") navController.navigate(R.id.navigation_fund)
+        if (type=="azioni")navController.navigate(R.id.navigation_stock) else if (type=="crypto") navController.navigate(R.id.navigation_crypto)
 
 
     }
