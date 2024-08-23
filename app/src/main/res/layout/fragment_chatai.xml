@@ -11,10 +11,11 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chat_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="680dp"
-            android:layout_marginTop="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:layout_weight="1"
-            android:background="#e6e6fa" />
+            android:background="#e6e6fa"
+            app:layout_constraintHeight_percent="0.8" />
 
 
         <!-- Barra di inserimento messaggi e pulsante per inviare -->

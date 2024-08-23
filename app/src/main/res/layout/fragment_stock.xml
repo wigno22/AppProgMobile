@@ -10,6 +10,8 @@
         android:id="@+id/button_show_stocks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorNeutral"
+        android:textColor="@color/white"
         android:text="Show Stocks" />
 
     <!-- Barra di progresso -->
@@ -41,6 +43,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Invest"
+            android:backgroundTint="@color/colorNeutral"
+            android:textColor="@color/white"
             android:visibility="visible" />
     </LinearLayout>
 
@@ -68,8 +72,10 @@
             <Button
                 android:id="@+id/button_update_values"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:text="Aggiorna Valori"
+                android:backgroundTint="@color/colorNeutral"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp" />
 
             <!-- Bottone per vendere tutte le azioni -->
@@ -78,8 +84,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sell All Stocks"
-                android:textColor="@android:color/white"
-                android:background="@color/colorAccent"
+                android:backgroundTint="@color/colorNegative"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:visibility="gone" />

@@ -89,9 +89,11 @@ class CryptoFragment : Fragment() {
             } else {
                 lifecycleScope.launch {
                     // Salva gli investimenti selezionati (logica non implementata)
+
                     saveInvestments(selectedCrypto)
                     registerInvestmentTransaction(selectedCrypto)
                     showInvestmentData()
+                    updateAllCryptoValues()
                 }
             }
         }
@@ -230,12 +232,21 @@ class CryptoFragment : Fragment() {
 
         val lowRiskCryptos = mutableListOf<CryptoSymbolWithQuote>()
         var count = 0
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+        val currentDate = dateFormat.format(java.util.Date())
 
         for (symbol in symbols) {
             if (count >= 20) { // Limita il numero di richieste
                 break
             }
             val quote = getCryptoQuote(apiService, apiKey, symbol.symbol)
+
+            if (quote != null) {
+                quote.valdata = currentDate
+            } else {
+                // Se la chiamata API fallisce, interrompi il ciclo
+                break
+            }
 
             quote?.let {
                 val risk = calculateCryptoRisk(it)
@@ -308,13 +319,13 @@ class CryptoFragment : Fragment() {
                 "nomeCripto" to symbol.name,
                 "valorecambioAcq" to exchangeRate,
                 "valoreAcq€" to valoreAcqEuro,
-                //"dataAcq" to quote.valdata,
+                "dataAcq" to quote.valdata,
                 "valorecambioUlt" to exchangeRate,
                 "valoreUlt€" to quote.price * exchangeRate,
-                //"dataUlt" to quote.valdata,
+                "dataUlt" to quote.valdata,
                 "valorecambioReal" to exchangeRate,
                 "valoreReal€" to quote.price * exchangeRate,
-                //"dataReal" to quote.valdata,
+                "dataReal" to quote.valdata,
                 "numeroCriptovalute" to numCryptos
             )
 

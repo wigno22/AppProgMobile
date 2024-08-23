@@ -1,5 +1,6 @@
 package com.example.progettoprogrammazionemobile
 
+import android.health.connect.datatypes.units.Percentage
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -8,25 +9,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.BuildConfig
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.DecimalFormat
 import java.util.*
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+
 
 class InvestmentFragment : Fragment() {
 
@@ -35,15 +34,31 @@ class InvestmentFragment : Fragment() {
     private lateinit var cifraInvestimentoEditText: EditText
     private lateinit var radioGroupRischio: RadioGroup
     private lateinit var azioniCifraTextView: TextView
-    private lateinit var CryptoCifraTextView: TextView
+    private lateinit var cryptoCifraTextView: TextView
     private lateinit var confirmButton: Button
     private lateinit var periodoSpinner: Spinner
     private lateinit var azioniFattoreRischioTextView: TextView
     private lateinit var CryptoFattoreRischioTextView: TextView
-    private lateinit var azioniButton: Button
-    private lateinit var cryptoButton: Button
+    private lateinit var azioniButton: ImageButton
+    private lateinit var cryptoButton: ImageButton
     private lateinit var azioni_valore_attuale: TextView
     private lateinit var crypto_valore_attuale: TextView
+    private lateinit var crypto_data_acq: TextView
+    private lateinit var crypto_data_attuale: TextView
+    private lateinit var azioni_data_attuale: TextView
+    private lateinit var azioni_data_acq: TextView
+    private lateinit var azioni_perc_rend: TextView
+    private lateinit var crypto_perc_rend: TextView
+    private val apiKeyA = "cqrngv9r01quefaheobgcqrngv9r01quefaheoc0"
+    private val apiKeyC = "6e362c44-bcd8-483d-9db5-a3f880533d6f"
+
+    private lateinit var viewModel: DataViewModel
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -56,12 +71,17 @@ class InvestmentFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_investment, container, false)
+
+        // Ottieni il ViewModel
+        viewModel = ViewModelProvider(this).get(DataViewModel::class.java)
+
+
         saldoMedioTextView = view.findViewById(R.id.saldo_medio)
         saldoCifraEditText = view.findViewById(R.id.saldo_cifra)
         cifraInvestimentoEditText = view.findViewById(R.id.cifra_investimento)
         radioGroupRischio = view.findViewById(R.id.radio_group_rischio)
         azioniCifraTextView = view.findViewById(R.id.azioni_cifra)
-        CryptoCifraTextView = view.findViewById(R.id.crypto_cifra)
+        cryptoCifraTextView = view.findViewById(R.id.crypto_cifra)
 
         confirmButton = view.findViewById(R.id.confirm_button)
         periodoSpinner = view.findViewById(R.id.periodo_spinner)
@@ -75,10 +95,26 @@ class InvestmentFragment : Fragment() {
         azioni_valore_attuale =  view.findViewById(R.id.azioni_valore_attuale)
         crypto_valore_attuale = view.findViewById(R.id.crypto_valore_attuale)
 
+        crypto_data_acq = view.findViewById(R.id.crypto_data_acquisto)
+        crypto_data_attuale = view.findViewById(R.id.crypto_data_attuale)
+        azioni_data_attuale = view.findViewById(R.id.azioni_data_attuale)
+        azioni_data_acq = view.findViewById(R.id.azioni_data_acquisto)
 
+
+        azioni_perc_rend = view.findViewById(R.id.azioni_percentuale_rendimento)
+        crypto_perc_rend = view.findViewById(R.id.crypto_percentuale_rendimento)
 
         azioniFattoreRischioTextView.text = "<10%"
         CryptoFattoreRischioTextView.text = "<5%"
+
+         val retrofit = Retrofit.Builder()
+            .baseUrl("https://pro-api.coinmarketcap.com/v1/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+         val service = retrofit.create(CoinMarketCapApiService::class.java)
+
 
         //fetchExchangeRate()
         showUserData()
@@ -86,6 +122,14 @@ class InvestmentFragment : Fragment() {
         fetchSaldoMedioTrimestrale()
         fetchSaldoAzioni()
         fetchSaldoCrypto()
+
+        lifecycleScope.launch {
+            viewModel.updateAllStockValues(db, FirebaseAuth.getInstance().currentUser, okHttpClient, apiKeyA, exchangeRate)
+
+            viewModel.updateAllCryptoValues(db, FirebaseAuth.getInstance().currentUser, service, apiKeyC, exchangeRate)
+        }
+
+
         confirmButton.setOnClickListener { onConfirmButtonClick() }
 
         azioniButton.setOnClickListener { navigatetoFragment("azioni") }
@@ -93,11 +137,18 @@ class InvestmentFragment : Fragment() {
         return view
     }
 
+
+
+
+
+
     private fun showUserData() {
         val user = auth.currentUser
         val UID = user?.uid
         if (UID != null) {
             val userDocRef = db.collection(UID).document("Account")
+            val cryptoinfo = db.collection(UID).document("Account").collection("Criptovalute")
+            val azioniinfo = db.collection(UID).document("Account").collection("Azioni")
 
             userDocRef.get().addOnSuccessListener { document ->
                 if (document != null && document.exists()) {
@@ -136,11 +187,75 @@ class InvestmentFragment : Fragment() {
                     val quotacrypto = cifraInvestimento - quotaazioni
 
                     azioniCifraTextView.text = quotaazioni.toString()
-                    CryptoCifraTextView.text = quotacrypto.toString()
+                    cryptoCifraTextView.text = quotacrypto.toString()
+
+                    azioniinfo.get().addOnSuccessListener { querySnapshot ->
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
+                            // Crea un SimpleDateFormat per il parsing della data originale e uno per la formattazione della nuova data
+                            val originalFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                            val newFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                            // Itera sui documenti nella collezione
+                            for (document in querySnapshot.documents) {
+                                // Estrai i dati dai singoli documenti
+                                val azioniDataAttualeString = document.getString("dataReal")
+                                val azioniDataAcqString = document.getString("dataAcq")
+
+                                // Converti e formatta le date
+                                val azioniDataAttuale = azioniDataAttualeString?.let {
+                                    val date = originalFormat.parse(it)
+                                    newFormat.format(date)
+                                }
+
+                                val azioniDataAcq = azioniDataAcqString?.let {
+                                    val date = originalFormat.parse(it)
+                                    newFormat.format(date)
+                                }
+
+                                // Mostra le date formattate nei TextView
+                                azioni_data_acq.text = azioniDataAcq
+                                azioni_data_attuale.text = azioniDataAttuale
+                            }
+                        }
+                    }
+
+                    cryptoinfo.get().addOnSuccessListener { querySnapshot ->
+                        if (querySnapshot != null && !querySnapshot.isEmpty) {
+                            // Crea un SimpleDateFormat per il parsing della data originale e uno per la formattazione della nuova data
+                            val originalFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
+                            val newFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+
+                            // Itera sui documenti nella collezione
+                            for (document in querySnapshot.documents) {
+                                // Estrai i dati dai singoli documenti
+                                val cryptoDataAttualeString = document.getString("dataReal")
+                                val cryptoDataAcqString = document.getString("dataAcq")
+
+                                // Converti e formatta le date
+                                val cryptoDataAttuale = cryptoDataAttualeString?.let {
+                                    val date = originalFormat.parse(it)
+                                    newFormat.format(date)
+                                }
+
+                                val cryptoDataAcq = cryptoDataAcqString?.let {
+                                    val date = originalFormat.parse(it)
+                                    newFormat.format(date)
+                                }
+
+                                // Mostra le date formattate nei TextView
+                                crypto_data_acq.text = cryptoDataAcq
+                                crypto_data_attuale.text = cryptoDataAttuale
+                            }
+                        }
+                    }
+
+
+
 
                     // Imposta visibilità dei bottoni
                     azioniButton.visibility = if (quotaazioni > 0) View.VISIBLE else View.INVISIBLE
                     cryptoButton.visibility = if (quotacrypto > 0) View.VISIBLE else View.INVISIBLE
+
 
                 } else {
                     Toast.makeText(requireContext(), "Nessun dato trovato per l'utente.", Toast.LENGTH_LONG).show()
@@ -204,6 +319,34 @@ class InvestmentFragment : Fragment() {
 
                 azioni_valore_attuale.setText(AzioniFormatted)
 
+
+                val azioniCifraText = azioniCifraTextView.text.toString()
+
+                // Verifica che tutti i valori siano validi
+                if (saldoAzTotale != 0.0 && azioniCifraText.isNotBlank() &&
+                    azioniCifraText.matches(Regex("[-+]?\\d*\\.?\\d+"))) {
+
+                    // Converti i testi in numeri
+                    val azioniValoreAcqIniz = azioniCifraText.toDouble()
+
+                    // Esegui i calcoli
+                    val margineAzioni = ((saldoAzTotale / azioniValoreAcqIniz) - 1)
+
+                    val percentFormat = DecimalFormat("#.#%")
+
+                    // Imposta i risultati nei TextView
+                    azioni_perc_rend.text = percentFormat.format(margineAzioni).toString()
+
+                } else {
+                    // Se uno dei valori non è valido, imposta una stringa vuota
+                    azioni_perc_rend.text = ""
+
+                }
+
+
+
+
+
                 Log.d("InvestimentiFragment", "Saldo medio: $saldoAzTotale")
             }.addOnFailureListener { exception ->
                 Log.e("InvestimentiFragment", "Failed to fetch transactions: ${exception.message}")
@@ -242,6 +385,30 @@ class InvestmentFragment : Fragment() {
                 val CryptoFormatted = decimalFormat.format(saldoCryTotale)
 
                 crypto_valore_attuale.setText(CryptoFormatted)
+
+
+                val cryptoCifraText = cryptoCifraTextView.text.toString()
+
+
+                if (saldoCryTotale != 0.0 && cryptoCifraText.isNotBlank() &&
+                    cryptoCifraText.matches(Regex("[-+]?\\d*\\.?\\d+"))) {
+
+                    // Converti i testi in numeri
+                    val cryptoCifraNumero = cryptoCifraText.toDouble()
+
+                    // Esegui i calcoli
+                    val margineCrypto = ((saldoCryTotale / cryptoCifraNumero) - 1)
+
+                    val percentFormat = DecimalFormat("#.#%")
+
+                    // Imposta i risultati nei TextView
+                    crypto_perc_rend.text = percentFormat.format(margineCrypto).toString()
+
+
+                } else {
+                    // Se uno dei valori non è valido, imposta una stringa vuota
+                    crypto_perc_rend.text = ""
+                }
 
                 Log.d("InvestimentiFragment", "Saldo medio: $crypto_valore_attuale")
             }.addOnFailureListener { exception ->
@@ -332,7 +499,7 @@ class InvestmentFragment : Fragment() {
         }
 
         azioniCifraTextView.text = quotaazioni.toString()
-        CryptoCifraTextView.text = quotacrypto.toString()
+        cryptoCifraTextView.text = quotacrypto.toString()
 
         val uid = auth.uid
         if (uid != null) {
@@ -372,6 +539,7 @@ class InvestmentFragment : Fragment() {
 
 
     }
+
 
 
 }

@@ -89,6 +89,7 @@ class StockFragment : Fragment() {
                     saveInvestments(selectedStocks)
                     registerInvestmentTransaction(selectedStocks)
                     showInvestmentData()
+                    updateAllStockValues()
                 }
             }
         }

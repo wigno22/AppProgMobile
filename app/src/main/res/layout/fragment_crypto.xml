@@ -10,6 +10,8 @@
         android:id="@+id/button_show_crypto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorNeutral"
+        android:textColor="@color/white"
         android:text="Show Crypto" />
 
     <!-- Barra di progresso -->
@@ -40,7 +42,8 @@
             android:layout_width="120dp"
             android:layout_height="10dp"
             android:layout_weight="0.05"
-            android:background="@android:color/holo_blue_light"
+            android:backgroundTint="@color/colorNeutral"
+            android:textColor="@color/white"
             android:text="Invest" />
     </LinearLayout>
 
@@ -68,9 +71,11 @@
             <!-- Bottone per aggiornare i valori -->
             <Button
                 android:id="@+id/button_update_values_crypto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:text="Aggiorna Valori"
+                android:backgroundTint="@color/colorNeutral"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp" />
 
             <!-- Bottone per vendere tutte le azioni -->
@@ -79,8 +84,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Sell All Stocks"
-                android:textColor="@android:color/white"
-                android:background="@color/colorAccent"
+                android:backgroundTint="@color/colorNegative"
+                android:textColor="@color/white"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
                 android:visibility="gone" />

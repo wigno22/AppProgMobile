@@ -128,18 +128,20 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Proponi Piano d'investimento"
+            android:backgroundTint="@color/colorNeutral"
             android:textColor="@color/white"
             android:textSize="17dp"/>
 
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="442dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
 
             <TableLayout
-                android:layout_width="284dp"
+                android:layout_width="286dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:stretchColumns="1,2,3,4,5">
@@ -162,7 +164,7 @@
 
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="41dp"
                     android:layout_marginTop="5dp"
                     android:background="@color/colorPrimary"
                     android:textSize="10dp">
@@ -179,7 +181,7 @@
 
                     <TextView
                         android:id="@+id/transactionPercentageTitle"
-                        android:layout_width="40dp"
+                        android:layout_width="74dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
                         android:text="Risk"
@@ -226,11 +228,11 @@
                         android:layout_width="114dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="17dp"
-                        android:text="DD/MM/YYYY" />
+                        android:padding="17dp" />
 
 
                 </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -272,13 +274,12 @@
                 <!-- Riga 2 per "Azioni" - Valore attuale -->
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="41dp">
 
                     <TextView
                         android:id="@+id/azioni_valore_attuale"
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
-
                         android:gravity="right"
                         android:padding="17dp"
                         android:text="_______" />
@@ -296,8 +297,7 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="17dp"
-                        android:text="DD/MM/YYYY" />
+                        android:padding="17dp" />
 
 
                 </TableRow>
@@ -365,7 +365,7 @@
                 <!-- Riga 1 per "Crypto" - Valore d'acquisto -->
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="41dp">
 
                     <TextView
                         android:id="@+id/crypto_cifra"
@@ -379,7 +379,7 @@
                     <TextView
                         android:id="@+id/crypto_percentuale_rischio"
                         android:layout_width="40dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:gravity="center"
                         android:padding="17dp"
                         android:text="0%" />
@@ -387,11 +387,10 @@
                     <TextView
                         android:id="@+id/crypto_data_acquisto"
                         android:layout_width="80dp"
-                        android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="17dp"
-                        android:text="DD/MM/YYYY" />
+                        android:padding="17dp" />
                 </TableRow>
+
                 <TableRow
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -432,7 +431,7 @@
                 <!-- Riga 2 per "Crypto" - Valore attuale -->
                 <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="41dp">
 
                     <TextView
                         android:id="@+id/crypto_valore_attuale"
@@ -455,8 +454,7 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:padding="17dp"
-                        android:text="DD/MM/YYYY" />
+                        android:padding="17dp" />
 
                 </TableRow>
 
@@ -464,32 +462,32 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="374dp"
-                android:layout_marginTop="40dp"
+                android:layout_height="357dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="10dp"
                 android:orientation="vertical">
 
-                <Button
+                <ImageButton
                     android:id="@+id/azioni_button"
-                    android:layout_width="72dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="50dp"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="20dp"
+                    android:background="?android:attr/selectableItemBackground"
                     android:padding="8dp"
-                    android:text="Dettagli"
-                    android:textColor="@color/white"
-                    android:textSize="10dp" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/immagine_lente" />
 
 
-                <Button
+                <ImageButton
                     android:id="@+id/crypto_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginTop="160dp"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_marginTop="140dp"
+
+                    android:background="?android:attr/selectableItemBackground"
                     android:padding="8dp"
-                    android:text="Dettagli"
-                    android:textColor="@color/white"
-                    android:textSize="10dp" />
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/immagine_lente" />
 
 
             </LinearLayout>

@@ -104,7 +104,8 @@ data class CryptoQuote(
     val volume_24h: Double,
     val percent_change_1h: Double,
     val percent_change_24h: Double,
-    val percent_change_7d: Double
+    val percent_change_7d: Double,
+    var valdata: String
 )
 
 
