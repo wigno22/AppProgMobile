@@ -21,6 +21,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.util.Log
 import android.widget.ProgressBar
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -48,12 +49,22 @@ class CryptoFragment : Fragment() {
     private var exchangeRate: Double = 1.09
     private val db = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
+    private lateinit var viewModel: DataViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_crypto, container, false)
+
+        // Inizializzazione del ViewModel
+        viewModel = ViewModelProvider(this).get(DataViewModel::class.java)
+
+        // Osserva i cambiamenti nel LiveData
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
         recyclerView = view.findViewById(R.id.recycler_view_crypto)
         investButton = view.findViewById(R.id.button_invest_crypto)
         showStocksButton = view.findViewById(R.id.button_show_crypto)
@@ -233,7 +244,7 @@ class CryptoFragment : Fragment() {
         val lowRiskCryptos = mutableListOf<CryptoSymbolWithQuote>()
         var count = 0
         val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-        val currentDate = dateFormat.format(java.util.Date())
+        val currentDate = dateFormat.format(Date())
 
         for (symbol in symbols) {
             if (count >= 25) { // Limita il numero di richieste
@@ -248,16 +259,17 @@ class CryptoFragment : Fragment() {
                 break
             }
 
-            quote?.let {
-                val risk = calculateCryptoRisk(it)
-                if (risk < 0.05) {
-                    lowRiskCryptos.add(CryptoSymbolWithQuote(symbol, it))
+            // Filtra le criptovalute con valore inferiore a 0,001 per evitare problemi di approssimazione
+            if (quote.price >= 0.001) {
+                val risk = calculateCryptoRisk(quote)
+                if (risk < 0.1) {
+                    lowRiskCryptos.add(CryptoSymbolWithQuote(symbol, quote))
                     count++
                 }
             }
         }
 
-        Log.d("AIIntegrationFragment", "Calculated low risk cryptos: $lowRiskCryptos")
+        Log.d("AIIntegrationFragment", "Calculated low-risk cryptos: $lowRiskCryptos")
         return lowRiskCryptos
     }
 
@@ -350,55 +362,7 @@ class CryptoFragment : Fragment() {
 
 
     private suspend fun updateAllCryptoValues() {
-        val uid = user?.uid ?: return
-        val userDocRef = db.collection(uid).document("Account").collection("Criptovalute")
-
-        try {
-            val snapshot = userDocRef.get().await()
-            val batch = db.batch()
-
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-            val currentDate = dateFormat.format(Date())
-
-            for (document in snapshot.documents) {
-                val symbol = document.id
-                val quote = getCryptoQuote(service, apiKey, symbol)
-                quote?.let {
-                    val docRef = userDocRef.document(symbol)
-                    val valoreUltEuro = document.getDouble("valoreUlt€") ?: 0.0
-
-                    val currentPrice = quote.price / exchangeRate
-
-                    batch.update(docRef, "valoreReal€", valoreUltEuro)
-                    batch.update(docRef, "dataReal", currentDate)
-
-                    withContext(Dispatchers.Main) {
-                        if (currentPrice > valoreUltEuro) {
-                            // Colora di verde
-                            investmentDataTextView.setTextColor(Color.GREEN)
-                            Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Colora di rosso
-                            investmentDataTextView.setTextColor(Color.RED)
-                            Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    batch.update(docRef, "valoreUlt€", currentPrice)
-                    batch.update(docRef, "dataUlt", currentDate)
-                }
-            }
-
-            batch.commit().await()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), "Crypto values updated successfully!", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), "Failed to update crypto values: ${e.message}", Toast.LENGTH_LONG).show()
-                Log.e("AIIntegrationFragment", "Failed to update crypto values", e)
-            }
-        }
+        viewModel.updateAllCryptoValues(db, FirebaseAuth.getInstance().currentUser, service, apiKey, exchangeRate)
     }
 
     private suspend fun registerInvestmentTransaction(cryptos: List<CryptoSymbolWithQuote>) {
@@ -481,6 +445,18 @@ class CryptoFragment : Fragment() {
                 Log.e("AIIntegrationFragment", "Failed to sell all cryptos", e)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Nascondi la Bottom Navigation Bar quando il fragment è visibile
+        (activity as? MainActivity)?.setBottomNavigationVisibility(false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Mostra la Bottom Navigation Bar quando il fragment non è più visibile
+        (activity as? MainActivity)?.setBottomNavigationVisibility(true)
     }
 
 }

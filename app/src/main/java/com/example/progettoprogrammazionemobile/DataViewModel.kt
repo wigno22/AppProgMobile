@@ -52,11 +52,11 @@ class DataViewModel : ViewModel() {
         _balance.value = newBalance
     }
 
-    // LiveData per notificare il fragment riguardo a eventi come successi o errori
-    private val _eventMessage = MutableLiveData<String>()
-    val eventMessage: LiveData<String> get() = _eventMessage
 
-    // Funzione per aggiornare i valori delle azioni
+
+    private val _toastMessage = MutableLiveData<String>()
+    val toastMessage: LiveData<String> get() = _toastMessage
+
     suspend fun updateAllStockValues(
         db: FirebaseFirestore,
         user: FirebaseUser?,
@@ -83,26 +83,48 @@ class DataViewModel : ViewModel() {
 
             for (document in snapshot.documents) {
                 val symbol = document.id
+                // ricevo valore delle azioni ultimo
                 val quote = getStockQuote(service, apiKey, symbol)
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
-                    val valoreUlt = document.getDouble("valoreUlt") ?: 0.0
-                    val valoreUltEuro = valoreUlt * exchangeRate
+                    val valoreUlt = document.getDouble("valoreUlt$") ?: 0.0
+                    val valoreUltEuro = valoreUlt / exchangeRate
 
+                    // metto nel valoreReal il valore ultimo che avevo registrato nel db
                     batch.update(docRef, "valoreReal", valoreUltEuro)
+                    batch.update(docRef, "valoreReal$", valoreUlt)
                     batch.update(docRef, "dataReal", currentDate)
 
-                    batch.update(docRef, "valoreUlt", quote.c * exchangeRate)
+                    // confronto ultime quotazioni con quelle già registrate
+                    if (quote.c > valoreUlt) {
+                        // Notifica il Fragment/Activity se il valore è maggiore
+                        _toastMessage.postValue("Il valore reale è maggiore dell'ultimo valore!")
+                    } else {
+                        // Notifica il Fragment/Activity se il valore non è maggiore
+                        _toastMessage.postValue("Il valore reale non è maggiore dell'ultimo valore.")
+                    }
+
+                    // registro in valoreUlt l'ultima quotazione
+                    batch.update(docRef, "valoreUlt$", quote.c)
+                    batch.update(docRef, "valoreUlt", quote.c / exchangeRate)
                     batch.update(docRef, "dataUlt", currentDate)
                 }
             }
+
             batch.commit().await()
+            _toastMessage.postValue("Stock values updated successfully!")
         } catch (e: Exception) {
-            Log.e("DataViewModel", "Failed to update stock values", e)
+            _toastMessage.postValue("Failed to update stock values: ${e.message}")
+            Log.e("AIIntegrationFragment", "Failed to update stock values", e)
         }
     }
 
-    // Funzione per aggiornare i valori delle criptovalute
+
+    // LiveData per notificare il fragment riguardo a eventi come successi o errori
+    private val _eventMessage = MutableLiveData<String>()
+    val eventMessage: LiveData<String> get() = _eventMessage
+
+
     suspend fun updateAllCryptoValues(
         db: FirebaseFirestore,
         user: FirebaseUser?,
@@ -125,23 +147,33 @@ class DataViewModel : ViewModel() {
                 val quote = getCryptoQuote(service, apiKey, symbol)
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
-                    val valoreUlt = document.getDouble("valoreUlt€") ?: 0.0
-                    val valoreUltEuro = valoreUlt * exchangeRate
-                    val currentPrice = quote.price * exchangeRate
+                    val valoreUltEuro = document.getDouble("valoreUlt€") ?: 0.0
 
-                    batch.update(docRef, "valoreReal€", currentPrice)
+                    val currentPrice = quote.price / exchangeRate
+
+                    // Aggiornamento del valore nel batch
+                    batch.update(docRef, "valoreReal€", valoreUltEuro)
                     batch.update(docRef, "dataReal", currentDate)
 
+                    if (currentPrice > valoreUltEuro) {
+                        // Notifica il Fragment/Activity se il valore è maggiore
+                        _toastMessage.postValue("Il valore reale è maggiore dell'ultimo valore!")
+                    } else {
+                        // Notifica il Fragment/Activity se il valore non è maggiore
+                        _toastMessage.postValue("Il valore reale non è maggiore dell'ultimo valore.")
+                    }
+
+                    // Aggiorna il valore attuale nel batch
                     batch.update(docRef, "valoreUlt€", currentPrice)
                     batch.update(docRef, "dataUlt", currentDate)
                 }
             }
 
             batch.commit().await()
-            _eventMessage.postValue("Crypto values updated successfully!")
+            _toastMessage.postValue("Crypto values updated successfully!")
         } catch (e: Exception) {
-            _eventMessage.postValue("Failed to update crypto values: ${e.message}")
-            Log.e("DataViewModel", "Failed to update crypto values", e)
+            _toastMessage.postValue("Failed to update crypto values: ${e.message}")
+            Log.e("YourViewModel", "Failed to update crypto values", e)
         }
     }
 

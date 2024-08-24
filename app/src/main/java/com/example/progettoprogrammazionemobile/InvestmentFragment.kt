@@ -25,6 +25,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.DecimalFormat
 import java.util.*
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -472,6 +474,8 @@ class InvestmentFragment : Fragment() {
         val user = auth.currentUser
         val UID = user?.uid ?: return
 
+
+
         val cryptoinfo = db.collection(UID).document("Account").collection("Criptovalute")
         val azioniinfo = db.collection(UID).document("Account").collection("Azioni")
 
@@ -526,6 +530,8 @@ class InvestmentFragment : Fragment() {
         val periodo = selectedPeriodo.split(" ")[0].toInt()
         var quotaazioni = 0.0
         var quotacrypto = 0.0
+        val currentDate = LocalDateTime.now()
+        val formattedDateTime = Date.from(currentDate.atZone(ZoneId.systemDefault()).toInstant())
 
         val rischioId = radioGroupRischio.checkedRadioButtonId
         val fattoreRischio = when (rischioId) {
@@ -559,7 +565,8 @@ class InvestmentFragment : Fragment() {
                 "cifraInvestimento" to cifraInvestimento,
                 "cifraInAzioni" to quotaazioni,
                 "cifraInCrypto" to quotacrypto,
-                "exchangeRate" to exchangeRate
+                "exchangeRate" to exchangeRate,
+                "dataInizioPiano" to formattedDateTime
             )
 
             docref.set(accountData, SetOptions.merge())

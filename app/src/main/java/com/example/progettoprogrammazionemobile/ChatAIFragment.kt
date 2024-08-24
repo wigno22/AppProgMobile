@@ -1,26 +1,26 @@
 package com.example.progettoprogrammazionemobile
 
-
+import android.graphics.Rect
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
-
 
 class ChatAIFragment : Fragment() {
 
@@ -35,7 +35,6 @@ class ChatAIFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_chatai, container, false)
 
         chatRecyclerView = view.findViewById(R.id.chat_recyclerview)
@@ -49,9 +48,11 @@ class ChatAIFragment : Fragment() {
 
         sendButton.setOnClickListener { sendMessage() }
 
+        // Aggiungi il listener per la tastiera
+        handleKeyboardVisibility(view)
+
         return view
     }
-
 
     private fun sendMessage() {
         val messageText = chatInput.text.toString()
@@ -84,8 +85,29 @@ class ChatAIFragment : Fragment() {
                 chatRecyclerView.scrollToPosition(messages.size - 1)
             }
         } catch (e: Exception) {
-            Log.e("InvestmentFragment", "Failed to generate AI content: ${e.message}")
+            Log.e("ChatAIFragment", "Failed to generate AI content: ${e.message}")
         }
+    }
+
+    private fun handleKeyboardVisibility(view: View) {
+        val bottomNavigationView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+
+        view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val rect = Rect()
+                view.getWindowVisibleDisplayFrame(rect)
+                val screenHeight = view.rootView.height
+                val keypadHeight = screenHeight - rect.bottom
+
+                if (keypadHeight > screenHeight * 0.15) {
+                    // La tastiera è visibile
+                    bottomNavigationView.visibility = View.GONE
+                } else {
+                    // La tastiera è nascosta
+                    bottomNavigationView.visibility = View.VISIBLE
+                }
+            }
+        })
     }
 }
 
@@ -103,7 +125,6 @@ class ChatAdapter(private val messages: List<ChatAIFragment.ChatMessage>) : Recy
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
         val message = messages[position]
         holder.messageTextView.text = message.text
-        // Configura l'aspetto del messaggio in base al fatto che sia dell'utente o dell'AI
         if (message.isUser) {
             holder.messageTextView.gravity = Gravity.END
             holder.messageTextView.setBackgroundResource(R.drawable.user_message_background)

@@ -280,7 +280,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
 
-                    android:text="30%"
+                    android:text="60%"
                     android:textStyle="bold" />
 
                 <TextView
@@ -298,7 +298,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
 
-                    android:text="70%"
+                    android:text="40%"
                     android:textStyle="bold" />
 
             </TableRow>
@@ -326,7 +326,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
 
-                    android:text="70%"
+                    android:text="40%"
                     android:textStyle="bold" />
 
                 <TextView
@@ -344,7 +344,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
 
-                    android:text="30%"
+                    android:text="60%"
                     android:textStyle="bold" />
 
             </TableRow>
@@ -441,8 +441,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-
-                    android:text="5%"
+                    android:text="10%"
                     android:textStyle="bold" />
 
 

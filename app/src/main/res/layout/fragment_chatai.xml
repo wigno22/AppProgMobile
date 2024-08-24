@@ -3,21 +3,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="700dp"
         android:orientation="vertical"
-        android:padding="16dp">
+        >
 
         <!-- RecyclerView per la chat -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/chat_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginTop="10dp"
-            android:background="#e6e6fa"
+            android:layout_height="300dp"
+            android:background="#1976D2"
             app:layout_constraintHeight_percent="0.8" />
 
 
-        <!-- Barra di inserimento messaggi e pulsante per inviare -->
         <LinearLayout
             android:id="@+id/chat_input_container"
             android:layout_width="match_parent"
@@ -28,21 +26,21 @@
 
             <EditText
                 android:id="@+id/chat_input"
-                android:layout_width="200dp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
                 android:hint="Type a message"
                 android:inputType="text" />
 
+            <Button
+                android:id="@+id/send_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send"
+                android:textColor="@color/white"
+                android:textStyle="italic" />
 
         </LinearLayout>
-        <Button
-            android:id="@+id/send_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Send"
-            android:textColor="@color/white"
-            android:textStyle="italic" />
+
     </LinearLayout>
 </layout>

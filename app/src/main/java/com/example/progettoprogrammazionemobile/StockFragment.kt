@@ -20,6 +20,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import android.util.Log
 import android.widget.ProgressBar
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -46,12 +47,22 @@ class StockFragment : Fragment() {
     private var exchangeRate: Double = 1.09
     private val db = FirebaseFirestore.getInstance()
     private val user = FirebaseAuth.getInstance().currentUser
+    private lateinit var viewModel: DataViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_stock, container, false)
+
+        // Inizializzazione del ViewModel
+        viewModel = ViewModelProvider(this).get(DataViewModel::class.java)
+
+        // Osserva i cambiamenti nel LiveData
+        viewModel.toastMessage.observe(viewLifecycleOwner) { message ->
+            Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+        }
+
         recyclerView = view.findViewById(R.id.recycler_view)
         investButton = view.findViewById(R.id.button_invest)
         showStocksButton = view.findViewById(R.id.button_show_stocks)
@@ -71,6 +82,8 @@ class StockFragment : Fragment() {
             investmentDataContainer.visibility = View.GONE
             showStocksButton.visibility = View.GONE
             updateValuesButton.visibility = View.GONE
+
+
             lifecycleScope.launch {
                 try {
                     fetchBestStocks()
@@ -355,63 +368,8 @@ class StockFragment : Fragment() {
     }
 
     private suspend fun updateAllStockValues() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://finnhub.io/api/v1/")
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        viewModel.updateAllStockValues(db, FirebaseAuth.getInstance().currentUser, okHttpClient, apiKey, exchangeRate)
 
-        val service = retrofit.create(FinnhubApiService::class.java)
-        val uid = user?.uid ?: return
-        val userDocRef = db.collection(uid).document("Account").collection("Azioni")
-
-        try {
-            val snapshot = userDocRef.get().await()
-            val batch = db.batch()
-
-            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-            val currentDate = dateFormat.format(java.util.Date())
-
-            for (document in snapshot.documents) {
-                val symbol = document.id
-                //ricvo valore delle azioni ultimo
-                val quote = getStockQuote(service, apiKey, symbol)
-                quote?.let {
-                    val docRef = userDocRef.document(symbol)
-                    val valoreUlt = document.getDouble("valoreUlt$") ?: 0.0
-                    val valoreUltEuro = valoreUlt / exchangeRate
-
-                    //metto nel valorereal il valore ultimo che avevo registrato nel db
-                    batch.update(docRef, "valoreReal", valoreUltEuro)
-                    batch.update(docRef, "valoreReal$", valoreUlt)
-                    batch.update(docRef, "dataReal", currentDate)
-
-                    //confronto ultime quotazioni con quelle già registrate
-                    if (quote.c  > valoreUlt) {
-                        // Mostra un Toast se il valore è maggiore
-                        Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
-                    } else {
-                        // Mostra un Toast se il valore non è maggiore
-                        Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
-                    }
-
-                    //registro in valoreult l'ultima quotazione
-                    batch.update(docRef, "valoreUlt$", quote.c)
-                    batch.update(docRef, "valoreUlt", quote.c/exchangeRate)
-                    batch.update(docRef, "dataUlt", currentDate)
-                }
-            }
-
-            batch.commit().await()
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), "Stock values updated successfully!", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(requireContext(), "Failed to update stock values: ${e.message}", Toast.LENGTH_LONG).show()
-                Log.e("AIIntegrationFragment", "Failed to update stock values", e)
-            }
-        }
     }
 
 
@@ -500,6 +458,18 @@ class StockFragment : Fragment() {
                 Log.e("AIIntegrationFragment", "Failed to sell all stocks", e)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Nascondi la Bottom Navigation Bar quando il fragment è visibile
+        (activity as? MainActivity)?.setBottomNavigationVisibility(false)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Mostra la Bottom Navigation Bar quando il fragment non è più visibile
+        (activity as? MainActivity)?.setBottomNavigationVisibility(true)
     }
 
 }
