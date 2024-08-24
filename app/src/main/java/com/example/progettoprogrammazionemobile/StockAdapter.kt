@@ -37,7 +37,7 @@ class StockAdapter : ListAdapter<StockSymbolWithQuote, StockAdapter.StockViewHol
 
         fun bind(stock: StockSymbolWithQuote) {
             textName.text = stock.symbol.symbol
-            textCurrentValue.text = "Valore Attuale: ${stock.quote.c}"
+            textCurrentValue.text = "Valore Attuale: ${stock.quote.c} $"
             description.text=stock.symbol.description
 
             // Placeholder for date, which will be set when the item is selected

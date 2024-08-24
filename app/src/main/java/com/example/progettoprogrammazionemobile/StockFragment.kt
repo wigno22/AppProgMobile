@@ -152,7 +152,7 @@ class StockFragment : Fragment() {
                 val dateUlt = data?.get("dataUlt") as? String
                 val numStocks = data?.get("numeroAzioni") as? Double
 
-                val numberFormat = NumberFormat.getCurrencyInstance(Locale.ITALY)
+                val numberFormat = NumberFormat.getCurrencyInstance(Locale.US)
 
                 if (stockName != null) {
                     investmentData.append("Name: $stockName\n")
@@ -318,9 +318,9 @@ class StockFragment : Fragment() {
         for (stock in stocks) {
             val quote = stock.quote
             val symbol = stock.symbol
-            val numstocks = ((cifrainAzioni*exchangeRate)/ stocks.size) / stock.quote.c
+            val numstocks = ((cifrainAzioni * exchangeRate)/ stocks.size) / stock.quote.c
             val docRef = userDocRef.document(symbol.symbol)
-            val valoreAcqEuro = quote.c * exchangeRate
+            val valoreAcqEuro = quote.c / exchangeRate
             val data = hashMapOf(
                 "nomeAzione" to symbol.description,
                 "valorecambioAcq" to exchangeRate,
@@ -354,18 +354,6 @@ class StockFragment : Fragment() {
         }
     }
 
-    private suspend fun fetchNumberOfStocks(): Int? {
-        val uid = user?.uid ?: return null
-        val accountDocRef = db.collection(uid).document("Account")
-        return try {
-            val accountSnapshot = accountDocRef.get().await()
-            accountSnapshot.getLong("Azioni")?.toInt()
-        } catch (e: Exception) {
-            Log.e("AIIntegrationFragment", "Failed to fetch number of stocks: ${e.message}")
-            null
-        }
-    }
-
     private suspend fun updateAllStockValues() {
         val retrofit = Retrofit.Builder()
             .baseUrl("https://finnhub.io/api/v1/")
@@ -386,16 +374,20 @@ class StockFragment : Fragment() {
 
             for (document in snapshot.documents) {
                 val symbol = document.id
+                //ricvo valore delle azioni ultimo
                 val quote = getStockQuote(service, apiKey, symbol)
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
-                    val valoreUlt = document.getDouble("valoreUlt") ?: 0.0
-                    val valoreUltEuro = valoreUlt * exchangeRate
+                    val valoreUlt = document.getDouble("valoreUlt$") ?: 0.0
+                    val valoreUltEuro = valoreUlt / exchangeRate
 
+                    //metto nel valorereal il valore ultimo che avevo registrato nel db
                     batch.update(docRef, "valoreReal", valoreUltEuro)
+                    batch.update(docRef, "valoreReal$", valoreUlt)
                     batch.update(docRef, "dataReal", currentDate)
 
-                    if (quote.c * exchangeRate > valoreUltEuro) {
+                    //confronto ultime quotazioni con quelle già registrate
+                    if (quote.c  > valoreUlt) {
                         // Mostra un Toast se il valore è maggiore
                         Toast.makeText(context, "Il valore reale è maggiore dell'ultimo valore!", Toast.LENGTH_SHORT).show()
                     } else {
@@ -403,7 +395,9 @@ class StockFragment : Fragment() {
                         Toast.makeText(context, "Il valore reale non è maggiore dell'ultimo valore.", Toast.LENGTH_SHORT).show()
                     }
 
-                    batch.update(docRef, "valoreUlt", quote.c * exchangeRate)
+                    //registro in valoreult l'ultima quotazione
+                    batch.update(docRef, "valoreUlt$", quote.c)
+                    batch.update(docRef, "valoreUlt", quote.c/exchangeRate)
                     batch.update(docRef, "dataUlt", currentDate)
                 }
             }
@@ -471,9 +465,9 @@ class StockFragment : Fragment() {
         try {
             val snapshot = userDocRef.get().await()
             val totalValue = snapshot.documents.sumOf { document ->
-                val currentAmount = document.getDouble("valoreUlt$") ?: 0.0
+                val currentAmount = document.getDouble("valoreUlt") ?: 0.0
                 val numStocks = document.getDouble("numeroAzioni") ?: 0.0
-                currentAmount * numStocks / exchangeRate
+                currentAmount * numStocks
             }
 
             val currentDateTime = LocalDateTime.now()

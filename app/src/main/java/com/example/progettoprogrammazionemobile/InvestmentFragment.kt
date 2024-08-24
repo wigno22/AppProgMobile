@@ -1,5 +1,6 @@
 package com.example.progettoprogrammazionemobile
 
+import android.app.AlertDialog
 import android.health.connect.datatypes.units.Percentage
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
@@ -179,9 +181,9 @@ class InvestmentFragment : Fragment() {
 
                     // Calcola le quote azioni e fondi
                     val quotaazioni = when (livelloRischio) {
-                        1 -> cifraInvestimento * 0.4
+                        1 -> cifraInvestimento * 0.6
                         2 -> cifraInvestimento * 0.5
-                        3 -> cifraInvestimento * 0.6
+                        3 -> cifraInvestimento * 0.4
                         else -> 0.0
                     }
                     val quotacrypto = cifraInvestimento - quotaazioni
@@ -467,6 +469,12 @@ class InvestmentFragment : Fragment() {
 
 
     private fun onConfirmButtonClick() {
+        val user = auth.currentUser
+        val UID = user?.uid ?: return
+
+        val cryptoinfo = db.collection(UID).document("Account").collection("Criptovalute")
+        val azioniinfo = db.collection(UID).document("Account").collection("Azioni")
+
         val cifraInvestimento = cifraInvestimentoEditText.text.toString().toDoubleOrNull() ?: return
 
         // Controllo se la cifra di investimento supera il saldo medio trimestrale
@@ -475,6 +483,45 @@ class InvestmentFragment : Fragment() {
             return
         }
 
+        // Controlla se ci sono criptovalute o azioni nel database
+        azioniinfo.get().addOnSuccessListener { azioniSnapshot ->
+            cryptoinfo.get().addOnSuccessListener { cryptoSnapshot ->
+                val hasStocks = !azioniSnapshot.isEmpty
+                val hasCryptos = !cryptoSnapshot.isEmpty
+
+                if (hasStocks || hasCryptos) {
+                    // Mostra un popup di conferma prima di procedere con il piano di investimento
+                    AlertDialog.Builder(requireContext())
+                        .setTitle("Conferma Piano di Investimento")
+                        .setMessage("Ci sono azioni o criptovalute esistenti. Procedendo con questo piano, verranno vendute. Sei sicuro di voler continuare?")
+                        .setPositiveButton("Conferma") { dialog, which ->
+                            // Se confermato, vendi tutte le azioni e criptovalute
+                            lifecycleScope.launch {
+                                if (hasStocks) {
+                                    viewModel.sellAllStocks(db, user)
+                                }
+                                if (hasCryptos) {
+                                    viewModel.sellAllCryptos(db, user)
+                                }
+
+                                // Procedi con l'investimento
+                                saveInvestmentPlan(cifraInvestimento)
+                            }
+                        }
+                        .setNegativeButton("Annulla") { dialog, which ->
+                            // Annulla l'operazione
+                            dialog.dismiss()
+                        }
+                        .show()
+                } else {
+                    // Se non ci sono azioni o criptovalute, procedi direttamente con l'investimento
+                    saveInvestmentPlan(cifraInvestimento)
+                }
+            }
+        }
+    }
+
+    private fun saveInvestmentPlan(cifraInvestimento: Double) {
         val selectedPeriodo = periodoSpinner.selectedItem.toString()
         val periodo = selectedPeriodo.split(" ")[0].toInt()
         var quotaazioni = 0.0
@@ -517,11 +564,9 @@ class InvestmentFragment : Fragment() {
 
             docref.set(accountData, SetOptions.merge())
                 .addOnSuccessListener {
-
                     Toast.makeText(requireContext(), "Dati salvati con successo!", Toast.LENGTH_SHORT).show()
                 }
                 .addOnFailureListener { e ->
-
                     Toast.makeText(requireContext(), "Errore nel salvataggio: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }
@@ -529,6 +574,7 @@ class InvestmentFragment : Fragment() {
         azioniButton.visibility = View.VISIBLE
         cryptoButton.visibility = View.VISIBLE
     }
+
 
     private fun navigatetoFragment(type: String) {
 

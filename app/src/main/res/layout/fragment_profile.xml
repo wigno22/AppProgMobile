@@ -14,8 +14,6 @@
     android:layout_margin="5dp"
     android:padding="0dp">
 
-
-
     <Button
         android:id="@+id/sign_out"
         android:layout_width="wrap_content"
@@ -23,135 +21,158 @@
         android:backgroundTint="@color/red"
         android:text="Log-Out"
         android:textColor="@android:color/black"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="10dp"
         android:layout_gravity="right"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="118dp"
-        android:orientation="vertical"
-        android:layout_marginTop="30dp">
-
+        android:layout_height="155dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/UserLabel"
+            android:layout_width="376dp"
+            android:layout_height="40dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:text="User"
+            android:textSize="18dp" />
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:layout_marginTop="0dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/Tname"
                 android:layout_width="188dp"
-                android:layout_height="42dp"
+                android:layout_height="38dp"
                 android:gravity="left"
                 android:text="Name"
-                android:textSize="20sp"
-                android:background="@drawable/border"/>
+                android:textSize="18dp" />
 
             <TextView
                 android:id="@+id/Tsurname"
                 android:layout_width="188dp"
-                android:layout_height="42dp"
+                android:layout_height="38dp"
                 android:gravity="left"
                 android:text="Surname"
-                android:textSize="20sp"
-                android:background="@drawable/border"/>
+                android:textSize="18dp" />
         </LinearLayout>
-
+        <TextView
+            android:id="@+id/EmailLabel"
+            android:layout_width="376dp"
+            android:layout_height="38dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:text="Email"
+            android:textSize="18dp" />
         <TextView
             android:id="@+id/Temail"
             android:layout_width="376dp"
-            android:layout_height="42dp"
+            android:layout_height="38dp"
             android:layout_marginTop="5dp"
-            android:background="@drawable/border"
-            android:gravity="left"
+            android:gravity="center"
             android:text="Email"
-            android:textSize="20sp" />
+            android:textSize="18dp"
+            />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="376dp"
-        android:layout_height="214dp"
-        android:layout_marginTop="15dp"
+        android:layout_height="135dp"
+        android:layout_marginTop="5dp"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/border"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/Labelphone"
                 android:layout_width="184dp"
                 android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
                 android:gravity="center"
-                android:text="Phone Number:"
-                android:textSize="18sp" />
+                android:text="Phone Number"
+                android:textColor="@android:color/white"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/Tphone"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="right"
                 android:hint="Phone Number"
                 android:inputType="phone"
-                android:padding="10dp" />
+                android:padding="10dp"
+                android:textSize="18dp" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/border"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="183dp"
                 android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
                 android:gravity="center"
-                android:text="Fixed Outcome:"
-                android:textSize="18sp" />
+                android:text="Fixed Outcome"
+                android:textColor="@android:color/white"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/TfixedOut"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:gravity="right"
                 android:hint="Fixed Expenses"
                 android:inputType="numberDecimal"
                 android:padding="10dp"
+                android:textSize="18dp"
                 android:text="@{viewModel.fixedOut}" />
 
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/border"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <TextView
                 android:layout_width="184dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimary"
                 android:gravity="center"
-                android:text="Fixed Income:"
-                android:textSize="18sp" />
+                android:text="Fixed Income"
+                android:textColor="@android:color/white"
+                android:textSize="18dp" />
 
 
             <EditText
                 android:id="@+id/TfixedIn"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="right"
                 android:hint="Fixed Income"
                 android:inputType="numberDecimal"
                 android:padding="10dp"
+                android:textSize="18dp"
                 android:text="@{viewModel.fixedEntries}" />
 
         </LinearLayout>
 
     </LinearLayout>
-
     <Button
         android:id="@+id/Bsave"
         android:layout_width="wrap_content"
@@ -161,5 +182,277 @@
         android:textColor="@color/white"
         android:layout_marginTop="16dp"
         android:layout_gravity="center"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:orientation="horizontal">
+
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:stretchColumns="1,2,3,4,5">
+
+            <!-- Intestazione della tabella -->
+
+            <TableRow
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
+
+                <TextView
+                    android:id="@+id/RischioTitle_label"
+                    android:layout_width="124dp"
+                    android:gravity="center"
+
+                    android:text="Rischio"
+                    android:textColor="@android:color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="41dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorPrimary"
+                android:textSize="10dp">
+
+                <TextView
+                    android:id="@+id/InvestimentoTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Invest."
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/BassoTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Basso"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/MedioTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Medio"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/AltoTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Alto"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+
+            </TableRow>
+
+            <!-- Riga 1 per "Azioni" - Valore d'acquisto -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24dp"
+                android:padding="4dp">
+
+                <TextView
+                    android:id="@+id/Lavel_Azioni"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="left"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@android:color/white"
+                    android:text="Azioni"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/AzBas_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="30%"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/AzMed_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="50%"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/AzAlt_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="70%"
+                    android:textStyle="bold" />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24dp"
+                android:padding="4dp">
+
+                <TextView
+                    android:id="@+id/Lavel_Crypto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@android:color/white"
+                    android:gravity="left"
+
+                    android:text="Crypto"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/CrBas_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="70%"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/CrMed_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="50%"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/CrAlt_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="30%"
+                    android:textStyle="bold" />
+
+            </TableRow>
+
+
+
+
+
+        </TableLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+
+        <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:stretchColumns="1,2,3,4,5">
+
+            <!-- Intestazione della tabella -->
+
+            <TableRow
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary">
+
+                <TextView
+                    android:id="@+id/Rischio_label"
+                    android:layout_width="206dp"
+                    android:gravity="center"
+                    android:text="Rischio Investimento"
+                    android:textColor="@android:color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+            </TableRow>
+
+            <TableRow
+                android:layout_width="wrap_content"
+                android:layout_height="41dp"
+                android:layout_marginTop="5dp"
+                android:background="@color/colorPrimary"
+                android:textSize="10dp">
+
+
+
+                <TextView
+                    android:id="@+id/AzioniTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Azioni"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+                <TextView
+                    android:id="@+id/CryptoTitle"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Crypto"
+                    android:textColor="@android:color/white"
+                    android:textSize="18dp" />
+
+
+
+
+            </TableRow>
+
+            <!-- Riga 1 per "Azioni" - Valore d'acquisto -->
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="24dp"
+                android:padding="4dp">
+
+
+
+                <TextView
+                    android:id="@+id/RiskAz_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="10%"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/RiskCr_cifra"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+
+                    android:text="5%"
+                    android:textStyle="bold" />
+
+
+            </TableRow>
+
+
+        </TableLayout>
+
+    </LinearLayout>
+
+
 </LinearLayout>
 </layout>

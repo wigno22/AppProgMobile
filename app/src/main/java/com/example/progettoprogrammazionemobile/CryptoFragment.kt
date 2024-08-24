@@ -236,7 +236,7 @@ class CryptoFragment : Fragment() {
         val currentDate = dateFormat.format(java.util.Date())
 
         for (symbol in symbols) {
-            if (count >= 20) { // Limita il numero di richieste
+            if (count >= 25) { // Limita il numero di richieste
                 break
             }
             val quote = getCryptoQuote(apiService, apiKey, symbol.symbol)
@@ -250,7 +250,7 @@ class CryptoFragment : Fragment() {
 
             quote?.let {
                 val risk = calculateCryptoRisk(it)
-                if (risk < 0.1) {
+                if (risk < 0.05) {
                     lowRiskCryptos.add(CryptoSymbolWithQuote(symbol, it))
                     count++
                 }
@@ -314,17 +314,17 @@ class CryptoFragment : Fragment() {
             val symbol = crypto.symbol
             val numCryptos = ((cifrainCriptovalute * exchangeRate) / cryptos.size) / crypto.quote.price
             val docRef = userDocRef.document(symbol.symbol)
-            val valoreAcqEuro = quote.price * exchangeRate
+            val valoreAcqEuro = quote.price / exchangeRate
             val data = hashMapOf(
                 "nomeCripto" to symbol.name,
                 "valorecambioAcq" to exchangeRate,
                 "valoreAcq€" to valoreAcqEuro,
                 "dataAcq" to quote.valdata,
                 "valorecambioUlt" to exchangeRate,
-                "valoreUlt€" to quote.price * exchangeRate,
+                "valoreUlt€" to quote.price / exchangeRate,
                 "dataUlt" to quote.valdata,
                 "valorecambioReal" to exchangeRate,
-                "valoreReal€" to quote.price * exchangeRate,
+                "valoreReal€" to quote.price / exchangeRate,
                 "dataReal" to quote.valdata,
                 "numeroCriptovalute" to numCryptos
             )
@@ -365,11 +365,11 @@ class CryptoFragment : Fragment() {
                 val quote = getCryptoQuote(service, apiKey, symbol)
                 quote?.let {
                     val docRef = userDocRef.document(symbol)
-                    val valoreUlt = document.getDouble("valoreUlt€") ?: 0.0
-                    val valoreUltEuro = valoreUlt * exchangeRate
-                    val currentPrice = quote.price * exchangeRate
+                    val valoreUltEuro = document.getDouble("valoreUlt€") ?: 0.0
 
-                    batch.update(docRef, "valoreReal€", currentPrice)
+                    val currentPrice = quote.price / exchangeRate
+
+                    batch.update(docRef, "valoreReal€", valoreUltEuro)
                     batch.update(docRef, "dataReal", currentDate)
 
                     withContext(Dispatchers.Main) {
@@ -450,7 +450,7 @@ class CryptoFragment : Fragment() {
             val totalValue = snapshot.documents.sumOf { document ->
                 val currentAmount = document.getDouble("valoreUlt€") ?: 0.0
                 val numCryptos = document.getDouble("numeroCriptovalute") ?: 0.0
-                currentAmount * numCryptos / exchangeRate
+                currentAmount * numCryptos
             }
 
             val currentDateTime = LocalDateTime.now()

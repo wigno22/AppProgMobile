@@ -3,6 +3,8 @@ package com.example.progettoprogrammazionemobile
 
 import android.graphics.Color
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +17,8 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -174,5 +178,98 @@ class DataViewModel : ViewModel() {
             }
         }
     }
+
+    private val _sellStocksError = MutableLiveData<String>()
+    val sellStocksError: LiveData<String> get() = _sellStocksError
+
+     suspend fun sellAllStocks(
+        db: FirebaseFirestore,
+        user: FirebaseUser?)
+    {
+        val exchangeRate = 1.09
+        val uid = user?.uid ?: return
+        val userDocRef = db.collection(uid).document("Account").collection("Azioni")
+        val transactionDocRef = db.collection(uid).document("Account").collection("Transaction")
+
+        try {
+            val snapshot = userDocRef.get().await()
+            val totalValue = snapshot.documents.sumOf { document ->
+                val currentAmount = document.getDouble("valoreUlt") ?: 0.0
+                val numStocks = document.getDouble("numeroAzioni") ?: 0.0
+                (currentAmount * numStocks)
+            }
+
+            val currentDateTime = LocalDateTime.now()
+
+            // Converti il nuovo oggetto LocalDateTime in un oggetto Date
+            val formattedDateTime = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant())
+
+            // Registra la transazione di vendita
+            val transactionData = hashMapOf(
+                "amount" to totalValue,
+                "category" to "Stock Sale",
+                "outgoing" to false,
+                "date" to formattedDateTime,
+                "uid" to uid
+            )
+            transactionDocRef.document(formattedDateTime.toString()).set(transactionData)
+                .await() // Usa la data come ID del documento
+
+            // Rimuovi tutte le azioni dal database
+            for (document in snapshot.documents) {
+                userDocRef.document(document.id).delete().await()
+            }
+
+        } catch (e: Exception) {
+            _sellStocksError.postValue("Failed to sell all stocks: ${e.message}")
+            Log.e("AIIntegrationFragment", "Failed to sell all stocks", e)
+        }
+
+    }
+
+    private val _sellCryptoError = MutableLiveData<String>()
+    val sellCryptoError: LiveData<String> get() = _sellCryptoError
+
+    suspend fun sellAllCryptos(
+        db: FirebaseFirestore,
+        user: FirebaseUser?)
+    {
+        val exchangeRate = 1.09
+        val uid = user?.uid ?: return
+        val userDocRef = db.collection(uid).document("Account").collection("Criptovalute")
+        val transactionDocRef = db.collection(uid).document("Account").collection("Transaction")
+
+        try {
+            val snapshot = userDocRef.get().await()
+            val totalValue = snapshot.documents.sumOf { document ->
+                val currentAmount = document.getDouble("valoreUlt€") ?: 0.0
+                val numCryptos = document.getDouble("numeroCriptovalute") ?: 0.0
+                currentAmount * numCryptos
+            }
+
+            val currentDateTime = LocalDateTime.now()
+            val formattedDateTime = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant())
+
+            // Registra la transazione di vendita
+            val transactionData = hashMapOf(
+                "amount" to totalValue,
+                "category" to "Crypto Sale",
+                "outgoing" to false,
+                "date" to formattedDateTime,
+                "uid" to uid
+            )
+            transactionDocRef.document(formattedDateTime.toString()).set(transactionData).await()
+
+            // Rimuovi tutte le criptovalute dal database
+            for (document in snapshot.documents) {
+                userDocRef.document(document.id).delete().await()
+            }
+
+        } catch (e: Exception) {
+            _sellCryptoError.postValue("Failed to sell all stocks: ${e.message}")
+            Log.e("AIIntegrationFragment", "Failed to sell all stocks", e)
+        }
+    }
+
 }
 
