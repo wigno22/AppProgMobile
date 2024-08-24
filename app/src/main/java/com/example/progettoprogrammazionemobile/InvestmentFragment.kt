@@ -285,7 +285,7 @@ class InvestmentFragment : Fragment() {
 
 
     private fun setupPeriodoSpinner() {
-        val periodi = arrayOf("6 mesi", "12 mesi", "18 mesi", "24 mesi", "36 mesi")
+        val periodi = arrayOf("6 Months", "12 Months", "18 Months", "24 Months", "36 Months")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, periodi)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         periodoSpinner.adapter = adapter

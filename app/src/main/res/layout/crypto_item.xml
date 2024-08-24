@@ -25,11 +25,11 @@
         android:id="@+id/text_current_value"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Valore Attuale: $40,000"/>
+        android:text="Current Value: $40,000"/>
 
     <CheckBox
         android:id="@+id/checkbox_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Seleziona"/>
+        android:text="Select"/>
 </LinearLayout>

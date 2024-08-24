@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:textSize="16sp"
-        android:background="@drawable/message_background"/>
+        android:background="@color/colorPositive"/>
 
 
 

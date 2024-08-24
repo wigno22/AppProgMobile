@@ -13,6 +13,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -20,8 +21,8 @@
                 android:id="@+id/saldo_medio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Saldo Medio Trimestrale:"
-                android:textSize="17dp"/>
+                android:text="Three-month balance average:"
+                android:textSize="18dp"/>
 
             <TextView
                 android:id="@+id/saldo_cifra"
@@ -40,8 +41,8 @@
             android:id="@+id/livello_rischio_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Seleziona il livello di rischio:"
-            android:layout_marginTop="16dp"
+            android:text="Select the risk level:"
+            android:layout_marginTop="20dp"
             android:textSize="17dp"/>
 
         <RadioGroup
@@ -56,21 +57,21 @@
                 android:id="@+id/rischio_basso"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Basso"
+                android:text="Low"
                 android:textSize="17dp"/>
 
             <RadioButton
                 android:id="@+id/rischio_medio"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Medio"
+                android:text="Medium"
                 android:textSize="17dp"/>
 
             <RadioButton
                 android:id="@+id/rischio_alto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Alto"
+                android:text="High"
                 android:textSize="17dp"/>
         </RadioGroup>
 
@@ -80,14 +81,14 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="14dp">
+            android:layout_marginTop="18dp">
 
             <TextView
                 android:id="@+id/cifra_investire_label"
-                android:layout_width="wrap_content"
+                android:layout_width="195dp"
                 android:layout_height="wrap_content"
-                android:text="Quantità da investire:"
-                android:textSize="17dp" />
+                android:text="Amount to invest:"
+                android:textSize="18dp" />
 
             <EditText
                 android:id="@+id/cifra_investimento"
@@ -106,18 +107,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginTop="16dp">
+            android:layout_marginTop="18dp">
 
             <TextView
                 android:id="@+id/data_investire_label"
-                android:layout_width="224dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Durata Investimento:"
+                android:text="Lifetime of the investment:"
                 android:textSize="17dp" />
 
             <Spinner
                 android:id="@+id/periodo_spinner"
-                android:layout_width="130dp"
+                android:layout_width="154dp"
                 android:layout_height="wrap_content"
                 android:gravity="right" />
         </LinearLayout>
@@ -126,8 +127,8 @@
             android:id="@+id/confirm_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Proponi Piano d'investimento"
+            android:layout_marginTop="20dp"
+            android:text="Propose Investment Plan"
             android:backgroundTint="@color/colorNeutral"
             android:textColor="@color/white"
             android:textSize="17dp"/>
@@ -136,13 +137,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="442dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:orientation="horizontal">
 
 
             <TableLayout
                 android:layout_width="286dp"
-                android:layout_height="wrap_content"
+                android:layout_height="373dp"
                 android:layout_marginTop="10dp"
                 android:stretchColumns="1,2,3,4,5">
 
@@ -150,15 +151,18 @@
 
                 <TableRow
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary">
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:background="@color/lavanda">
 
                     <TextView
                         android:id="@+id/azioni_label"
+                        android:layout_gravity="center"
                         android:gravity="center"
-                        android:text="Azioni"
+                        android:text="Stocks"
 
-                        android:textColor="@android:color/white"
-                        android:textSize="20dp"
+                        android:textColor="@android:color/black"
+                        android:textSize="18dp"
                         android:textStyle="bold" />
                 </TableRow>
 
@@ -175,7 +179,7 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Acquisto"
+                        android:text="Purchase"
                         android:textColor="@android:color/white"
                         android:textSize="18dp" />
 
@@ -193,7 +197,7 @@
                         android:layout_width="80dp"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Data"
+                        android:text="Date"
                         android:textColor="@android:color/white"
                         android:textSize="18dp" />
 
@@ -222,15 +226,14 @@
                     <TextView
                         android:id="@+id/azioni_data_acquisto"
                         android:layout_width="80dp"
-                        android:gravity="center"
-                         />
+                        android:gravity="center" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
 
-                    android:background="@color/colorPrimary"
                     android:layout_height="40dp"
+                    android:background="@color/colorPrimary"
                     android:padding="5dp"
                     android:textSize="10dp">
 
@@ -239,25 +242,22 @@
                         android:id="@+id/transactionAmountTitle2"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Corrente"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Current"
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionPercentageTitle2"
                         android:layout_width="40dp"
                         android:gravity="center"
-                        android:text="Margine"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Margin"
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionDateTitle2"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Data"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Date"
+                        android:textColor="@android:color/white" />
 
 
                 </TableRow>
@@ -267,14 +267,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:padding="5dp"
-                    android:textSize="10dp"
-                    >
+                    android:textSize="10dp">
 
                     <TextView
                         android:id="@+id/azioni_valore_attuale"
                         android:layout_width="100dp"
                         android:gravity="right"
-                        android:text="_______" />
+                        android:text="0" />
 
                     <TextView
                         android:id="@+id/azioni_percentuale_rendimento"
@@ -285,31 +284,26 @@
                     <TextView
                         android:id="@+id/azioni_data_attuale"
                         android:layout_width="80dp"
-                        android:gravity="center"
-                         />
+                        android:gravity="center" />
 
 
                 </TableRow>
 
                 <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_height="40dp"
-                    android:padding="5dp"
-                    android:textSize="10dp"
-                    android:background="@color/colorPrimary">
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:background="@color/lavanda">
 
-                    <TableRow android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/crypto_label"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="Crypto"
 
-                        <TextView
-                            android:id="@+id/cripto_label"
-                            android:gravity="center"
-                            android:text="Crypto"
-                            android:textColor="@android:color/white"
-                            android:textStyle="bold" />
-                    </TableRow>
-
-
+                        android:textColor="@android:color/black"
+                        android:textSize="18dp"
+                        android:textStyle="bold" />
                 </TableRow>
 
 
@@ -317,9 +311,9 @@
                 <TableRow
                     android:layout_width="match_parent"
 
+                    android:layout_height="40dp"
                     android:layout_marginTop="5dp"
                     android:background="@color/colorPrimary"
-                    android:layout_height="40dp"
                     android:padding="5dp"
                     android:textSize="10dp">
 
@@ -328,25 +322,22 @@
                         android:id="@+id/transactionAmountTitleC"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Acquisto"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Purchase"
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionPercentageTitleC"
                         android:layout_width="40dp"
                         android:gravity="center"
                         android:text="Risk"
-                        android:textColor="@android:color/white"
-                         />
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionDateTitleC"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Data"
-                        android:textColor="@android:color/white"
-                          />
+                        android:text="Date"
+                        android:textColor="@android:color/white" />
 
 
                 </TableRow>
@@ -374,43 +365,38 @@
                     <TextView
                         android:id="@+id/crypto_data_acquisto"
                         android:layout_width="80dp"
-                        android:gravity="center"
-                         />
+                        android:gravity="center" />
                 </TableRow>
 
                 <TableRow
                     android:layout_width="match_parent"
 
                     android:layout_height="40dp"
-                    android:padding="5dp"
-                    android:textSize="10dp"
                     android:background="@color/colorPrimary"
-                    >
+                    android:padding="5dp"
+                    android:textSize="10dp">
 
 
                     <TextView
                         android:id="@+id/transactionAmountTitle3"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Corrente"
-                        android:textColor="@android:color/white"
-                        />
+                        android:text="Current"
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionPercentageTitle3"
                         android:layout_width="40dp"
                         android:gravity="center"
-                        android:text="Margine"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Margin"
+                        android:textColor="@android:color/white" />
 
                     <TextView
                         android:id="@+id/transactionDateTitle3"
                         android:layout_width="80dp"
                         android:gravity="center"
-                        android:text="Data"
-                        android:textColor="@android:color/white"
-                         />
+                        android:text="Date"
+                        android:textColor="@android:color/white" />
 
 
                 </TableRow>
@@ -424,8 +410,8 @@
                     <TextView
                         android:id="@+id/crypto_valore_attuale"
                         android:layout_width="100dp"
-                         android:gravity="right"
-                        android:text="_______" />
+                        android:gravity="right"
+                        android:text=" 0" />
 
                     <TextView
                         android:id="@+id/crypto_percentuale_rendimento"

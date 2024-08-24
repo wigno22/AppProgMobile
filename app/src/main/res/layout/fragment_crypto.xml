@@ -71,9 +71,9 @@
             <!-- Bottone per aggiornare i valori -->
             <Button
                 android:id="@+id/button_update_values_crypto"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="Aggiorna Valori"
+                android:text="Update Values"
                 android:backgroundTint="@color/colorNeutral"
                 android:textColor="@color/white"
                 android:layout_marginTop="16dp" />
@@ -83,7 +83,7 @@
                 android:id="@+id/button_sellallcrypto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Sell All Stocks"
+                android:text="Sell All Crypto"
                 android:backgroundTint="@color/colorNegative"
                 android:textColor="@color/white"
                 android:layout_marginTop="16dp"

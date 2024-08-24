@@ -16,4 +16,5 @@
     <color name="colorPositive">#4CAF50</color> <!-- Green for positive values -->
     <color name="colorNegative">#D32F2F</color> <!-- Red for negative values -->
     <color name="colorNeutral">#1976D2</color> <!-- Blue for neutral values -->
+
 </resources>
