@@ -6,5 +6,6 @@
     <string name="investment">Investment</string>
     <string name="mostra_fondi">Mostra Fondi</string>
     <string name="mostra_azioni">Mostra Azioni</string>
+    <string name="PulsanteDiRicerca">Ricerca</string>
 
 </resources>

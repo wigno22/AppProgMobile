@@ -146,7 +146,7 @@
     <fragment
         android:id="@+id/navigation_chatAi"
         android:name="com.example.progettoprogrammazionemobile.ChatAIFragment"
-        android:label="ChatAIFragment" >
+        android:label="Chat AI">
         <action
             android:id="@+id/action_navigation_chatAi_to_navigation_account"
             app:destination="@id/navigation_account" />

@@ -109,7 +109,7 @@ class InvestmentFragment : Fragment() {
         crypto_perc_rend = view.findViewById(R.id.crypto_percentuale_rendimento)
 
         azioniFattoreRischioTextView.text = "<10%"
-        CryptoFattoreRischioTextView.text = "<5%"
+        CryptoFattoreRischioTextView.text = "<10%"
 
          val retrofit = Retrofit.Builder()
             .baseUrl("https://pro-api.coinmarketcap.com/v1/")
@@ -474,32 +474,26 @@ class InvestmentFragment : Fragment() {
         val user = auth.currentUser
         val UID = user?.uid ?: return
 
-
-
         val cryptoinfo = db.collection(UID).document("Account").collection("Criptovalute")
         val azioniinfo = db.collection(UID).document("Account").collection("Azioni")
 
         val cifraInvestimento = cifraInvestimentoEditText.text.toString().toDoubleOrNull() ?: return
 
-        // Controllo se la cifra di investimento supera il saldo medio trimestrale
         if (cifraInvestimento > saldoMedio) {
             Toast.makeText(requireContext(), "La cifra di investimento non può superare il saldo medio trimestrale.", Toast.LENGTH_LONG).show()
             return
         }
 
-        // Controlla se ci sono criptovalute o azioni nel database
         azioniinfo.get().addOnSuccessListener { azioniSnapshot ->
             cryptoinfo.get().addOnSuccessListener { cryptoSnapshot ->
                 val hasStocks = !azioniSnapshot.isEmpty
                 val hasCryptos = !cryptoSnapshot.isEmpty
 
                 if (hasStocks || hasCryptos) {
-                    // Mostra un popup di conferma prima di procedere con il piano di investimento
                     AlertDialog.Builder(requireContext())
                         .setTitle("Conferma Piano di Investimento")
                         .setMessage("Ci sono azioni o criptovalute esistenti. Procedendo con questo piano, verranno vendute. Sei sicuro di voler continuare?")
                         .setPositiveButton("Conferma") { dialog, which ->
-                            // Se confermato, vendi tutte le azioni e criptovalute
                             lifecycleScope.launch {
                                 if (hasStocks) {
                                     viewModel.sellAllStocks(db, user)
@@ -508,22 +502,42 @@ class InvestmentFragment : Fragment() {
                                     viewModel.sellAllCryptos(db, user)
                                 }
 
-                                // Procedi con l'investimento
                                 saveInvestmentPlan(cifraInvestimento)
+
+                                // Ricarica il fragment
+                                reloadFragment()
                             }
                         }
                         .setNegativeButton("Annulla") { dialog, which ->
-                            // Annulla l'operazione
                             dialog.dismiss()
                         }
                         .show()
                 } else {
-                    // Se non ci sono azioni o criptovalute, procedi direttamente con l'investimento
                     saveInvestmentPlan(cifraInvestimento)
+                    reloadFragment()
                 }
             }
         }
     }
+
+
+
+    private fun reloadFragment() {
+      /*  val fragment = parentFragmentManager.findFragmentById(R.id.nav_host) // Sostituisci con l'ID del tuo fragment container
+        fragment?.let {
+            val transaction = parentFragmentManager.beginTransaction()
+            transaction.detach(it).attach(it).commit()
+        }
+*/
+
+        showUserData()
+        fetchSaldoAzioni()
+        fetchSaldoCrypto()
+
+
+
+    }
+
 
     private fun saveInvestmentPlan(cifraInvestimento: Double) {
         val selectedPeriodo = periodoSpinner.selectedItem.toString()

@@ -384,7 +384,7 @@ class CryptoFragment : Fragment() {
 
         val data = hashMapOf(
             "amount" to cifrainCriptovalute,
-            "category" to "Crypto Investment",
+            "category" to "Crypto Inv.",
             "outgoing" to true,
             "date" to formattedDateTime,
             "uid" to uid

@@ -34,7 +34,7 @@ class CryptoAdapter : ListAdapter<CryptoSymbolWithQuote, CryptoAdapter.CryptoVie
         fun bind(crypto: CryptoSymbolWithQuote) {
             textSymbol.text = crypto.symbol.symbol
             textName.text = crypto.symbol.name
-            textCurrentValue.text = "Valore Attuale: ${crypto.quote.price}"
+            textCurrentValue.text = "Current Value: ${crypto.quote.price} $"
 
             checkbox.setOnCheckedChangeListener(null) // Rimuove l'eventuale listener precedente
             checkbox.isChecked = selectedCryptos.contains(crypto)

@@ -396,7 +396,7 @@ class StockFragment : Fragment() {
 
         val data = hashMapOf(
             "amount" to cifrainAzioni,
-            "category" to "Stock Investment",
+            "category" to "Stock Inv.",
             "outgoing" to true,
             "date" to formattedDateTime,
             "uid" to uid

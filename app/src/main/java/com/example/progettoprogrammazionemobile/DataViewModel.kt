@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -231,6 +232,10 @@ class DataViewModel : ViewModel() {
                 (currentAmount * numStocks)
             }
 
+            // Arrotonda ai centesimi
+            val roundedTotalValue = BigDecimal(totalValue).setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
+
+
             val currentDateTime = LocalDateTime.now()
 
             // Converti il nuovo oggetto LocalDateTime in un oggetto Date
@@ -238,7 +243,7 @@ class DataViewModel : ViewModel() {
 
             // Registra la transazione di vendita
             val transactionData = hashMapOf(
-                "amount" to totalValue,
+                "amount" to roundedTotalValue,
                 "category" to "Stock Sale",
                 "outgoing" to false,
                 "date" to formattedDateTime,
@@ -279,12 +284,14 @@ class DataViewModel : ViewModel() {
                 currentAmount * numCryptos
             }
 
+            val roundedTotalValue = BigDecimal(totalValue).setScale(2, BigDecimal.ROUND_HALF_UP).toDouble()
+
             val currentDateTime = LocalDateTime.now()
             val formattedDateTime = Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant())
 
             // Registra la transazione di vendita
             val transactionData = hashMapOf(
-                "amount" to totalValue,
+                "amount" to roundedTotalValue,
                 "category" to "Crypto Sale",
                 "outgoing" to false,
                 "date" to formattedDateTime,

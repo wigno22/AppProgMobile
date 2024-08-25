@@ -8,7 +8,7 @@
     <!-- Bottone per mostrare le azioni -->
     <Button
         android:id="@+id/button_show_crypto"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorNeutral"
         android:textColor="@color/white"
@@ -25,7 +25,7 @@
     <!-- Layout per la selezione delle azioni -->
     <LinearLayout
         android:id="@+id/crypto_selection_container"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone">
@@ -39,7 +39,7 @@
 
         <Button
             android:id="@+id/button_invest_crypto"
-            android:layout_width="120dp"
+            android:layout_width="match_parent"
             android:layout_height="10dp"
             android:layout_weight="0.05"
             android:backgroundTint="@color/colorNeutral"
@@ -48,7 +48,7 @@
     </LinearLayout>
 
 
-    <!-- ScrollView per la schermata delle azioni già possedute -->
+    <!-- ScrollView per la schermata delle crypto già possedute -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             <!-- Bottone per aggiornare i valori -->
             <Button
                 android:id="@+id/button_update_values_crypto"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Update Values"
                 android:backgroundTint="@color/colorNeutral"

@@ -16,14 +16,16 @@
 
     <Button
         android:id="@+id/sign_out"
-        android:layout_width="wrap_content"
+         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/red"
         android:text="Log-Out"
-        android:textColor="@android:color/black"
+        android:textColor="@color/white"
         android:layout_marginTop="5dp"
-        android:layout_marginRight="10dp"
         android:layout_gravity="right"/>
+
+
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,8 +34,8 @@
         android:orientation="vertical">
         <TextView
             android:id="@+id/UserLabel"
-            android:layout_width="376dp"
-            android:layout_height="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:gravity="center"
@@ -51,7 +53,7 @@
                 android:layout_height="38dp"
                 android:gravity="left"
                 android:text="Name"
-                android:textSize="18dp" />
+                android:textSize="18dp" android:textStyle="bold"/>
 
             <TextView
                 android:id="@+id/Tsurname"
@@ -59,12 +61,12 @@
                 android:layout_height="38dp"
                 android:gravity="left"
                 android:text="Surname"
-                android:textSize="18dp" />
+                android:textSize="18dp" android:textStyle="bold"/>
         </LinearLayout>
         <TextView
             android:id="@+id/EmailLabel"
-            android:layout_width="376dp"
-            android:layout_height="38dp"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"
             android:gravity="center"
@@ -72,12 +74,11 @@
             android:textSize="18dp" />
         <TextView
             android:id="@+id/Temail"
-            android:layout_width="376dp"
+            android:layout_width="match_parent"
             android:layout_height="38dp"
-            android:layout_marginTop="5dp"
-            android:gravity="center"
+               android:gravity="center"
             android:text="Email"
-            android:textSize="18dp"
+            android:textSize="18dp" android:textStyle="bold"
             />
     </LinearLayout>
 
@@ -90,18 +91,16 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="12dp"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/Labelphone"
-                android:layout_width="184dp"
+                android:layout_width="140dp"
                 android:layout_height="match_parent"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="Phone Number"
-                android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18dp" android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/Tphone"
@@ -110,7 +109,6 @@
                 android:gravity="right"
                 android:hint="Phone Number"
                 android:inputType="phone"
-                android:padding="10dp"
                 android:textSize="18dp" />
 
         </LinearLayout>
@@ -122,13 +120,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="183dp"
+                android:layout_width="140dp"
                 android:layout_height="match_parent"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="Fixed Outcome"
-                android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18dp" android:textStyle="bold" />
 
             <EditText
                 android:id="@+id/TfixedOut"
@@ -137,7 +133,6 @@
                 android:gravity="right"
                 android:hint="Fixed Expenses"
                 android:inputType="numberDecimal"
-                android:padding="10dp"
                 android:textSize="18dp"
                 android:text="@{viewModel.fixedOut}" />
 
@@ -150,13 +145,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="184dp"
+                android:layout_width="140dp"
                 android:layout_height="match_parent"
-                android:background="@color/colorPrimary"
-                android:gravity="center"
+                 android:gravity="left"
                 android:text="Fixed Income"
-                android:textColor="@android:color/white"
-                android:textSize="18dp" />
+                android:textSize="18dp" android:textStyle="bold"  />
 
 
             <EditText
@@ -166,7 +159,6 @@
                 android:gravity="right"
                 android:hint="Fixed Income"
                 android:inputType="numberDecimal"
-                android:padding="10dp"
                 android:textSize="18dp"
                 android:text="@{viewModel.fixedEntries}" />
 
@@ -175,8 +167,8 @@
     </LinearLayout>
     <Button
         android:id="@+id/Bsave"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_width="match_parent"
         android:text="Save"
         android:backgroundTint="@color/colorNeutral"
         android:textColor="@color/white"
@@ -198,17 +190,15 @@
 
             <TableRow
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary">
-
+                android:background="@color/lavanda">
                 <TextView
                     android:id="@+id/RischioTitle_label"
                     android:layout_width="124dp"
                     android:gravity="center"
-
-                    android:text="Rischio"
-                    android:textColor="@android:color/white"
+                    android:text="Risk"
                     android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"/>
             </TableRow>
 
             <TableRow
@@ -232,7 +222,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Basso"
+                    android:text="Low"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
 
@@ -241,7 +231,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Medio"
+                    android:text="Medium"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
 
@@ -250,7 +240,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Alto"
+                    android:text="High"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
 
@@ -269,9 +259,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="left"
-                    android:background="@color/colorPrimary"
-                    android:textColor="@android:color/white"
-                    android:text="Azioni"
+                    android:text="Stocks"
                     android:textStyle="bold" />
 
                 <TextView
@@ -313,10 +301,7 @@
                     android:id="@+id/Lavel_Crypto"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:textColor="@android:color/white"
                     android:gravity="left"
-
                     android:text="Crypto"
                     android:textStyle="bold" />
 
@@ -325,7 +310,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-
                     android:text="40%"
                     android:textStyle="bold" />
 
@@ -367,21 +351,19 @@
         <TableLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
             android:stretchColumns="1,2,3,4,5">
 
             <!-- Intestazione della tabella -->
 
             <TableRow
                 android:layout_height="wrap_content"
-                android:background="@color/colorPrimary">
-
+                android:background="@color/lavanda">
                 <TextView
                     android:id="@+id/Rischio_label"
                     android:layout_width="206dp"
                     android:gravity="center"
-                    android:text="Rischio Investimento"
-                    android:textColor="@android:color/white"
+                    android:text="Investment Risk"
+                    android:textColor="@android:color/black"
                     android:textSize="20dp"
                     android:textStyle="bold" />
             </TableRow>
@@ -400,7 +382,7 @@
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="Azioni"
+                    android:text="Stocks"
                     android:textColor="@android:color/white"
                     android:textSize="18dp" />
 

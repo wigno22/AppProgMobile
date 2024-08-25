@@ -8,7 +8,7 @@
     <!-- Bottone per mostrare le azioni -->
     <Button
         android:id="@+id/button_show_stocks"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorNeutral"
         android:textColor="@color/white"
@@ -26,7 +26,7 @@
     <LinearLayout
         android:id="@+id/stock_selection_container"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -34,18 +34,19 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
-            android:maxHeight="300dp" />
+            android:layout_height="0dp"
+            android:layout_weight="0.9" />
 
         <!-- Bottone per investire -->
         <Button
             android:id="@+id/button_invest"
-            android:layout_width="wrap_content"
-            android:layout_height="80dp"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_weight="0.05"
             android:text="Invest"
             android:backgroundTint="@color/colorNeutral"
             android:textColor="@color/white"
-            android:visibility="visible" />
+            />
     </LinearLayout>
 
     <!-- ScrollView per la schermata delle azioni già possedute -->
@@ -71,7 +72,7 @@
             <!-- Bottone per aggiornare i valori -->
             <Button
                 android:id="@+id/button_update_values"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Update Values"
                 android:backgroundTint="@color/colorNeutral"
@@ -88,7 +89,8 @@
                 android:textColor="@color/white"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </LinearLayout>
+
     </ScrollView>
 </LinearLayout>
