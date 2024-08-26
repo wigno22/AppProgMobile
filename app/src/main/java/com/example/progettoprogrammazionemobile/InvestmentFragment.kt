@@ -312,7 +312,7 @@ class InvestmentFragment : Fragment() {
                 val AzioniFormatted = decimalFormat.format(saldoAzTotale)
 
                 // Imposta il valore formato o 0,0 se nullo
-                azioni_valore_attuale.text = if (AzioniFormatted == ",0") "0,0" else AzioniFormatted
+                azioni_valore_attuale.text = if (AzioniFormatted == ".0") "0,0" else AzioniFormatted
 
                 val azioniCifraText = azioniCifraTextView.text.toString()
 
@@ -356,7 +356,7 @@ class InvestmentFragment : Fragment() {
                 val CryptoFormatted = decimalFormat.format(saldoCryTotale)
 
                 // Imposta il valore formato o 0,0 se nullo
-                crypto_valore_attuale.text = if (CryptoFormatted == ",0") "0,0" else CryptoFormatted
+                crypto_valore_attuale.text = if (CryptoFormatted == ".0") "0,0" else CryptoFormatted
 
                 val cryptoCifraText = cryptoCifraTextView.text.toString()
 
@@ -415,7 +415,7 @@ class InvestmentFragment : Fragment() {
                 val saldoMedioFormatted = decimalFormat.format(saldoMedio)
 
 
-                saldoCifraEditText.text = if (saldoMedioFormatted == ",0") "0,0" else saldoMedioFormatted
+                saldoCifraEditText.text = if (saldoMedioFormatted == ".0") "0,0" else saldoMedioFormatted
 
                 Log.d("InvestimentiFragment", "Saldo medio: $saldoMedioFormatted")
             }.addOnFailureListener { exception ->
