@@ -296,62 +296,37 @@ class InvestmentFragment : Fragment() {
         val UID = user?.uid
         if (UID != null) {
             val userDocRef = db.collection(UID).document("Account")
-            val threeMonthsAgo = Calendar.getInstance().apply {
-                add(Calendar.MONTH, -3)
-            }.time
-
             val transactionsRef = userDocRef.collection("Azioni")
-
 
             transactionsRef.get().addOnSuccessListener { querySnapshot ->
                 var saldoAzTotale = 0.0
-
-                Log.d("InvestimentiFragment", "Number of documents: ${querySnapshot.documents.size}")
 
                 for (document in querySnapshot.documents) {
                     var qta = document.getDouble("numeroAzioni") ?: 0.0
                     var amount = document.getDouble("valoreUlt") ?: 0.0
 
-                    saldoAzTotale +=(amount * qta)
-
-                    Log.d("InvestimentiFragment", "Document: $document, Amount: $amount, Running Total: $saldoAzTotale")
+                    saldoAzTotale += (amount * qta)
                 }
-
 
                 val decimalFormat = DecimalFormat("#.0")
                 val AzioniFormatted = decimalFormat.format(saldoAzTotale)
 
-                azioni_valore_attuale.setText(AzioniFormatted)
-
+                // Imposta il valore formato o 0,0 se nullo
+                azioni_valore_attuale.text = if (AzioniFormatted == ",0") "0,0" else AzioniFormatted
 
                 val azioniCifraText = azioniCifraTextView.text.toString()
 
-                // Verifica che tutti i valori siano validi
                 if (saldoAzTotale != 0.0 && azioniCifraText.isNotBlank() &&
                     azioniCifraText.matches(Regex("[-+]?\\d*\\.?\\d+"))) {
 
-                    // Converti i testi in numeri
                     val azioniValoreAcqIniz = azioniCifraText.toDouble()
-
-                    // Esegui i calcoli
                     val margineAzioni = ((saldoAzTotale / azioniValoreAcqIniz) - 1)
 
                     val percentFormat = DecimalFormat("#.#%")
-
-                    // Imposta i risultati nei TextView
-                    azioni_perc_rend.text = percentFormat.format(margineAzioni).toString()
-
+                    azioni_perc_rend.text = percentFormat.format(margineAzioni)
                 } else {
-                    // Se uno dei valori non è valido, imposta una stringa vuota
-                    azioni_perc_rend.text = ""
-
+                    azioni_perc_rend.text = "0,0%" // Imposta un valore di default se il valore è nullo
                 }
-
-
-
-
-
-                Log.d("InvestimentiFragment", "Saldo medio: $saldoAzTotale")
             }.addOnFailureListener { exception ->
                 Log.e("InvestimentiFragment", "Failed to fetch transactions: ${exception.message}")
             }
@@ -359,62 +334,43 @@ class InvestmentFragment : Fragment() {
             Log.e("InvestimentiFragment", "User ID is null")
         }
     }
+
 
     private fun fetchSaldoCrypto() {
         val user = auth.currentUser
         val UID = user?.uid
         if (UID != null) {
             val userDocRef = db.collection(UID).document("Account")
-            val threeMonthsAgo = Calendar.getInstance().apply {
-                add(Calendar.MONTH, -3)
-            }.time
-
             val transactionsRef = userDocRef.collection("Criptovalute")
 
             transactionsRef.get().addOnSuccessListener { querySnapshot ->
                 var saldoCryTotale = 0.0
 
-                Log.d("InvestimentiFragment", "Number of documents: ${querySnapshot.documents.size}")
-
                 for (document in querySnapshot.documents) {
                     var amount = document.getDouble("valoreUlt€") ?: 0.0
                     var qta = document.getDouble("numeroCriptovalute") ?: 0.0
                     saldoCryTotale += amount * qta
-
-                    Log.d("InvestimentiFragment", "Document: $document, Amount: $amount, Running Total: $saldoCryTotale")
                 }
-
 
                 val decimalFormat = DecimalFormat("#.0")
                 val CryptoFormatted = decimalFormat.format(saldoCryTotale)
 
-                crypto_valore_attuale.setText(CryptoFormatted)
-
+                // Imposta il valore formato o 0,0 se nullo
+                crypto_valore_attuale.text = if (CryptoFormatted == ",0") "0,0" else CryptoFormatted
 
                 val cryptoCifraText = cryptoCifraTextView.text.toString()
-
 
                 if (saldoCryTotale != 0.0 && cryptoCifraText.isNotBlank() &&
                     cryptoCifraText.matches(Regex("[-+]?\\d*\\.?\\d+"))) {
 
-                    // Converti i testi in numeri
                     val cryptoCifraNumero = cryptoCifraText.toDouble()
-
-                    // Esegui i calcoli
                     val margineCrypto = ((saldoCryTotale / cryptoCifraNumero) - 1)
 
                     val percentFormat = DecimalFormat("#.#%")
-
-                    // Imposta i risultati nei TextView
-                    crypto_perc_rend.text = percentFormat.format(margineCrypto).toString()
-
-
+                    crypto_perc_rend.text = percentFormat.format(margineCrypto)
                 } else {
-                    // Se uno dei valori non è valido, imposta una stringa vuota
-                    crypto_perc_rend.text = ""
+                    crypto_perc_rend.text = "0,0%" // Imposta un valore di default se il valore è nullo
                 }
-
-                Log.d("InvestimentiFragment", "Saldo medio: $crypto_valore_attuale")
             }.addOnFailureListener { exception ->
                 Log.e("InvestimentiFragment", "Failed to fetch transactions: ${exception.message}")
             }
@@ -422,6 +378,7 @@ class InvestmentFragment : Fragment() {
             Log.e("InvestimentiFragment", "User ID is null")
         }
     }
+
 
 
 
@@ -457,7 +414,8 @@ class InvestmentFragment : Fragment() {
                 val decimalFormat = DecimalFormat("#.0")
                 val saldoMedioFormatted = decimalFormat.format(saldoMedio)
 
-                saldoCifraEditText.setText(saldoMedioFormatted)
+
+                saldoCifraEditText.text = if (saldoMedioFormatted == ",0") "0,0" else saldoMedioFormatted
 
                 Log.d("InvestimentiFragment", "Saldo medio: $saldoMedioFormatted")
             }.addOnFailureListener { exception ->
@@ -523,18 +481,9 @@ class InvestmentFragment : Fragment() {
 
 
     private fun reloadFragment() {
-      /*  val fragment = parentFragmentManager.findFragmentById(R.id.nav_host) // Sostituisci con l'ID del tuo fragment container
-        fragment?.let {
-            val transaction = parentFragmentManager.beginTransaction()
-            transaction.detach(it).attach(it).commit()
-        }
-*/
-
         showUserData()
         fetchSaldoAzioni()
         fetchSaldoCrypto()
-
-
 
     }
 
